@@ -1,0 +1,13 @@
+{
+  "name": "@ilb/core",
+  "version": "1.0.1",
+  "description": "app core",
+  "type": "module",
+  "dependencies": {
+    "@ilb/ajvinstance": "^1.0.3",
+    "next-connect": "^0.13.0"
+  },
+  "main": "index.js",
+  "author": "barakok",
+  "license": "ISC"
+}

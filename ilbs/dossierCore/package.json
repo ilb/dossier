@@ -1,0 +1,15 @@
+{
+  "name": "@ilb/dossier-core",
+  "version": "1.0.1",
+  "description": "dossier-core",
+  "type": "module",
+  "dependencies": {
+    "mime-types": "^2.1.35",
+    "uuid": "^8.3.2",
+    "imagemagick": "^0.1.3",
+    "@ilb/core": "*"
+  },
+  "main": "index.js",
+  "author": "barakok",
+  "license": "ISC"
+}

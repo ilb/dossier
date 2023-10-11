@@ -1,0 +1,17 @@
+{
+  "name": "@ilb/checks",
+  "version": "1.0.1",
+  "description": "dossier checks",
+  "type": "module",
+  "dependencies": {
+    "@ilb/core": "*",
+    "@zxing/library": "^0.19.2",
+    "canvas": "^2.11.0",
+    "form-data": "^4.0.0",
+    "image-js": "^0.35.3",
+    "isomorphic-fetch": "^3.0.0"
+  },
+  "main": "src/index.js",
+  "author": "barakok",
+  "license": "ISC"
+}
