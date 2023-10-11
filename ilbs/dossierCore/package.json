@@ -1,15 +1,18 @@
 {
-  "name": "@ilb/dossier-core",
-  "version": "1.0.1",
+  "name": "@ilbru/dossier-core",
+  "version": "1.0.0",
   "description": "dossier-core",
   "type": "module",
   "dependencies": {
     "mime-types": "^2.1.35",
     "uuid": "^8.3.2",
     "imagemagick": "^0.1.3",
-    "@ilb/core": "*"
+    "@ilbru/core": "^1.0.0"
   },
   "main": "index.js",
   "author": "barakok",
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "@ilbru:registry": "https://gitlab.com/api/v4/projects/51115193/packages/npm/"
+  }
 }

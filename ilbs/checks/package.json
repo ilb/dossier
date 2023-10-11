@@ -1,10 +1,10 @@
 {
-  "name": "@ilb/checks",
-  "version": "1.0.1",
+  "name": "@ilbru/checks",
+  "version": "1.0.0",
   "description": "dossier checks",
   "type": "module",
   "dependencies": {
-    "@ilb/core": "*",
+    "@ilbru/core": "^1.0.0",
     "@zxing/library": "^0.19.2",
     "canvas": "^2.11.0",
     "form-data": "^4.0.0",
@@ -13,5 +13,8 @@
   },
   "main": "src/index.js",
   "author": "barakok",
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "@ilbru:registry": "https://gitlab.com/api/v4/projects/51115193/packages/npm/"
+  }
 }
