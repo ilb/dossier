@@ -1,12 +1,12 @@
 import { Classifier } from '../src/client.js';
 // import { useRef, useState } from 'react';
 import schema from '../../dossierCore/src/schemas/mockSchema.js';
-import ClassifierSchemaBuilder from '../src/classifier/schemeBuilder/services/ClassifierSchemaBuilder.js';
+import BaseSchemaBuilder from '../src/classifier/core/BaseSchemaBuilder.js';
 
 export default function App() {
   const uuid = '7533b049-88ca-489b-878a-3ac1c8616fe7';
 
-  const builder = new ClassifierSchemaBuilder();
+  const builder = new BaseSchemaBuilder();
 
   const classifierSchema = builder.build(schema, {
     dossierCode: 'client',
