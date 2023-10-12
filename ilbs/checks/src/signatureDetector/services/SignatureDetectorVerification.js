@@ -1,4 +1,4 @@
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import fs from 'fs';
 import FormData from 'form-data';
 import fetch from 'isomorphic-fetch';

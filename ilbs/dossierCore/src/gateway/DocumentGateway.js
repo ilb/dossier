@@ -31,7 +31,7 @@ export default class DocumentGateway {
   }
 
   async deletePage(document, pageUuid) {
-    await document.movePage(numberFrom, numberTo);
+    await document.deletePage(pageUuid);
     await this.deletePageInBase(pageUuid);
   }
 

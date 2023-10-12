@@ -1,4 +1,4 @@
-import Usecases from '@ilb/core/src/base/usecases/Usecases.js';
+import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
 
 export default class ClassifierUsecases extends Usecases {
   /**

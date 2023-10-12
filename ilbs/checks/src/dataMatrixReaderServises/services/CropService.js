@@ -1,5 +1,5 @@
 import { createCanvas, ImageData } from 'canvas';
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 
 export default class CropService extends Service {
   constructor() {

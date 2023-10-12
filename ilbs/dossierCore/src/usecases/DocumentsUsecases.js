@@ -1,4 +1,4 @@
-import Usecases from '@ilb/core/src/base/usecases/Usecases.js';
+import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
 
 export default class DocumentsUsecases extends Usecases {
   /**
@@ -29,6 +29,7 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async update({ pagesService, request }) {
+    console.log('hello add');
     await pagesService.add(request);
   }
 
@@ -67,7 +68,7 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async getPage({ pagesService, request }) {
-    await pagesService.get(request);
+    return await pagesService.get(request);
   }
 
   /**

@@ -1,4 +1,4 @@
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import { createCanvas } from 'canvas';
 // import fs from 'fs';
 export default class FlipService extends Service {

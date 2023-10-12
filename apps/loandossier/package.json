@@ -1,0 +1,49 @@
+{
+  "name": "@ilbru/loandossier",
+  "version": "1.0.0",
+  "description": "loandossier",
+  "type": "module",
+  "dependencies": {
+    "@prisma/client": "^5.3.1",
+    "awilix": "^7.0.3",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "glob": "^8.0.3",
+    "isomorphic-fetch": "^3.0.0",
+    "mime-types": "^2.1.35",
+    "multer": "^1.4.5-lts.1",
+    "next-connect": "^0.13.0",
+    "node-poppler": "^6.2.1",
+    "uuid": "^8.3.2",
+    "@ilbru/core": "*",
+    "@ilbru/checks": "*",
+    "@ilbru/dossier-core": "*"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.4.5",
+    "nodemon": "^2.0.18",
+    "prettier": "^2.5.1",
+    "prisma": "^5.3.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --ignore ./documents/ server.js",
+    "start": "node --experimental-specifier-resolution=node server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "ilb-build": "",
+    "ilb-deploy": "",
+    "db:generate": "npx prisma generate",
+    "db:migrate": "npx prisma migrate dev"
+  },
+  "prisma": {
+    "seed": "node --experimental-specifier-resolution=node prisma/seed.js"
+  },
+  "author": "barakok",
+  "license": "ISC"
+}

@@ -1,4 +1,4 @@
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import Page from '../document/Page.js';
 import mime from 'mime-types';
 import fs from 'fs';
@@ -96,8 +96,7 @@ export default class PagesService extends Service {
   async delete({ uuid, name, pageUuid }) {
     const dossier = await this.scope.dossierBuilder.build(uuid);
     const document = dossier.getDocument(name);
-    await document.deletePage(pageUuid);
-    await this.scope.dossierService.deletePage(fromDocument, from.page, toDocument, to.page);
+    await this.scope.documentGateway.deletePage(document, pageUuid);
   }
 
   async get({ uuid, name, number }) {

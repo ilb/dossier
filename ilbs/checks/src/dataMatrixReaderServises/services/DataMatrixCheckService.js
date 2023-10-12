@@ -1,5 +1,5 @@
 import { loadImage } from 'canvas';
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import {
   MultiFormatReader,
   BinaryBitmap,

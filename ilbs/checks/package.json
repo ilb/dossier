@@ -4,7 +4,7 @@
   "description": "dossier checks",
   "type": "module",
   "dependencies": {
-    "@ilbru/core": "^1.0.0",
+    "@ilbru/core": "*",
     "@zxing/library": "^0.19.2",
     "canvas": "^2.11.0",
     "form-data": "^4.0.0",

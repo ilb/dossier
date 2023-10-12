@@ -1,4 +1,4 @@
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import { chunkArray, prepareClassifies } from '../../libs/utils.js';
 import queue from '../../pqueue/pqueue.js';
 import Page from '../document/Page.js';
@@ -11,6 +11,7 @@ export default class ClassifyService extends Service {
     dossierService,
     dossierBuilder,
     verificationService,
+    classifierGate,
   }) {
     super();
     this.dossierService = dossierService;

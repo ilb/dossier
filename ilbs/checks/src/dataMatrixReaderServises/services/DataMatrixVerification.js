@@ -1,4 +1,4 @@
-import Service from '@ilb/core/src/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import Errors from './Errors.js';
 import DataMatrixCheckService from './DataMatrixCheckService.js';
 

@@ -1,6 +1,6 @@
 import { Classifier } from '../src/client.js';
 // import { useRef, useState } from 'react';
-import schema from '../../dossierCore/src/schemas/mockSchema.js';
+import schema from '../src/mocks/mockSchema.js';
 import BaseSchemaBuilder from '../src/classifier/core/BaseSchemaBuilder.js';
 
 export default function App() {
