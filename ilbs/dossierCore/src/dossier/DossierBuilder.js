@@ -34,7 +34,7 @@ export default class DossierBuilder {
   #buildDocuments(dossier, context) {
     const { schema } = context;
 
-    return schema.map((document) => {
+    return schema.documents.map((document) => {
       const docData = {
         type: document.type,
         verifications: document.verifications,

@@ -1,4 +1,4 @@
-import { execute, nutNull } from '../../libs/Executor.js';
+import { execute, nutNull } from '../../../libs/Executor.js';
 import { TooltipText } from '../constants/TooltipTexts.js';
 
 export default class RoleDossierProcessor {

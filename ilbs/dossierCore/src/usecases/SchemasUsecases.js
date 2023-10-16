@@ -1,5 +1,5 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
-
+import RoleDossierProcessor from '../schemas/core/RoleDossierProcessor.js';
 export default class SchemasUsecases extends Usecases {
   /**
    * @param {DocumentsService} documentsService
@@ -20,8 +20,14 @@ export default class SchemasUsecases extends Usecases {
   /**
    * @returns {Promise<{text: string}>}
    */
-  async read({ request, dossierSchema }) {
-    return dossierSchema;
+  async read({ request, dossierSchema, baseSchemaBuilder }) {
+    const schema = {
+      classifier: dossierSchema.classifier,
+      documents: dossierSchema.documents,
+      processor: new RoleDossierProcessor(dossierSchema, request),
+    };
+
+    return baseSchemaBuilder.build(schema, request);
   }
 
   async update() {}

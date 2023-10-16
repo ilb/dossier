@@ -1,8 +1,6 @@
 import http from 'http';
-import nc from 'next-connect';
 import bodyParser from 'body-parser';
 import { handle } from './src/index.js';
-// import SchemasUsecases from './src/usecases/SchemasUsecases.js';
 import FileResponse from '@ilbru/core/src/responses/FileReponse.js';
 import { uploadMiddleware } from './src/http/middlewares.js';
 import * as dotenv from 'dotenv';
@@ -10,14 +8,17 @@ import cors from 'cors';
 import { splitPdf } from './src/http/middlewares.js';
 import DocumentsUsecases from '@ilbru/dossier-core/src/usecases/DocumentsUsecases.js';
 import ClassifierUsecases from '@ilbru/dossier-core/src/usecases/ClassifierUsecases.js';
-
+import SchemasUsecases from '@ilbru/dossier-core/src/usecases/SchemasUsecases.js';
+import express from 'express';
 dotenv.config();
 
-const handler = nc({ attachParams: true })
+const app = express();
+app
   .use(cors())
   .use(
     '/loandossier/dossiercore/api',
-    nc({ attachParams: true })
+    express
+      .Router()
       .use(uploadMiddleware.array('documents'))
       .use(splitPdf)
       .use(bodyParser.json())
@@ -30,12 +31,13 @@ const handler = nc({ attachParams: true })
       .get(
         '/:uuid/documents/:name/version/:version',
         handle(DocumentsUsecases, 'print', FileResponse),
-      ),
-    // .get('/schema', handle(SchemasUsecases, 'read')),
+      )
+      .get('/schema', handle(SchemasUsecases, 'read')),
   )
   .use(
     '/loandossier/classifier/api',
-    nc({ attachParams: true })
+    express
+      .Router()
       .use(uploadMiddleware.array('documents'))
       .use(bodyParser.json())
       .put('/:uuid', handle(ClassifierUsecases, 'classifyPages'))
@@ -44,4 +46,6 @@ const handler = nc({ attachParams: true })
 
 const port = process.env['HTTP_PORT'] || 3001;
 
-http.createServer(handler).listen(port);
+app.listen(port, () => {
+  console.log('run on ', port);
+});

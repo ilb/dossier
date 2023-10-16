@@ -1,3 +1,4 @@
+import { asValue, asClass } from 'awilix';
 import DocumentMerger from './dossier/DocumentMerger.js';
 import DossierBuilder from './dossier/DossierBuilder.js';
 import DocumentGateway from './gateway/DocumentGateway.js';
@@ -16,7 +17,8 @@ import DossierService from './services/DossierService.js';
 import FileService from './services/FileService.js';
 import PagesService from './services/PagesService.js';
 import VerificationService from './services/VerificationService.js';
-import { asValue, asClass } from 'awilix';
+import RoleDossierProcessor from './schemas/core/RoleDossierProcessor.js';
+import BaseSchemaBuilder from './schemas/core/BaseSchemaBuilder.js';
 
 const registerPackageClasses = (container) => {
   container.register({
@@ -32,13 +34,15 @@ const registerPackageClasses = (container) => {
     classifierGate: asClass(
       process.env.CLASSIFIER_GATE_MOCK === 'true' ? ClassifierGate : ClassifierGateMock,
     ),
-    mockSchema: asValue(mockSchema),
+    dossierSchema: asValue(mockSchema),
     classifyService: asClass(ClassifyService),
     documentsService: asClass(DocumentsService),
     dossierService: asClass(DossierService),
     fileService: asClass(FileService),
     pagesService: asClass(PagesService),
     verificationService: asClass(VerificationService),
+    roleDossierProcessor: asClass(RoleDossierProcessor),
+    baseSchemaBuilder: asClass(BaseSchemaBuilder),
   });
 };
 
