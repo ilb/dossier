@@ -14,17 +14,6 @@ export default class DataMatrixVerification extends Service {
   }
 
   async check(document, context) {
-    // documentPages = document.pages это массив страниц,
-    // cropped = context.params
-    // const error = Errors.notFound(`Не найденные страницы : 1,3,4`);
-    // await document.addError(error);
-    // this.errors.push(error);
-    // return {
-    //   nameVerification: this.nameVerification,
-    //   ok: false,
-    //   errors: this.errors,
-    // };
-    // todo;
     for (let page of document.pages) {
       const res = await this.dataMatrixCheckService.decodeFile(page, context.params);
       let obj = null;

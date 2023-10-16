@@ -29,7 +29,6 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async update({ pagesService, request }) {
-    console.log('hello add');
     await pagesService.add(request);
   }
 

@@ -6,9 +6,9 @@ import {
   HTMLCanvasElementLuminanceSource,
   GlobalHistogramBinarizer,
 } from '@zxing/library';
-import CropService from './CropService';
-import FlipService from './FlipService';
-import DeviationCheck from './DeviationCheck';
+import CropService from './CropService.js';
+import FlipService from './FlipService.js';
+import DeviationCheck from './DeviationCheck.js';
 
 export default class DataMatrixCheckService extends Service {
   constructor() {

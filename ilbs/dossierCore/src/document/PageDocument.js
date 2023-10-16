@@ -16,7 +16,7 @@ export default class PageDocument extends Document {
     this.documentsPath = process.env.DOSSIER_DOCUMENT_PATH;
     this.dossierPath = this.documentsPath + '/dossier';
     this.documentMerger = new DocumentMerger(this.dossierPath);
-    this.verifications = docData.verifications || [];
+    this.verificationsList = docData.verifications || [];
     this.verificationsResult = [];
     this.currentVersion = null;
     this.versions = [];
@@ -25,11 +25,12 @@ export default class PageDocument extends Document {
   setDbData(document) {
     this.setUuid = document.uuid;
     this.setId = document.id;
-    this.errors = document.errors;
+    this.errors = document.currentDocumentVersion.errors;
     this.currentVersion = document.currentDocumentVersion;
-    this.versions = document.documentVersions;
+    this.status = document.currentDocumentVersion.status || '';
+    this.versions = document.versions;
     this.lastModified = document.updateAt || document.createAt;
-    this.verifications = document.verifications;
+    this.verificationsResult = document.currentDocumentVersion.verifications || [];
   }
 
   setCurrentVersion(version) {

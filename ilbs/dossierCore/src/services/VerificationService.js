@@ -14,11 +14,14 @@ export default class VerificationService {
    * @param path
    * @returns {Promise<*>}
    */
-  async add(type, path) {
+  async add(type, context) {
+    const { path, documentVersionId } = context;
+
     const verificationData = {
       statusCode: 'IN_QUEUE',
       typeCode: type,
       data: { path },
+      documentVersionId,
     };
 
     return await this.verificationRepository.save(verificationData);

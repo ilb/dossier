@@ -49,6 +49,7 @@ model Page {
   id                Int              @id @default(autoincrement())
   uuid              String           @unique
   data              Json?
+  context           Json? //В контекст записываем кеш проверок
   pageNumber        Int?
   isDelete          Boolean          @default(false)
   documentVersionId Int?
@@ -64,6 +65,7 @@ model Error {
   id                Int              @id @default(autoincrement())
   code              String?
   description       String?
+  isArchive         Boolean?         @default(false)
   documentId        Int?
   documentVersionId Int?
   pageId            Int?

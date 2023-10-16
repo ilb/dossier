@@ -13,11 +13,13 @@ export default class DocumentGateway {
     documentRepository,
     pageRepository,
     documentVersionRepository,
+    errorRepository,
   }) {
     this.dossierRepository = dossierRepository;
     this.documentRepository = documentRepository;
     this.pageRepository = pageRepository;
     this.documentVersionRepository = documentVersionRepository;
+    this.errorRepository = errorRepository;
   }
 
   async addPages(document, pages) {
@@ -35,14 +37,28 @@ export default class DocumentGateway {
     await this.deletePageInBase(pageUuid);
   }
 
-  async addError(error) {
-    await this.scope.errorRepository.create({
+  async addError(document, error) {
+    await this.errorRepository.create({
       code: error.type,
       description: error.description,
-      document: {
+      documentVersion: {
         connect: {
-          uuid: this.uuid,
+          id: document.currentVersion.id,
         },
+      },
+    });
+  }
+
+  async archiveErrors(document) {
+    const idsArray = document.errors.map(({ id }) => id);
+    await this.errorRepository.updateMany({
+      where: {
+        id: {
+          in: idsArray,
+        },
+      },
+      data: {
+        isArchive: true,
       },
     });
   }
@@ -83,7 +99,7 @@ export default class DocumentGateway {
       });
       const version = await this.createDocumentVersion(documentFromDb.uuid, 1);
       documentFromDb.currentDocumentVersion = version;
-      documentFromDb.documentVersions = [version];
+      documentFromDb.versions = [version];
     }
 
     if (documentFromDb) {
@@ -128,6 +144,7 @@ export default class DocumentGateway {
           uuid: item.uuid,
           errors: item.errors,
           pageNumber: item.pageNumber,
+          context: item.context,
           ...item.data,
         }),
     );

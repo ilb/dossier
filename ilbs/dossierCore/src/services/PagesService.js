@@ -10,26 +10,48 @@ export default class PagesService extends Service {
     this.scope = scope;
   }
 
-  // async verificationsRun(document) {
-  //   for (let verification of document.verifications) {
-  //     const path = `${document.uuid}.${verification.code}`;
-  //     let verificationProcess = await this.scope.verificationService.add(verification.code, path);
-  //     try {
-  //       await this.scope.verificationService.start(verificationProcess);
+  async verificationsRun(document) {
+    // console.log('document', document);
+    // let date = new Date();
+    // const taskFinish = new Date(date);
+    // taskFinish.setSeconds(taskFinish.getSeconds() + 5);
 
-  //       const handler = this.scope[verification.code];
-  //       const res = await handler.check(document, {
-  //         params: verification.params,
-  //       });
-  //       await this.scope.verificationService.finish(verificationProcess, res);
+    // while (date < taskFinish) {
+    //   date = new Date();
+    //   console.log('date', date);
+    //   console.log('taskFinish', taskFinish);
+    // }
+    // console.log('finish');
 
-  //       this.verificationsResult.push(res);
-  //     } catch (error) {
-  //       console.log(error);
-  //       await this.scope.verificationService.cancel(verificationProcess);
-  //     }
-  //   }
-  // }
+    // Перед проверками заархивировать ошибки в базе. Очистить ошибки в памяти.
+
+    if (document.errors.length) {
+      await this.scope.documentGateway.archiveErrors(document);
+      document.errors = [];
+    }
+
+    for (let verification of document.verificationsList) {
+      const path = `${document.uuid}.${verification.code}`;
+      let verificationProcess = await this.scope.verificationService.add(verification.code, {
+        path,
+        documentVersionId: document.currentVersion.id,
+      });
+      try {
+        await this.scope.verificationService.start(verificationProcess);
+
+        const handler = this.scope[verification.code];
+        const res = await handler.check(document, {
+          params: verification.params,
+        });
+        await this.scope.verificationService.finish(verificationProcess, res);
+
+        document.verificationsResult.push(res);
+      } catch (error) {
+        console.log(error);
+        await this.scope.verificationService.cancel(verificationProcess);
+      }
+    }
+  }
 
   async savePage(uuid, name, file, createdDate) {
     const date = createdDate.split('.').reverse().join('/');
@@ -67,7 +89,7 @@ export default class PagesService extends Service {
     }
 
     await this.scope.documentGateway.addPages(document, filesArray);
-    // await this.verificationsRun(document);
+    await this.verificationsRun(document);
     return { files, name };
   }
 

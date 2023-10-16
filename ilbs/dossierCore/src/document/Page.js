@@ -12,5 +12,6 @@ export default class Page {
     this.mimeType = file.mimetype;
     this.errors = file.errors;
     this.pageNumber = file.pageNumber;
+    this.context = file.context;
   }
 }

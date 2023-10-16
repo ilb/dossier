@@ -19,6 +19,11 @@ export default class DocumentRepository extends Repository {
           include: {
             pages: true,
             verifications: true,
+            errors: {
+              where: {
+                isArchive: false,
+              },
+            },
           },
         },
       },

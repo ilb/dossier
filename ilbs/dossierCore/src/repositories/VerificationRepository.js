@@ -32,8 +32,18 @@ export default class VerificationRepository extends Repository {
     };
   }
 
-  async save({ statusCode, typeCode, data, begDate, endDate, typeId, statusId, id = 0 }) {
-    let status, type;
+  async save({
+    statusCode,
+    typeCode,
+    data,
+    begDate,
+    endDate,
+    typeId,
+    statusId,
+    documentVersionId,
+    id = 0,
+  }) {
+    let status, type, documentVersion;
 
     if (typeCode) {
       type = {
@@ -45,6 +55,14 @@ export default class VerificationRepository extends Repository {
       type = {
         connect: {
           id: typeId,
+        },
+      };
+    }
+
+    if (documentVersionId) {
+      documentVersion = {
+        connect: {
+          id: documentVersionId,
         },
       };
     }
@@ -64,8 +82,8 @@ export default class VerificationRepository extends Repository {
     }
 
     const where = { id };
-    const create = { status, data, type, begDate };
-    const update = { status, data, begDate, endDate };
+    const create = { status, data, type, documentVersion, begDate };
+    const update = { status, data, begDate, documentVersion, endDate };
 
     return this.model.upsert({ where, create, update });
   }
