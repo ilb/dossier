@@ -25,7 +25,7 @@ export default class PagesService extends Service {
 
     // Перед проверками заархивировать ошибки в базе. Очистить ошибки в памяти.
 
-    if (document.errors.length) {
+    if (document?.errors?.length) {
       await this.scope.documentGateway.archiveErrors(document);
       document.errors = [];
     }
