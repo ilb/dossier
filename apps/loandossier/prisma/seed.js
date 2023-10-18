@@ -1,4 +1,4 @@
-import prisma from '../libs/prisma/prisma.js';
+import prisma from '../libs/prisma.mjs';
 import VerificationStatusSeeder from './seeds/VerificationStatusSeeder.js';
 import VerificationTypeSeeder from './seeds/VerificationTypeSeeder.js';
 

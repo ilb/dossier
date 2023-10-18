@@ -1,4 +1,3 @@
-import http from 'http';
 import bodyParser from 'body-parser';
 import { handle } from './src/index.js';
 import FileResponse from '@ilbru/core/src/responses/FileReponse.js';
@@ -19,7 +18,10 @@ app
     '/loandossier/dossiercore/api',
     express
       .Router()
-      .use(uploadMiddleware.array('documents'))
+      .use((req, res, next) => {
+        console.log('req', req);
+        return uploadMiddleware.array('documents')(req, res, next);
+      })
       .use(splitPdf)
       .use(bodyParser.json())
       .get('/:uuid/documents', handle(DocumentsUsecases, 'list'))

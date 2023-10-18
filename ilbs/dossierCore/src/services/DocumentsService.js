@@ -24,13 +24,13 @@ export default class DocumentsService extends Service {
 
   async getDocuments({ uuid }) {
     const dossier = await this.dossierBuilder.build(uuid);
-    const url = `${process.env.BASE_URL}/loandossier/dossiercore/api/${uuid}/documents`;
+    const url = `${process.env.BASE_URL}/loandossier/api/${uuid}/documents`;
 
     return dossier.getDocuments().reduce((accumulator, document) => {
       const links = document.getPages().map((page, i) => {
         return {
-          id: `${url}/${document.type}/${i + 1}?_nocache=${new Date()}`,
-          path: `${url}/${document.type}/${i + 1}?_nocache=${new Date()}`,
+          id: `${url}/${document.type}/number/${i + 1}?_nocache=${new Date()}`,
+          path: `${url}/${document.type}/number/${i + 1}?_nocache=${new Date()}`,
           uuid: page.uuid,
           type: mime.lookup(page.extension),
         };
@@ -40,7 +40,7 @@ export default class DocumentsService extends Service {
         [document.type]: {
           pages: links,
           lastModified: document.lastModified,
-          errors: document?.errors.reduce((acc, currentError) => {
+          errors: document?.errors?.reduce((acc, currentError) => {
             if (acc) {
               return (acc += `\n${currentError.description}`);
             } else {
