@@ -1,4 +1,4 @@
-import Service from '../../core/base/Service.js';
+import Service from '@ilbru/core/src/base/Service.js';
 import Errors from './Errors.js';
 export default class DataMatrixVerification extends Service {
   constructor({ dataMatrixCheckService, documentRepository, documentGateway }) {
