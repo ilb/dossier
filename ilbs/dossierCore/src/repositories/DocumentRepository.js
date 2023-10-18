@@ -5,6 +5,17 @@ export default class DocumentRepository extends Repository {
     super({ prisma });
   }
 
+  async findByUuid(uuid) {
+    return await this.prisma.document.findUnique({
+      where: {
+        uuid,
+      },
+      include: {
+        pages: true,
+      },
+    });
+  }
+
   async findByFilter(filter) {
     return await this.prisma.document.findMany({
       where: filter,

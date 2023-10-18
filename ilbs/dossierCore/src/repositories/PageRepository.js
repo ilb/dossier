@@ -5,6 +5,17 @@ export default class PageRepository extends Repository {
     super({ prisma });
   }
 
+  async updatePageNumber(uuid, pageNumber) {
+    return await this.prisma.page.update({
+      where: {
+        uuid,
+      },
+      data: {
+        pageNumber,
+      },
+    });
+  }
+
   async findGreaterThan({ documentVersionId, pageNumber }) {
     return await this.prisma.page.findMany({
       where: {

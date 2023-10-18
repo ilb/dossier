@@ -49,6 +49,12 @@ export default class DocumentGateway {
     });
   }
 
+  async reorderPages(pages) {
+    for (const page of pages) {
+      await this.pageRepository.updatePageNumber(page.uuid, page.pageNumber);
+    }
+  }
+
   async archiveErrors(document) {
     const idsArray = document.errors.map(({ id }) => id);
     await this.errorRepository.updateMany({

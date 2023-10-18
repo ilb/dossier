@@ -42,6 +42,7 @@ export default class PagesService extends Service {
         const handler = this.scope[verification.code];
         const res = await handler.check(document, {
           params: verification.params,
+          uuid: this.uuid,
         });
         await this.scope.verificationService.finish(verificationProcess, res);
 
