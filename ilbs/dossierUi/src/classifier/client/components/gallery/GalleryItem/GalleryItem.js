@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React, { useEffect } from 'react';
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
@@ -17,9 +16,9 @@ const GalleryItem = React.memo(
         onClick,
         attributes,
         listeners,
-        errors
+        errors,
       },
-      ref
+      ref,
     ) => {
       useEffect(() => {
         if (!dragOverlay) {
@@ -67,19 +66,18 @@ const GalleryItem = React.memo(
               {!disabled && <Remove onClick={handleClick} />}
               <div {...attributes}>
                 {isImage() && (
-                  <Image
+                  <img
                     src={getPath()}
-                    width={width}
-                    height={height}
-                    layout="responsive"
                     quality={10}
                     onClick={onClick}
                     className="img-ofit"
                     style={{
+                      width: '100%',
+                      height: '100%',
                       userSelect: 'none',
                       MozUserSelect: 'none',
                       WebkitUserSelect: 'none',
-                      WebkitUserDrag: 'none'
+                      WebkitUserDrag: 'none',
                     }}
                   />
                 )}
@@ -95,8 +93,8 @@ const GalleryItem = React.memo(
           </div>
         </div>
       );
-    }
-  )
+    },
+  ),
 );
 
 GalleryItem.displayName = 'GalleryItem';

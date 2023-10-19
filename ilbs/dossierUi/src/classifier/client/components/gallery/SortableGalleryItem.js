@@ -5,7 +5,7 @@ import GalleryItem from './GalleryItem/GalleryItem';
 const SortableGalleryItem = ({ src, width, height, onRemove, onClick, disabled, errors }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: src.id,
-    disabled: !src.type.includes('image/') || disabled
+    disabled: !src.type.includes('image/') || disabled,
   });
 
   const style = {
@@ -13,7 +13,7 @@ const SortableGalleryItem = ({ src, width, height, onRemove, onClick, disabled, 
     transition,
     opacity: isDragging ? 0.3 : 1,
     position: 'relative',
-    zIndex: 100
+    zIndex: 100,
   };
 
   return (
