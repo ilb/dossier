@@ -32,7 +32,7 @@ export const uploadPages = async (uuid, document, files, dossierUrl) => {
     formData.append(`documents`, f);
   });
 
-  const result = await fetch(`${dossierUrl}/api/${uuid}/documents/${document}`, {
+  const result = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/${document}`, {
     method: 'PUT',
     headers: {
       accept: '*/*',
@@ -62,7 +62,7 @@ export const deletePage = async (pageSrc) => {
 };
 
 export const correctDocuments = async (uuid, documents, dossierUrl) => {
-  const res = await fetch(`${dossierUrl}/api/${uuid}/documents/correction`, {
+  const res = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/correction`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export const getSchema = async (project, dossierUrl) => {
 export const usePages = (uuid, documentName, dossierUrl) => {
   const { mutate: mutateGlobal } = useSWRConfig();
   const { data: pages, mutate } = useSWR(
-    documentName ? `${dossierUrl}/api/${uuid}/documents/${documentName}` : null,
+    documentName ? `${dossierUrl}/api/dossier/${uuid}/documents/${documentName}` : null,
     fetcher,
     {
       fallbackData: [],
@@ -106,15 +106,21 @@ export const usePages = (uuid, documentName, dossierUrl) => {
     pages,
     mutatePages: mutate,
     revalidatePages: () =>
-      mutateGlobal(documentName ? `${dossierUrl}/api/${uuid}/documents/${documentName}` : null),
+      mutateGlobal(
+        documentName ? `${dossierUrl}/api/dossier/${uuid}/documents/${documentName}` : null,
+      ),
   };
 };
 
 export const useDocuments = (uuid, dossierUrl) => {
   const { mutate: mutateGlobal } = useSWRConfig();
-  const { data: documents, mutate } = useSWR(`${dossierUrl}/api/${uuid}/documents`, fetcher, {
-    fallbackData: {},
-  });
+  const { data: documents, mutate } = useSWR(
+    `${dossierUrl}/api/dossier/${uuid}/documents`,
+    fetcher,
+    {
+      fallbackData: {},
+    },
+  );
   return {
     documents,
     mutateDocuments: mutate,

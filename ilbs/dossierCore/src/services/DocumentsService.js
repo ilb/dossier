@@ -24,7 +24,7 @@ export default class DocumentsService extends Service {
 
   async getDocuments({ uuid }) {
     const dossier = await this.dossierBuilder.build(uuid);
-    const url = `${process.env.BASE_URL}/loandossier/api/${uuid}/documents`;
+    const url = `${process.env.BASE_URL}/loandossier/api/dossier/${uuid}/documents`;
 
     return dossier.getDocuments().reduce((accumulator, document) => {
       const links = document.getPages().map((page, i) => {
