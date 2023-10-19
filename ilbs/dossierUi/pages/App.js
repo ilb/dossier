@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 export default function App() {
   const uuid = '7533b049-88ca-489b-878a-3ac1c8616fe7';
-  const dossierUrl = 'http://127.0.0.1:3020/loandossier';
+  const dossierUrl = 'http://localhost:3001/loandossier';
 
   const [schema, setSchema] = useState({});
   const [isSchemaLoaded, setSchemaLoaded] = useState(false);
@@ -16,7 +16,7 @@ export default function App() {
       .map((key) => `${key}=${params[key]}`)
       .join('&');
 
-    const path = `${dossierUrl}/dossiercore/api/schema?${query}`;
+    const path = `${dossierUrl}/api/schema?${query}`;
 
     const res = await fetch(path);
     const body = await res.json();

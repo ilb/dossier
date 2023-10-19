@@ -10,6 +10,7 @@ export function handle(usecases, method, responseHandler = JsonResponse) {
       const scope = await createScope(context);
       const instance = new usecases(scope.cradle);
       const result = await instance[method](scope.cradle);
+
       return responseHandler.build(result, res);
     } catch (exception) {
       console.log(exception);

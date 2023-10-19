@@ -1,7 +1,7 @@
 import { createContainer, asValue, asClass, Lifetime } from 'awilix';
 import path from 'path';
 import glob from 'glob';
-import prisma from '../libs/prisma.mjs';
+import prisma from '../libs/prisma/index.js';
 import registerPackageClasses from '@ilbru/dossier-core/src/index.js';
 import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerification.js';
 import DataMatrixVerification from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerification.js';

@@ -125,7 +125,7 @@ export const useDocuments = (uuid, dossierUrl) => {
     documents,
     mutateDocuments: mutate,
     correctDocuments: (documents) => correctDocuments(uuid, documents, dossierUrl),
-    revalidateDocuments: () => mutateGlobal(`${dossierUrl}/api/${uuid}/documents`),
+    revalidateDocuments: () => mutateGlobal(`${dossierUrl}/api/dossier/${uuid}/documents`),
     classifyDocument: (uuid, files, availableClasses) =>
       classifyDocument(uuid, files, availableClasses, dossierUrl),
     uploadPages: (uuid, document, files) => uploadPages(uuid, document, files, dossierUrl),
