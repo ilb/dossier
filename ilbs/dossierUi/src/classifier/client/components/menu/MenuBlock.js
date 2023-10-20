@@ -33,6 +33,7 @@ const MenuBlock = ({
               validationErrorMessage={errors[document.type]}
               disabled={hiddenTabs.includes(document.type)}
               key={document.type}
+              id={document.type}
               document={document}
               selected={document.type === selected}
               onDocumentSelect={onDocumentSelect}
