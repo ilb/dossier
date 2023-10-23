@@ -1,10 +1,11 @@
 import Service from '@ilbru/core/src/base/Service.js';
 import Errors from './Errors.js';
+import DataMatrixCheckService from './DataMatrixCheckService.js';
 export default class DataMatrixVerification extends Service {
-  constructor({ dataMatrixCheckService, documentRepository, documentGateway }) {
+  constructor({ documentRepository, documentGateway }) {
     super();
     this.documentRepository = documentRepository;
-    this.dataMatrixCheckService = dataMatrixCheckService;
+    this.dataMatrixCheckService = new DataMatrixCheckService();
     this.result = [];
     this.nameVerification = 'DataMatrixCheck';
     this.ok = true;

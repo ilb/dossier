@@ -14,7 +14,7 @@ export default class DataMatrixCheckService extends Service {
   constructor() {
     super();
     this.flipService = new FlipService();
-    this.deviationCheck = new DeviationCheck({ flipService });
+    this.deviationCheck = new DeviationCheck({ flipService: this.flipService });
     this.cropService = new CropService();
     this.reader = new MultiFormatReader();
   }
