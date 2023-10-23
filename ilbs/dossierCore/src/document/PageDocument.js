@@ -102,7 +102,7 @@ export default class PageDocument extends Document {
     }
 
     const firstPageMimeType = mime.lookup(this.getPages()[0].extension);
-    if (firstPageMimeType.includes('image/')) {
+    if (firstPageMimeType?.includes('image/')) {
       return 'application/pdf';
     }
 

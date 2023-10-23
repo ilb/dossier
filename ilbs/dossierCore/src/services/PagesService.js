@@ -1,8 +1,6 @@
 import Service from '@ilbru/core/src/base/Service.js';
 import Page from '../document/Page.js';
 import mime from 'mime-types';
-import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 
 export default class PagesService extends Service {
   constructor(scope) {
@@ -54,25 +52,25 @@ export default class PagesService extends Service {
     }
   }
 
-  async savePage(uuid, name, file, createdDate) {
-    const date = createdDate.split('.').reverse().join('/');
-    const destination = `documents/dossier/${date}/${uuid}/${name}`;
-    const filename = `${uuidv4()}.${file.originalname.split('.').pop()}`;
-    const path = `${destination}/${filename}`;
-    if (!fs.existsSync(destination)) {
-      fs.mkdirSync(destination, { recursive: true });
-    }
-    fs.writeFileSync(path, file.buffer);
-    return {
-      originalname: file.originalname,
-      encoding: file.encoding,
-      mimetype: file.mimetype,
-      destination,
-      filename,
-      path,
-      size: file.size,
-    };
-  }
+  // async savePage(uuid, name, file, createdDate) {
+  //   const date = createdDate.split('.').reverse().join('/');
+  //   const destination = `documents/dossier/${date}/${uuid}/${name}`;
+  //   const filename = `${uuidv4()}.${file.originalname.split('.').pop()}`;
+  //   const path = `${destination}/${filename}`;
+  //   if (!fs.existsSync(destination)) {
+  //     fs.mkdirSync(destination, { recursive: true });
+  //   }
+  //   fs.writeFileSync(path, file.buffer);
+  //   return {
+  //     originalname: file.originalname,
+  //     encoding: file.encoding,
+  //     mimetype: file.mimetype,
+  //     destination,
+  //     filename,
+  //     path,
+  //     size: file.size,
+  //   };
+  // }
 
   async add({ uuid, name, files }) {
     const dossier = await this.scope.dossierBuilder.build(uuid);
@@ -85,8 +83,7 @@ export default class PagesService extends Service {
     const filesArray = [];
 
     for (let file of files) {
-      const res = await this.savePage(uuid, name, file, dossier.createdDate);
-      filesArray.push(new Page(res));
+      filesArray.push(new Page(file));
     }
 
     await this.scope.documentGateway.addPages(document, filesArray);

@@ -29,6 +29,7 @@ export default class ClassifyService extends Service {
     const pages = Object.values(files).map((file) => new Page(file));
     let unknownDocument = dossier.getDocument('unknown');
     // сначала переместить все в нераспознанные
+    //Проверить работу
     await unknownDocument.addPages(pages);
     const path = `${uuid}.classification`;
     let verification;

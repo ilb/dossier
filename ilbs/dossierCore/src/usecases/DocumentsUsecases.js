@@ -81,4 +81,8 @@ export default class DocumentsUsecases extends Usecases {
   async getByVersion({ documentsService, request }) {
     return await documentsService.getDocumentByVersion(request);
   }
+
+  async getDate({ dossierService, request }) {
+    return await dossierService.getCreatedDate(request);
+  }
 }

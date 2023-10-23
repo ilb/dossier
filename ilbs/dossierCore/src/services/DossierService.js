@@ -16,6 +16,13 @@ export default class DossierService {
    * @param {int|null} pageNumberTo
    * @return {Promise<void>}
    */
+
+  async getCreatedDate({ uuid }) {
+    const dossier = { uuid };
+    await this.documentGateway.initDossier(dossier);
+    return dossier;
+  }
+
   async movePage(documentFrom, pageNumberFrom, documentTo, pageNumberTo = 1) {
     const page = documentFrom.extractPage(pageNumberFrom);
 
