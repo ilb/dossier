@@ -19,6 +19,22 @@ export function handle(usecases, method, responseHandler = JsonResponse) {
   };
 }
 
+export function middlewareHandle(usecases, method, middleware) {
+  return async (req, res, next) => {
+    try {
+      const context = await JsonContext.build({ req, res });
+      const scope = await createScope(context);
+      const instance = new usecases(scope.cradle);
+      const result = await instance[method](scope.cradle);
+
+      return middleware(req, res, next, result);
+    } catch (exception) {
+      console.log(exception);
+      return responseHandler.exception(exception, res);
+    }
+  };
+}
+
 // export function crudHandler(nameOrUsecases, usecases) {
 //   usecases = usecases || nameOrUsecases;
 //   const name = nameOrUsecases || usecases.constructor.name.substring(0, -8);
