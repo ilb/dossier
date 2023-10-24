@@ -96,6 +96,7 @@ export default class PageDocument extends Document {
    *
    * @returns {string|null}
    */
+  // Проверить на ошибки
   getMimeType() {
     if (!this.getCountPages()) {
       return null;
