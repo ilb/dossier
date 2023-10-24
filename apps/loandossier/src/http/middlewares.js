@@ -15,7 +15,7 @@ export const uploadMiddleware = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
       const date = req?.query?.createdDate?.split('.').reverse().join('/');
-      const destination = 'documents/dossier/' + date + '/' + req.query.uuid;
+      const destination = `documents/dossier/${date}/${req.query.uuid}/${req.query.name}`;
 
       if (!fs.existsSync(destination)) {
         fs.mkdirSync(destination, { recursive: true });
