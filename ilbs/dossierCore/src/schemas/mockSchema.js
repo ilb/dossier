@@ -245,10 +245,10 @@ export default {
             { sx: 345, sy: 1613, width: 350, height: 140 },
           ],
         },
-        {
-          code: 'signatureDetectorVerification',
-          params: [{ documentType: 'loanAgreement' }],
-        },
+        // {
+        //   code: 'signatureDetectorVerification',
+        //   params: [{ documentType: 'loanAgreement' }],
+        // },
       ],
     },
     {

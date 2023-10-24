@@ -15,8 +15,8 @@ export default class DataMatrixVerificationMock extends Service {
 
   async check(document, context) {
     // это массив страниц,
-    documentPages = document.pages;
-    cropped = context.params;
+    const documentPages = document.pages;
+    const cropped = context.params;
     const error = Errors.notFound(`Не найденные страницы : 1,3,4`);
     await this.documentGateway.addError(document, error);
     this.errors.push(error);

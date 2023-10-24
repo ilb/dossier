@@ -4,7 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { Poppler } from 'node-poppler';
 import im from 'imagemagick';
 import { promisify } from 'util';
-// import sharp from 'sharp';
+import mime from 'mime-types';
+import Errors from '../util/Errors.js';
 
 export const uploadMiddleware = multer({
   limits: {
@@ -56,70 +57,22 @@ export const jfifToJpeg = async (req, res, next) => {
   next();
 };
 
-export const checkEmptyList = async (req, res, next) => {
-  const convert = promisify(im.convert);
+export const checkMimeType = async (req, res, next) => {
   req.files = await req.files?.reduce(async (accumulator, file) => {
-    // Задаем параметры для вывода в avr
     const files = await accumulator;
-    const colorSpace = 'sRGB';
-    const size = '100x100';
-    const format = '%[pixel:u]';
-    const outputFormat = 'txt';
-
-    const options = [
-      file.path,
-      '-colorspace',
-      colorSpace,
-      '-scale',
-      size,
-      '-depth',
-      '8',
-      '-format',
-      format,
-      outputFormat + ':-',
-    ];
-
-    const result = await convert(options);
-
-    const lines = result.trim().split('\n').slice(1);
-    //разбить текст на объект для удобной работы с ним
-    const objectsAvg = lines.map((line) => {
-      const [xy, color] = line.split(': ');
-      const [x, y] = xy.split(',');
-      const [rgb, hex, name] = color.split('  ');
-
-      return {
-        x: parseInt(x),
-        y: parseInt(y),
-        color: {
-          r: parseInt(rgb.slice(1, 4)),
-          g: parseInt(rgb.slice(5, 8)),
-          b: parseInt(rgb.slice(9, 12)),
-          name: name,
-          hex: hex,
-        },
-      };
-    });
-
-    const counters = {};
-    let maxCount = 0;
-    // получить количество цвета в %
-    for (let obj of objectsAvg) {
-      const name = obj.color.name;
-      counters[name] = (counters[name] || 0) + 1; // увеличиваем счетчик
-      if (counters[name] > maxCount) {
-        // обновляем максимальное значение
-        maxCount = counters[name];
-      }
+    const firstPageMimeType = mime.lookup(file.path);
+    //Тут можно обработать не нужные mimetype
+    if (!firstPageMimeType) {
+      const destinationPath = `${file.destination}/errorDocument/${file.filename}`;
+      const sourcePath = file.path;
+      //Создаем новую папку
+      fs.mkdir(`${file.destination}/errorDocument`, { recursive: true }, () => {
+        //Переносим исходный фаил
+        fs.rename(sourcePath, destinationPath, () => {});
+      });
+      throw Errors.critical(`Возникла проблема с файлом : ${file.filename}`);
     }
-
-    const maxCountPercent = maxCount / (objectsAvg.length / 100);
-    if (maxCountPercent > 99) {
-      fs.unlinkSync(file.path);
-      return [...files];
-    } else {
-      return [...files, file];
-    }
+    return [...files, file];
   }, []);
   next();
 };
@@ -260,3 +213,77 @@ export const splitPdf = async (req, res, next) => {
 //   }, []);
 //   next();
 // };
+
+export const checkEmptyList = async (req, res, next) => {
+  try {
+    const convert = promisify(im.convert);
+    req.files = await req.files?.reduce(async (accumulator, file) => {
+      // Задаем параметры для вывода в avr
+      const files = await accumulator;
+      const colorSpace = 'sRGB';
+      const size = '100x100';
+      const format = '%[pixel:u]';
+      const outputFormat = 'txt';
+
+      const options = [
+        file.path,
+        '-colorspace',
+        colorSpace,
+        '-scale',
+        size,
+        '-depth',
+        '8',
+        '-format',
+        format,
+        outputFormat + ':-',
+      ];
+
+      const result = await convert(options);
+
+      const lines = result.trim().split('\n').slice(1);
+      //разбить текст на объект для удобной работы с ним
+      const objectsAvg = lines.map((line) => {
+        const [xy, color] = line.split(': ');
+        const [x, y] = xy.split(',');
+        const [rgb, hex, name] = color.split('  ');
+
+        return {
+          x: parseInt(x),
+          y: parseInt(y),
+          color: {
+            r: parseInt(rgb.slice(1, 4)),
+            g: parseInt(rgb.slice(5, 8)),
+            b: parseInt(rgb.slice(9, 12)),
+            name: name,
+            hex: hex,
+          },
+        };
+      });
+
+      const counters = {};
+      let maxCount = 0;
+      // получить количество цвета в %
+      for (let obj of objectsAvg) {
+        const name = obj.color.name;
+        counters[name] = (counters[name] || 0) + 1; // увеличиваем счетчик
+        if (counters[name] > maxCount) {
+          // обновляем максимальное значение
+          maxCount = counters[name];
+        }
+      }
+
+      const maxCountPercent = maxCount / (objectsAvg.length / 100);
+
+      if (maxCountPercent > 99) {
+        fs.unlinkSync(file.path);
+        return [...files];
+      } else {
+        return [...files, file];
+      }
+    }, []);
+    next();
+  } catch (e) {
+    console.log('e', e);
+    throw new Error('Ошибка проверки на белый лист');
+  }
+};
