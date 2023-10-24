@@ -6,6 +6,7 @@ import {
   getDossierDate,
   jfifToJpeg,
   splitPdf,
+  checkEmptyList,
 } from '../../../../../../src/http/middlewares.js';
 import bodyParser from 'body-parser';
 import { handle, middlewareHandle } from '../../../../../../src/index.js';
@@ -15,6 +16,7 @@ export default nc()
   .use(uploadMiddleware.array('documents'))
   .use(jfifToJpeg)
   .use(splitPdf)
+  .use(checkEmptyList)
   .use(bodyParser.json())
   .put(handle(DocumentsUsecases, 'update'))
   .get(handle(DocumentsUsecases, 'print', FileResponse));

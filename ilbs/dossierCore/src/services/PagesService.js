@@ -77,7 +77,7 @@ export default class PagesService extends Service {
     const document = dossier.getDocument(name);
     files = Object.values(files);
     // если загружается не картинка или документ не является набором картинок, то все страницы документа затираются
-    if (!files[0].mimetype.includes('image/') || !document.isImages()) {
+    if (files.length > 0 && (!files[0].mimetype.includes('image/') || !document.isImages())) {
       await document.clear();
     }
     const filesArray = [];
