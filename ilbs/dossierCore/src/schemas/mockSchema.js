@@ -315,5 +315,21 @@ export default {
         editable: '*',
       },
     },
+    {
+      name: 'Анкета',
+      type: 'productQuestionnaire',
+      access: {
+        show: '*',
+        editable: '*',
+      },
+    },
+    {
+      name: 'Документы для формирования договора',
+      type: 'createContract',
+      access: {
+        show: '*',
+        editable: '*',
+      },
+    },
   ],
 };
