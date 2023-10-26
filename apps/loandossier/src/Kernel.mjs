@@ -7,7 +7,9 @@ import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/s
 import DataMatrixVerification from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerification.js';
 import SignatureDetectorVerificationMock from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerificationMock.js';
 import DataMatrixVerificationMock from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerificationMock.js';
-
+import DataMatrixCheckService from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixCheckService.js';
+import CropService from '@ilbru/checks/src/dataMatrixReaderServises/services/CropService.js';
+import FlipService from '@ilbru/checks/src/dataMatrixReaderServises/services/FlipService.js';
 export default class Kernel {
   constructor() {
     this.container = createContainer();
@@ -32,11 +34,10 @@ export default class Kernel {
           ? SignatureDetectorVerificationMock
           : SignatureDetectorVerification,
       ),
-      dataMatrixVerification: asClass(
-        process.env.DATA_MATRIX_MOCK === 'true'
-          ? DataMatrixVerificationMock
-          : DataMatrixVerification,
-      ),
+      dataMatrixCheckService: asClass(DataMatrixCheckService),
+      dataMatrixVerification: asClass(DataMatrixVerification),
+      cropService: asClass(CropService),
+      flipService: asClass(FlipService),
     });
   }
 
