@@ -137,23 +137,27 @@ export default class DocumentGateway {
   }
 
   async initDocumentPages(document) {
-    const pages = await this.pageRepository.findByFilter({
-      documentVersion: {
-        id: document.currentVersion.id,
-      },
-      isDelete: false,
-    });
+    if (document.currentVersion?.id) {
+      const pages = await this.pageRepository.findByFilter({
+        documentVersion: {
+          id: document.currentVersion.id,
+        },
+        isDelete: false,
+      });
 
-    document.pages = pages.map(
-      (item) =>
-        new Page({
-          uuid: item.uuid,
-          errors: item.errors,
-          pageNumber: item.pageNumber,
-          context: item.context,
-          ...item.data,
-        }),
-    );
+      document.pages = pages.map(
+        (item) =>
+          new Page({
+            uuid: item.uuid,
+            errors: item.errors,
+            pageNumber: item.pageNumber,
+            context: item.context,
+            ...item.data,
+          }),
+      );
+    } else {
+      document.pages = [];
+    }
   }
 
   async changeDocumentOnPage(uuid, currentDocumentId, pageNumber) {

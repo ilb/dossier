@@ -25,12 +25,12 @@ export default class PageDocument extends Document {
   setDbData(document) {
     this.setUuid = document.uuid;
     this.setId = document.id;
-    this.errors = document.currentDocumentVersion.errors;
+    this.errors = document.currentDocumentVersion?.errors || [];
     this.currentVersion = document.currentDocumentVersion;
-    this.status = document.currentDocumentVersion.status || '';
+    this.status = document.currentDocumentVersion?.status || '';
     this.versions = document.versions;
     this.lastModified = document.updateAt || document.createAt;
-    this.verificationsResult = document.currentDocumentVersion.verifications || [];
+    this.verificationsResult = document.currentDocumentVersion?.verifications || [];
   }
 
   setCurrentVersion(version) {
