@@ -13,7 +13,11 @@ import ClassifierUsecases from '@ilbru/dossier-core/src/usecases/ClassifierUseca
 import DocumentsUsecases from '@ilbru/dossier-core/src/usecases/DocumentsUsecases.js';
 
 export default nc()
-  .use(middlewareHandle(DocumentsUsecases, 'getDate', getDossierDate))
+  .use(async (req, res, next) => {
+    if (req.method !== 'GET') {
+      await middlewareHandle(DocumentsUsecases, 'getDate', getDossierDate)(req, res, next);
+    } else next();
+  })
   .use(uploadMiddleware.array('documents'))
   .use(jfifToJpeg)
   .use(splitPdf)

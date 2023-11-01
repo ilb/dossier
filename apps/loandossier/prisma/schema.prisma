@@ -60,6 +60,7 @@ model Page {
 }
 
 // Типы ошибок
+// Статусы ошибок
 
 model Error {
   id                Int              @id @default(autoincrement())
