@@ -29,8 +29,10 @@ export default class DocumentsService extends Service {
     return dossier.getDocuments().reduce((accumulator, document) => {
       const links = document.getPages().map((page, i) => {
         return {
-          id: `${url}/${document.type}/number/${i + 1}?_nocache=${new Date()}`,
-          path: `${url}/${document.type}/number/${i + 1}?_nocache=${new Date()}`,
+          id: `${url}/${document.type}/number/${i + 1}?_nocache=${new Date().toLocaleDateString()}`,
+          path: `${url}/${document.type}/number/${
+            i + 1
+          }?_nocache=${new Date().toLocaleDateString()}`,
           uuid: page.uuid,
           type: mime.lookup(page.extension),
         };
