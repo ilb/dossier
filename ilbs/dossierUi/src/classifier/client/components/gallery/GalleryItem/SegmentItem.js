@@ -19,11 +19,15 @@ const SegmentItem = ({ src, onClick, rotation, scale }) => {
         position: 'relative',
         overflow: 'auto',
         cursor: 'grab',
-        lineHeight: 0
+        lineHeight: 0,
       }}>
       {src && (
         <Image
+          loader={() => {
+            return src;
+          }}
           src={src}
+          alt="alt"
           //width={width * scale}
           //height={height * scale}
           width={rotation === 0 || rotation === 180 ? width * scale : height * scale}
@@ -38,7 +42,7 @@ const SegmentItem = ({ src, onClick, rotation, scale }) => {
             userSelect: 'none',
             MozUserSelect: 'none',
             WebkitUserSelect: 'none',
-            WebkitUserDrag: 'none'
+            WebkitUserDrag: 'none',
           }}
         />
       )}

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
+import Image from 'next/image';
 
 const GalleryItem = React.memo(
   React.forwardRef(
@@ -66,14 +67,17 @@ const GalleryItem = React.memo(
               {!disabled && <Remove onClick={handleClick} />}
               <div {...attributes}>
                 {isImage() && (
-                  <img
+                  <Image
+                    loader={() => {
+                      return getPath();
+                    }}
                     src={getPath()}
-                    quality={10}
+                    alt="alt"
+                    width={300}
+                    height={400}
                     onClick={onClick}
                     className="img-ofit"
                     style={{
-                      width: '100%',
-                      height: '100%',
                       userSelect: 'none',
                       MozUserSelect: 'none',
                       WebkitUserSelect: 'none',

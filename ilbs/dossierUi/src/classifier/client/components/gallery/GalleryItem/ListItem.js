@@ -8,10 +8,19 @@ const SegmentItem = ({ src }) => {
         position: 'relative',
         overflow: 'auto',
         cursor: 'grab',
-        lineHeight: 0
+        lineHeight: 0,
       }}>
       {src && (
-        <Image width={1000} height={1} src={src} style={{ maxWidth: '100%', height: 'auto' }} />
+        <Image
+          loader={() => {
+            return src;
+          }}
+          alt="alt"
+          src={src}
+          width={1000}
+          height={1}
+          style={{ maxWidth: '100%', height: 'auto' }}
+        />
       )}
     </div>
   );
