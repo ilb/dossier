@@ -7,7 +7,7 @@ export default class DocumentsUsecases extends Usecases {
    * @returns {}
    */
   async list({ documentsService, request }) {
-    return await documentsService.getDocuments(request);
+    return await documentsService.getDocuments({ ...request, withVersions: true });
   }
 
   /**
@@ -84,5 +84,9 @@ export default class DocumentsUsecases extends Usecases {
 
   async getDate({ dossierService, request }) {
     return await dossierService.getCreatedDate(request);
+  }
+
+  async changeVersion({ documentsService, request }) {
+    return await documentsService.changeDocumentVersion(request);
   }
 }

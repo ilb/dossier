@@ -5,6 +5,7 @@ import mime from 'mime-types';
 import Page from './Page.js';
 import Document from './Document.js';
 import DocumentMerger from '../dossier/DocumentMerger.js';
+import PageDocumentVersion from './PageDocumentVersion.js';
 
 export default class PageDocument extends Document {
   /**
@@ -26,11 +27,25 @@ export default class PageDocument extends Document {
     this.setUuid = document.uuid;
     this.setId = document.id;
     this.errors = document.currentDocumentVersion?.errors || [];
-    this.currentVersion = document.currentDocumentVersion;
+    this.initCurrentDocumentVersion(document.currentDocumentVersion);
     this.status = document.currentDocumentVersion?.status || '';
-    this.versions = document.versions;
+    this.initVersions(document.documentVersions);
     this.lastModified = document.updateAt || document.createAt;
     this.verificationsResult = document.currentDocumentVersion?.verifications || [];
+  }
+
+  initCurrentDocumentVersion(version) {
+    this.currentVersion = new PageDocumentVersion({ type: this.type, ...version });
+  }
+
+  initVersions(versions) {
+    this.versions = versions.map(
+      (version) =>
+        new PageDocumentVersion({
+          type: this.type,
+          ...version,
+        }),
+    );
   }
 
   setCurrentVersion(version) {
@@ -39,6 +54,10 @@ export default class PageDocument extends Document {
 
   setVersions(versions) {
     this.versions = versions;
+  }
+
+  getVersion(versionNumber) {
+    return this.versions.find(({ version }) => version === versionNumber);
   }
 
   /**

@@ -23,12 +23,15 @@ export default class DocumentRepository extends Repository {
         errors: true,
         documentVersions: {
           include: {
-            pages: true,
+            pages: { where: { isDelete: false } },
+          },
+          orderBy: {
+            version: 'desc',
           },
         },
         currentDocumentVersion: {
           include: {
-            pages: true,
+            pages: { where: { isDelete: false } },
             verifications: true,
             errors: {
               where: {

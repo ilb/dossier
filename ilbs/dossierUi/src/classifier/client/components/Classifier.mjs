@@ -230,7 +230,8 @@ const Classifier = forwardRef(
       } else {
         setLoading(true);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
-        uploadPages(uuid, selectedTab.type, compressedFiles)
+
+        uploadPages(uuid, selectedTab.block, compressedFiles)
           .then(async (result) => {
             const documents = await revalidateDocuments();
             onUpdate && onUpdate(selectedTab, documents);
@@ -291,6 +292,7 @@ const Classifier = forwardRef(
         [activeContainer]: {
           pages: documents[activeContainer]?.pages.filter((item) => item !== pageSrc),
           errors: documents[activeContainer]?.errors | [],
+          lastModified: documents[activeContainer]?.lastModified,
         },
       };
       mutateDocuments(newDocumentsList, false);
@@ -302,8 +304,10 @@ const Classifier = forwardRef(
     const onDragStart = ({ active }) => {
       setDrugFrom(selectedTab);
       setActiveDraggable(active);
+      const container = findContainer(active.id);
       setDraggableOrigin({
-        container: findContainer(active.id),
+        container: container,
+        type: selectedTab.block,
         index: active.data.current.sortable.index,
       });
     };
@@ -336,7 +340,6 @@ const Classifier = forwardRef(
         if (overIndex === -1) {
           overIndex = documents[overContainer]?.pages.length - 1;
         }
-
         if (activeIndex !== overIndex) {
           mutateDocuments(
             {
@@ -346,19 +349,20 @@ const Classifier = forwardRef(
             false,
           );
         }
+        const overContainerTo = overContainer.split('_')[0];
 
         if (draggableOrigin.container !== overContainer) {
           await correctDocuments([
             {
-              from: { class: draggableOrigin.container, page: draggableOrigin.index + 1 },
-              to: { class: overContainer, page: overIndex + 1 },
+              from: { class: draggableOrigin.type, page: draggableOrigin.index + 1 },
+              to: { class: overContainerTo, page: overIndex + 1 },
             },
           ]);
         } else {
           await correctDocuments([
             {
-              from: { class: activeContainer, page: activeIndex + 1 },
-              to: { class: overContainer, page: overIndex + 1 },
+              from: { class: activeContainer.split('_')[0], page: activeIndex + 1 },
+              to: { class: overContainerTo, page: overIndex + 1 },
             },
           ]);
         }

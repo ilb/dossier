@@ -11,7 +11,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
     scale: 1,
     rotation: 0,
     src: '',
-    previewOpen: false
+    previewOpen: false,
   });
 
   useEffect(() => {

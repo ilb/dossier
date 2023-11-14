@@ -1,5 +1,6 @@
 import { v4 } from 'uuid';
 import Page from '../document/Page.js';
+import PageDocumentVersion from '../document/PageDocumentVersion.js';
 
 export default class DocumentGateway {
   /**
@@ -105,9 +106,8 @@ export default class DocumentGateway {
       });
       const version = await this.createDocumentVersion(documentFromDb.uuid, 1);
       documentFromDb.currentDocumentVersion = version;
-      documentFromDb.versions = [version];
+      documentFromDb.documentVersions = [version];
     }
-
     if (documentFromDb) {
       document.setDbData(documentFromDb);
     }
@@ -171,7 +171,7 @@ export default class DocumentGateway {
       isDelete: true,
     });
 
-    // Получение страниц после удоляемой
+    // Получение страниц после удаляемой
     const pages = await this.pageRepository.findGreaterThan({
       documentVersionId: deletePage.documentVersion.id,
       pageNumber: deletePage.pageNumber,
@@ -279,44 +279,53 @@ export default class DocumentGateway {
     }
   }
 
-  // // Возвращает номер версии документа
-  // async changeDocumentVersion(document, unknownPage) {
-  //   const versionCartage = {
-  //     code: document.type,
-  //     version: document.version,
-  //     document: {
-  //       connect: {
-  //         uuid: document.uuid,
-  //       },
-  //     },
-  //     errors: {
-  //       connect: document.errors?.map((error) => ({ id: error.id })),
-  //     },
-  //     pages: {
-  //       connect: document.pages.map((page) => ({ uuid: page.uuid })),
-  //     },
-  //   };
+  // Возвращает номер версии документа
+  async changeDocumentVersion(document) {
+    const versionCartage = {
+      status: document.currentVersion.status,
+      version: document.currentVersion.version + 1,
+      document: {
+        connect: {
+          uuid: document.uuid,
+        },
+      },
+    };
 
-  //   if (unknownPage) {
-  //     versionCartage.pages = {
-  //       connect: {
-  //         uuid: unknownPage,
-  //       },
-  //     };
-  //   }
+    const pages = [];
 
-  //   await this.documentVersionRepository.create(versionCartage);
+    for (let page of document.pages) {
+      const { uuid, pageNumber, errors, context, ...data } = page;
 
-  //   await this.documentRepository.update({
-  //     uuid: document.uuid,
-  //     errors: {
-  //       disconnect: document.errors?.map((error) => ({ id: error.id })),
-  //     },
-  //     version: document.version + 1,
-  //   });
+      const pageCartage = {
+        uuid: v4(),
+        pageNumber,
+        data,
+      };
 
-  //   return document.version;
-  // }
+      pages.push(pageCartage);
+    }
+
+    if (pages.length > 0) {
+      versionCartage.pages = {
+        createMany: {
+          data: pages,
+        },
+      };
+    }
+
+    const newVersion = await this.documentVersionRepository.create(versionCartage);
+
+    await this.documentRepository.update({
+      uuid: document.uuid,
+      currentDocumentVersion: {
+        connect: {
+          id: newVersion.id,
+        },
+      },
+    });
+
+    return versionCartage.version;
+  }
 
   // async unlinkPage(document, page) {
   //   let documentFromDb = (

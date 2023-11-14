@@ -20,11 +20,9 @@ const MenuBlock = ({
               className="menuItem"
               onClick={() => setOpen(!isOpened)}
               style={{ cursor: 'pointer' }}>
-              <span>
-                {isOpened && <i className="iconChevronUp icon" />}
-                {!isOpened && <i className="iconChevronDown icon" />}
-                {block.name}
-              </span>
+              {isOpened && <i className="iconChevronUp icon" />}
+              {!isOpened && <i className="iconChevronDown icon" />}
+              <span style={{ marginLeft: '5px' }}>{block.name}</span>
             </div>
           )}
           {block.documents.map((document) => (

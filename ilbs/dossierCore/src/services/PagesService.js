@@ -119,11 +119,12 @@ export default class PagesService extends Service {
     await this.scope.documentGateway.deletePage(document, pageUuid);
   }
 
-  async get({ uuid, name, number }) {
+  async get({ uuid, name, version, number }) {
     const dossier = await this.scope.dossierBuilder.build(uuid);
     const document = dossier.getDocument(name);
-    const page = document.getPage(number);
-    const imageBuffer = document.getFile(number);
+    const versionDocument = document.getVersion(Number(version));
+    const page = versionDocument.pages.find(({ pageNumber }) => pageNumber === Number(number));
+    const imageBuffer = versionDocument.getFile(Number(number));
     return {
       file: imageBuffer,
       filename: page.name,

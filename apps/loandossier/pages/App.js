@@ -3,7 +3,7 @@ import Classifier from '@ilbru/dossier-ui/src/classifier/client/components/Class
 import { useEffect, useState } from 'react';
 
 export default function App() {
-  const uuid = '7533b049-88ca-489b-878a-3ac1c8616fe7';
+  const uuid = '600';
   const dossierUrl = process.env.BASE_URL + '/loandossier';
 
   const [schema, setSchema] = useState({});
@@ -34,6 +34,7 @@ export default function App() {
     fetchSchema({
       dossierCode: 'client',
       stateCode: 'CREATED',
+      uuid,
     });
   }, []);
 
@@ -74,8 +75,8 @@ export default function App() {
             defaultViewType="grid"
             dossierUrl={dossierUrl}
             uuid={uuid}
-            schema={schema}
-            onChangeTab={(tab) => console.log('tab', tab)}
+            schema={schema.client}
+            onChangeTab={() => {}}
             // onInit={documentStore.setDocuments}
             // onAfterChange={documentStore.updateDocuments}
             defaultTab="passport"
