@@ -14,6 +14,9 @@ const MenuTab = ({
   hidden,
   validationErrorMessage,
   dossierUrl,
+  isOpened,
+  setOpen,
+  collapsed,
 }) => {
   let className = '';
   let isNotImage = false;
@@ -72,6 +75,15 @@ const MenuTab = ({
 
                 {document.tooltip && <Popup content={document.tooltip} trigger={<Question />} />}
               </div>
+
+              {collapsed && (
+                <div
+                  onClick={() => setOpen(!isOpened)}
+                  style={{ cursor: 'pointer', marginRight: '10px' }}>
+                  {isOpened && <i className="iconChevronUp icon" />}
+                  {!isOpened && <i className="iconChevronDown icon" />}
+                </div>
+              )}
 
               <div>
                 <span>

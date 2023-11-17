@@ -11,11 +11,15 @@ const MenuBlock = ({
   errors = {},
 }) => {
   const [isOpened, setOpen] = useState(block.open);
+
+  const mainBlock = block.documents ? block.documents[0] : null;
+  const versionBlock = block.documents ? block.documents.slice(1) : [];
+
   return (
     <>
       {!!block?.documents?.length && (
         <>
-          {block.collapsed && (
+          {/* {block.collapsed && (
             <div
               className="menuItem"
               onClick={() => setOpen(!isOpened)}
@@ -24,8 +28,27 @@ const MenuBlock = ({
               {!isOpened && <i className="iconChevronDown icon" />}
               <span style={{ marginLeft: '5px' }}>{block.name}</span>
             </div>
+          )} */}
+
+          {mainBlock && (
+            <MenuTab
+              uuid={uuid}
+              validationErrorMessage={errors[mainBlock.type]}
+              disabled={hiddenTabs.includes(mainBlock.type)}
+              key={mainBlock.type}
+              id={mainBlock.type}
+              document={mainBlock}
+              selected={mainBlock.type === selected}
+              onDocumentSelect={onDocumentSelect}
+              // hidden={!isOpened && block.collapsed}
+              dossierUrl={dossierUrl}
+              isOpened={isOpened}
+              setOpen={setOpen}
+              collapsed={block.collapsed}
+            />
           )}
-          {block.documents.map((document) => (
+
+          {versionBlock.map((document) => (
             <MenuTab
               uuid={uuid}
               validationErrorMessage={errors[document.type]}
