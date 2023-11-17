@@ -5,15 +5,33 @@ import dealBankDocumentsClassifierSchema from '../scheme/dealBankDocumentsClassi
 import dealShopDocumentsClassifierSchema from '../scheme/dealShopDocumentsClassifierSchema.js';
 
 export default class DossierFactory {
-  constructor() {}
-
-  getSchema() {
-    return {
+  constructor() {
+    this.tabs = {
       client: clientClassifierSchema,
       product: productClassifierSchema,
       bail: bailClassifierSchema,
       dealShopDocuments: dealShopDocumentsClassifierSchema,
       dealBankDocuments: dealBankDocumentsClassifierSchema,
     };
+  }
+
+  getTabs() {
+    return this.tabs;
+  }
+
+  getSchema(context) {
+    const schema = {};
+
+    for (let tab in context.tabs) {
+      schema[tab] = {
+        ...this.tabs[tab],
+        documents: this.tabs[tab].documents.filter(
+          (document) =>
+            context.tabs[tab].includes('*') || context.tabs[tab].includes(document.type),
+        ),
+      };
+    }
+
+    return schema;
   }
 }

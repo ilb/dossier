@@ -3,7 +3,7 @@ import Classifier from '@ilbru/dossier-ui/src/classifier/client/components/Class
 import { useEffect, useState } from 'react';
 
 export default function App() {
-  const uuid = '600';
+  const uuid = '800';
   const dossierUrl = process.env.BASE_URL + '/loandossier';
 
   const [schema, setSchema] = useState({});
@@ -12,13 +12,13 @@ export default function App() {
   const [errorText, setErrorText] = useState('');
 
   const fetchSchema = async (params) => {
-    const query = Object.keys(params)
-      .map((key) => `${key}=${params[key]}`)
-      .join('&');
+    const path = `${dossierUrl}/api/schema`;
 
-    const path = `${dossierUrl}/api/schema?${query}`;
+    const res = await fetch(path, {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
 
-    const res = await fetch(path);
     const body = await res.json();
     if (res.ok) {
       setSchema(body);
@@ -32,7 +32,13 @@ export default function App() {
 
   useEffect(() => {
     fetchSchema({
-      dossierCode: 'client',
+      tabs: {
+        client: ['*'],
+        product: ['*'],
+        bail: ['*'],
+        dealShopDocuments: ['*'],
+        dealBankDocuments: ['*'],
+      },
       stateCode: 'CREATED',
       uuid,
     });

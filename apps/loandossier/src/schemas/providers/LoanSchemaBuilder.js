@@ -12,7 +12,7 @@ export default class LoanSchemaBuilder extends BaseSchemaBuilder {
 
   async build(schema, context) {
     this.dossier = await this.dossierBuilder.build(context.uuid);
-    const dossierSchema = this.dossierFactory.getSchema();
+    const dossierSchema = this.dossierFactory.getSchema(context);
     const modeProcessor = this.modesProcessorFactory.getModeProcessor(schema, context);
 
     for (let schemaKey in dossierSchema) {

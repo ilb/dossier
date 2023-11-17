@@ -5,19 +5,6 @@ export default class DossierSchemaFactory {
   }
 
   async getSchema(context) {
-    switch (context.project) {
-      case 'loandeal': {
-        return await this.loanSchemaBuilder.build(this.dossierSchema, context);
-      }
-      case 'loanbroker': {
-        return await this.loanSchemaBuilder.build(this.dossierSchema, context);
-      }
-      case 'beilverification': {
-        return {};
-      }
-      default: {
-        break;
-      }
-    }
+    return await this.loanSchemaBuilder.build(this.dossierSchema, context);
   }
 }
