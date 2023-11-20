@@ -17,7 +17,6 @@ import DossierService from './services/DossierService.js';
 import FileService from './services/FileService.js';
 import PagesService from './services/PagesService.js';
 import VerificationService from './services/VerificationService.js';
-import RoleDossierProcessor from './schemas/core/RoleDossierProcessor.js';
 import BaseSchemaBuilder from './schemas/core/BaseSchemaBuilder.js';
 
 const registerPackageClasses = (container) => {
@@ -41,7 +40,6 @@ const registerPackageClasses = (container) => {
     fileService: asClass(FileService),
     pagesService: asClass(PagesService),
     verificationService: asClass(VerificationService),
-    roleDossierProcessor: asClass(RoleDossierProcessor),
     baseSchemaBuilder: asClass(BaseSchemaBuilder),
   });
 };

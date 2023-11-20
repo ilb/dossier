@@ -20,14 +20,8 @@ export default class SchemasUsecases extends Usecases {
   /**
    * @returns {Promise<{text: string}>}
    */
-  async read({ request, dossierSchema, baseSchemaBuilder }) {
-    const schema = {
-      classifier: dossierSchema.classifier,
-      documents: dossierSchema.documents,
-      processor: new RoleDossierProcessor(dossierSchema, request),
-    };
-
-    return baseSchemaBuilder.build(schema, request);
+  async read({ dossierSchema }) {
+    return dossierSchema;
   }
 
   async update() {}
