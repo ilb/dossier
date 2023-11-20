@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 export default function App() {
   const uuid = '800';
-  const dossierUrl = process.env.BASE_URL + '/loandossier';
+  const dossierUrl = process.env.BASE_URL;
 
   const [schema, setSchema] = useState({});
   const [isSchemaLoaded, setSchemaLoaded] = useState(false);

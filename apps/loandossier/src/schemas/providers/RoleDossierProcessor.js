@@ -1,5 +1,5 @@
-import { execute, nutNull } from '../../../libs/Executor.js';
-import { TooltipText } from '../../../../../apps/loandossier/src/schemas/constants/TooltipTexts.js';
+import { execute, nutNull } from '@ilbru/dossier-core/libs/Executor';
+import { TooltipText } from '../constants/TooltipTexts';
 
 export default class RoleDossierProcessor {
   allStatuses = [
