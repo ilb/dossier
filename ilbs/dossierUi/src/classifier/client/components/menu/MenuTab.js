@@ -3,6 +3,7 @@ import { useDocuments } from '../../hooks';
 import classNames from 'classnames';
 import Popup from '../elements/Popup';
 import { Alert, CheckSuccess, Question } from '../../icons/CustomIcons';
+import { useEffect, useState } from 'react';
 
 const MenuTab = ({
   uuid,
@@ -35,6 +36,26 @@ const MenuTab = ({
 
   if (error) className += ' error';
   if (document.readonly) className += 'readonly';
+
+  const [tooltip, setTooltip] = useState(null);
+  const [isTooltipLoading, setIsTooltipLoading] = useState(true);
+
+  useEffect(() => {
+    if (document.tooltip) {
+      getTooltip(document.tooltip);
+    }
+  }, []);
+
+  const getTooltip = async (tooltip) => {
+    const res = await fetch(`${dossierUrl}/${tooltip}`);
+    setIsTooltipLoading(false);
+    if (res.ok) {
+      const body = await res.json();
+      setTooltip(body);
+    } else {
+      setTooltip('Не удалось загрузить подсказку.');
+    }
+  };
 
   return (
     <div id={document.type}>
@@ -73,7 +94,12 @@ const MenuTab = ({
                   </>
                 )}
 
-                {document.tooltip && <Popup content={document.tooltip} trigger={<Question />} />}
+                {document.tooltip && (
+                  <Popup
+                    content={isTooltipLoading ? 'Загрузка подсказки' : tooltip}
+                    trigger={<Question />}
+                  />
+                )}
               </div>
 
               {collapsed && (
