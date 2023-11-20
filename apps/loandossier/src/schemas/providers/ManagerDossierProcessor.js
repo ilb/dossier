@@ -1,6 +1,6 @@
-import RoleDossierProcessor from '@ilbru/dossier-core/src/schemas/core/RoleDossierProcessor';
 import { nutNull } from '@ilbru/dossier-core/libs/Executor';
 import { TooltipText } from 'src/schemas/constants/TooltipTexts';
+import RoleDossierProcessor from './RoleDossierProcessor';
 
 export default class ManagerDossierProcessor extends RoleDossierProcessor {
   constructor(type, context) {

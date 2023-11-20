@@ -1,11 +1,30 @@
-import { nutNull } from '@ilbru/dossier-core/libs/Executor';
-import { TooltipText } from 'src/schemas/constants/TooltipTexts';
-import RoleDossierProcessor from './RoleDossierProcessor';
+import { execute, nutNull } from '../../../libs/Executor.js';
+import { TooltipText } from '../../../../../apps/loandossier/src/schemas/constants/TooltipTexts.js';
 
-export default class AnalystDossierProcessor extends RoleDossierProcessor {
+export default class RoleDossierProcessor {
+  allStatuses = [
+    'RECEIVE_BAIL_DECISION',
+    'ON_BAIL_VERIFICATION',
+    'LOADING_DOCUMENTS',
+    'CHECK_DOCUMENTS',
+    'SIGN_CONTRACT',
+    'CONTROL_CALL',
+    'CREDITING',
+    'LOAN_ISSUED',
+  ];
+
+  dealStatuses = [
+    'LOADING_DOCUMENTS',
+    'CHECK_DOCUMENTS',
+    'SIGN_CONTRACT',
+    'CONTROL_CALL',
+    'CREDITING',
+    'LOAN_ISSUED',
+  ];
+
   constructor(type, context) {
-    super(type, context);
-
+    this.context = context;
+    this.type = type;
     this.rulesSchema = {
       // unknown: {
       //   display: {
@@ -15,7 +34,7 @@ export default class AnalystDossierProcessor extends RoleDossierProcessor {
       //     snils: nutNull,
       //   },
       //   required: {
-      //     stateCode: this.allStatuses,
+      //     unknown: nutNull,
       //   },
       // },
       passport: {
@@ -236,30 +255,29 @@ export default class AnalystDossierProcessor extends RoleDossierProcessor {
       saleContractAndCheck: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
         },
-        required: {
-          stateCode: this.allStatuses,
-        },
+        required: {},
         tooltip: TooltipText.saleContractAndCheck,
       },
       prevSaleContractAndCheck: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
         },
-        required: {
-          autoUsed: true,
-        },
+        required: {},
         tooltip: TooltipText.saleContractAndCheck,
       },
       invoice: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
@@ -270,49 +288,67 @@ export default class AnalystDossierProcessor extends RoleDossierProcessor {
       firstPayment: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
         },
-        required: {
-          initialPayment: true,
-        },
+        required: {},
         tooltip: TooltipText.firstPayment,
+      },
+      commissionContract: {
+        display: {
+          stateCode: this.allStatuses,
+          bail: 'TRUE',
+        },
+        readOnly: {
+          snils: nutNull,
+        },
+        required: {},
+        tooltip: TooltipText.commissionContract,
+      },
+      powerAttorney: {
+        display: {
+          stateCode: this.allStatuses,
+          bail: 'TRUE',
+        },
+        readOnly: {
+          snils: nutNull,
+        },
+        required: {},
+        tooltip: TooltipText.powerAttorney,
       },
       applicationAdditionalProducts: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
         },
-        required: {
-          equipment: true,
-        },
+        required: {},
         tooltip: TooltipText.applicationAdditionalProducts,
       },
       servicesInvoice: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
         },
-        required: {
-          equipment: true,
-        },
+        required: {},
         tooltip: TooltipText.servicesInvoice,
       },
       kasko: {
         display: {
           stateCode: this.allStatuses,
+          bail: 'TRUE',
         },
         readOnly: {
           snils: nutNull,
         },
-        required: {
-          kasko: true,
-        },
+        required: {},
         tooltip: TooltipText.kasko,
       },
       createContract: {
@@ -325,5 +361,26 @@ export default class AnalystDossierProcessor extends RoleDossierProcessor {
         required: {},
       },
     };
+  }
+
+  isRequired(type) {
+    const doc = this.rulesSchema[type];
+    if (doc) {
+      return execute(doc.required, this.context);
+    } else return false;
+  }
+
+  isReadonly(type) {
+    const doc = this.rulesSchema[type];
+    if (doc) {
+      return execute(doc.readOnly, this.context);
+    } else return false;
+  }
+
+  isDisplay(type) {
+    const doc = this.rulesSchema[type];
+    if (doc) {
+      return execute(doc.display, this.context);
+    } else return false;
   }
 }
