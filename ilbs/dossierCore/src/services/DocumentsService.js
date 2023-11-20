@@ -9,7 +9,7 @@ export default class DocumentsService extends Service {
   }
 
   buildLinks(pages, documentType, version, uuid) {
-    const url = `${process.env.BASE_URL}/loandossier/api/dossier/${uuid}/documents`;
+    const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
 
     return pages.map((page, i) => {
       return {
