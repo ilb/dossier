@@ -1,4 +1,4 @@
-import { TooltipText } from '@ilbru/dossier-core/src/schemas/constants/TooltipTexts';
+import { TooltipText } from 'src/schemas/constants/TooltipTexts';
 import TabProcessor from '@ilbru/dossier-core/src/schemas/core/TabProcessor.js';
 
 export default {
@@ -25,7 +25,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.saleContractAndCheck,
+      tooltip: {
+        name: 'saleContractAndCheck',
+        text: TooltipText.saleContractAndCheck,
+      },
     },
     {
       name: 'Документы продавец-автосалон',
@@ -34,7 +37,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.saleContractAndCheck,
+      tooltip: {
+        name: 'saleContractAndCheck',
+        text: TooltipText.saleContractAndCheck,
+      },
     },
     {
       name: 'Счет на оплату',
@@ -43,7 +49,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.invoice,
+      tooltip: {
+        name: 'invoice',
+        text: TooltipText.invoice,
+      },
     },
     {
       name: 'Оплата ПВ',
@@ -52,7 +61,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.firstPayment,
+      tooltip: {
+        name: 'invoice',
+        text: TooltipText.firstPayment,
+      },
     },
     {
       name: 'Договор/Сертификат на доп.оборудование/услуги',
@@ -61,7 +73,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.applicationAdditionalProducts,
+      tooltip: {
+        name: 'applicationAdditionalProducts',
+        text: TooltipText.applicationAdditionalProducts,
+      },
     },
     {
       name: 'Счет на оплату допов (оборудования/услуг)',
@@ -70,7 +85,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.servicesInvoice,
+      tooltip: {
+        name: 'servicesInvoice',
+        text: TooltipText.servicesInvoice,
+      },
     },
     {
       name: 'КАСКО и счет',
@@ -79,7 +97,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.kasko,
+      tooltip: {
+        name: 'kasko',
+        text: TooltipText.kasko,
+      },
     },
   ],
 };

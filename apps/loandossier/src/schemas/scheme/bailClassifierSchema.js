@@ -1,4 +1,4 @@
-import { TooltipText } from '@ilbru/dossier-core/src/schemas/constants/TooltipTexts';
+import { TooltipText } from 'src/schemas/constants/TooltipTexts';
 import TabProcessor from '@ilbru/dossier-core/src/schemas/core/TabProcessor.js';
 
 export default {
@@ -25,7 +25,10 @@ export default {
         show: '*',
         editable: '*',
       },
-      tooltip: TooltipText.vehiclePassport,
+      tooltip: {
+        name: 'vehiclePassport',
+        text: TooltipText.vehiclePassport,
+      },
     },
     {
       name: 'СТС',

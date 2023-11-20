@@ -1,12 +1,19 @@
 import BaseSchemaBuilder from '@ilbru/dossier-core/src/schemas/core/BaseSchemaBuilder.js';
 
 export default class LoanSchemaBuilder extends BaseSchemaBuilder {
-  constructor({ buildDossierSchema, dossierFactory, modesProcessorFactory, dossierBuilder }) {
+  constructor({
+    buildDossierSchema,
+    dossierFactory,
+    modesProcessorFactory,
+    dossierBuilder,
+    tooltipService,
+  }) {
     super();
     this.buildDossierSchema = buildDossierSchema;
     this.dossierFactory = dossierFactory;
     this.modesProcessorFactory = modesProcessorFactory;
     this.dossierBuilder = dossierBuilder;
+    this.tooltipService = tooltipService;
     this.dossier = null;
   }
 
@@ -16,6 +23,15 @@ export default class LoanSchemaBuilder extends BaseSchemaBuilder {
     const modeProcessor = this.modesProcessorFactory.getModeProcessor(schema, context);
 
     for (let schemaKey in dossierSchema) {
+      dossierSchema[schemaKey].documents = dossierSchema[schemaKey].documents.map((document) => {
+        return {
+          ...document,
+          ...(document.tooltip && {
+            tooltip: this.tooltipService.getTooltipUrl(document.tooltip.name),
+          }),
+        };
+      });
+
       dossierSchema[schemaKey].documents.filter((item) => modeProcessor.isDisplay(item.type));
       dossierSchema[schemaKey] = await super.build(
         { ...dossierSchema[schemaKey], processor: modeProcessor },

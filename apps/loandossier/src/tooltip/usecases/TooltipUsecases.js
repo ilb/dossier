@@ -1,5 +1,5 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
-export default class SchemasUsecases extends Usecases {
+export default class TooltipUsecases extends Usecases {
   /**
    * @param {DocumentsService} documentsService
    * @param {object} request
@@ -19,8 +19,8 @@ export default class SchemasUsecases extends Usecases {
   /**
    * @returns {Promise<{text: string}>}
    */
-  async read({ request, dossierSchemaFactory }) {
-    return await dossierSchemaFactory.getSchema(request);
+  async read({ request, tooltipService }) {
+    return tooltipService.getTooltipByType(request);
   }
 
   async update() {}
