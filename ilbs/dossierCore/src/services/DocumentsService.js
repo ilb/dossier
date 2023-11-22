@@ -56,6 +56,14 @@ export default class DocumentsService extends Service {
     };
   }
 
+  async getDocumentsInfo({ uuid }) {
+    const dossier = await this.dossierBuilder.build(uuid);
+    return dossier.getDocuments().map((document) => ({
+      type: document.type,
+      versions: document.versions,
+    }));
+  }
+
   async getDocuments({ uuid }) {
     const dossier = await this.dossierBuilder.build(uuid);
 

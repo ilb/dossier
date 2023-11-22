@@ -89,4 +89,8 @@ export default class DocumentsUsecases extends Usecases {
   async changeVersion({ documentsService, request }) {
     return await documentsService.changeDocumentVersion(request);
   }
+
+  async documentsInfo({ documentsService, request }) {
+    return await documentsService.getDocumentsInfo(request);
+  }
 }
