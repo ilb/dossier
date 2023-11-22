@@ -331,5 +331,21 @@ export default {
         editable: '*',
       },
     },
+    {
+      name: 'Прочее',
+      type: 'otherDocumentsBank',
+      access: {
+        show: '*',
+        editable: '*',
+      },
+    },
+    {
+      name: 'Согласие',
+      type: 'borrowerConsent',
+      access: {
+        show: '*',
+        editable: '*',
+      },
+    },
   ],
 };
