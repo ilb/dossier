@@ -1,0 +1,94 @@
+{
+  "classifier": { "disabled": true },
+  "tabs": [
+    {
+      "name": "Паспорт",
+      "type": "passport",
+      "block": "OFFER_CREATE_BLOCK",
+      "tooltip": null,
+      "required": true,
+      "readonly": false,
+      "documentName": "passport"
+    },
+    {
+      "name": "Согласие",
+      "type": "offerAgreement",
+      "block": "OFFER_CREATE_BLOCK",
+      "tooltip": null,
+      "required": false,
+      "readonly": false,
+      "documentName": "offerAgreement"
+    },
+    {
+      "name": "Фото",
+      "type": "buyerPhoto",
+      "block": "OFFER_CREATE_BLOCK",
+      "tooltip": null,
+      "required": false,
+      "readonly": false,
+      "documentName": "buyerPhoto"
+    },
+    {
+      "name": "В/удостоверение",
+      "type": "driverLicense",
+      "block": "OFFER_CREATE_BLOCK",
+      "tooltip": null,
+      "readonly": false,
+      "documentName": "driverLicense"
+    },
+    {
+      "name": "СНИЛС",
+      "type": "snils",
+      "block": "OFFER_CREATE_BLOCK",
+      "tooltip": null,
+      "readonly": false,
+      "documentName": "snils"
+    },
+    {
+      "name": "Согласие",
+      "type": "offerAgreement",
+      "tooltip": null,
+      "required": false,
+      "readonly": false,
+      "documentName": "offerAgreement"
+    },
+    {
+      "name": "Прочее",
+      "type": "otherDocuments",
+      "block": "OTHER_BLOCK",
+      "tooltip": "Документы, которые распознались, но не могут быть загружены в необходимую вкладку",
+      "readonly": true,
+      "documentName": "otherDocuments"
+    }
+  ],
+  "blocks": [
+    { "name": "", "type": "UNKNOWN_BLOCK", "collapsed": false, "open": false },
+    { "name": "Создание заявки", "type": "OFFER_CREATE_BLOCK", "collapsed": true, "open": true },
+    {
+      "name": "Проверка залога",
+      "type": "BAIL_VERIFICATION_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    {
+      "name": "Документы на авто",
+      "type": "AUTO_DOCUMENTS_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    {
+      "name": "Документы на доп. сервисы",
+      "type": "SERVICES_DOCUMENTS_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    {
+      "name": "Оформление сделки",
+      "type": "DEAL_PROCESSING_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    { "name": "", "type": "OTHER_BLOCK", "collapsed": false, "open": false }
+  ],
+  "meta": { "required": ["passport"] }
+}

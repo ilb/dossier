@@ -1,10 +1,15 @@
 import Classifier from '@ilbru/dossier-ui/src/classifier/client/components/Classifier.mjs';
 // import { useRef, useState } from 'react';
 import { useEffect, useState } from 'react';
+import loanbrokerTestSchema from '../test/loanbrokerTestSchema.json';
+import loandealTestSchema from '../test/loandealTestSchema.json';
 
 export default function App() {
-  const uuid = '800';
+  const uuid = '666';
   const dossierUrl = process.env.BASE_URL;
+
+  // console.log('loanbrokerTestSchema', loanbrokerTestSchema);
+  // console.log('loandealTestSchema', loandealTestSchema);
 
   const [schema, setSchema] = useState({});
   const [isSchemaLoaded, setSchemaLoaded] = useState(false);
@@ -81,7 +86,7 @@ export default function App() {
             defaultViewType="grid"
             dossierUrl={dossierUrl}
             uuid={uuid}
-            schema={schema.client}
+            schema={loanbrokerTestSchema}
             onChangeTab={() => {}}
             // onInit={documentStore.setDocuments}
             // onAfterChange={documentStore.updateDocuments}
