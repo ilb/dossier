@@ -1,5 +1,4 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
-import RoleDossierProcessor from '../schemas/core/RoleDossierProcessor.js';
 export default class SchemasUsecases extends Usecases {
   /**
    * @param {DocumentsService} documentsService
