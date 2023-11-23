@@ -15,8 +15,8 @@ const MenuTab = ({
   hidden,
   validationErrorMessage,
   dossierUrl,
-  isOpened,
-  setOpen,
+  isVersionOpened,
+  setIsVersionOpened,
   collapsed,
 }) => {
   let className = '';
@@ -36,26 +36,6 @@ const MenuTab = ({
 
   if (error) className += ' error';
   if (document.readonly) className += 'readonly';
-
-  const [tooltip, setTooltip] = useState(null);
-  const [isTooltipLoading, setIsTooltipLoading] = useState(true);
-
-  useEffect(() => {
-    if (document.tooltip) {
-      getTooltip(document.tooltip);
-    }
-  }, []);
-
-  const getTooltip = async (tooltip) => {
-    const res = await fetch(`${dossierUrl}/${tooltip}`);
-    setIsTooltipLoading(false);
-    if (res.ok) {
-      const body = await res.json();
-      setTooltip(body);
-    } else {
-      setTooltip('Не удалось загрузить подсказку.');
-    }
-  };
 
   return (
     <div id={document.type}>
@@ -94,20 +74,15 @@ const MenuTab = ({
                   </>
                 )}
 
-                {document.tooltip && (
-                  <Popup
-                    content={isTooltipLoading ? 'Загрузка подсказки' : tooltip}
-                    trigger={<Question />}
-                  />
-                )}
+                {document.tooltip && <Popup content={document.tooltip} trigger={<Question />} />}
               </div>
 
               {collapsed && (
                 <div
-                  onClick={() => setOpen(!isOpened)}
+                  onClick={() => setIsVersionOpened(!isVersionOpened)}
                   style={{ cursor: 'pointer', marginRight: '10px' }}>
-                  {isOpened && <i className="iconChevronUp icon" />}
-                  {!isOpened && <i className="iconChevronDown icon" />}
+                  {isVersionOpened && <i className="iconChevronUp icon" />}
+                  {!isVersionOpened && <i className="iconChevronDown icon" />}
                 </div>
               )}
 

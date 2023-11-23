@@ -231,7 +231,7 @@ const Classifier = forwardRef(
         setLoading(true);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
 
-        uploadPages(uuid, selectedTab.block, compressedFiles)
+        uploadPages(uuid, selectedTab.documentName, compressedFiles)
           .then(async (result) => {
             const documents = await revalidateDocuments();
             onUpdate && onUpdate(selectedTab, documents);
@@ -307,7 +307,7 @@ const Classifier = forwardRef(
       const container = findContainer(active.id);
       setDraggableOrigin({
         container: container,
-        type: selectedTab.block,
+        type: selectedTab.documentName,
         index: active.data.current.sortable.index,
       });
     };
