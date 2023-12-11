@@ -17,6 +17,14 @@ export default {
       type: 'passport',
       name: 'Паспорт',
       required: ['CREATION', 'CREATED', 'ON_CHECK', 'CONTINUE_QUESTIONNAIRE'],
+      validationRules: [
+        {
+          type: 'pageLength',
+          min: 4,
+          message:
+            'Паспорт должен содержать минимум 4 страницы: разворот с фото, место жительства, семейное положение, информация о ранее выданных паспортах',
+        },
+      ],
     },
     {
       type: 'buyerQuestionnaire',

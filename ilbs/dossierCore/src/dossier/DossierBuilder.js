@@ -38,6 +38,7 @@ export default class DossierBuilder {
       const docData = {
         type: document.type,
         verifications: document.verifications,
+        validationRules: document.validationRules,
       };
 
       return new PageDocument(dossier, docData);

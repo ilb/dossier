@@ -30,7 +30,7 @@ export default class ClassifyService extends Service {
     let unknownDocument = dossier.getDocument('unknown');
     // сначала переместить все в нераспознанные
     //Проверить работу
-    await unknownDocument.addPages(pages);
+    await this.documentGateway.addPages(unknownDocument, pages);
     const path = `${uuid}.classification`;
     let verification;
     let currentClassificationResult = [];

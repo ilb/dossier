@@ -1,6 +1,7 @@
 import Service from '@ilbru/core/src/base/Service.js';
 import Page from '../document/Page.js';
 import mime from 'mime-types';
+import DocumentError from '../document/DocumentError.js';
 
 export default class PagesService extends Service {
   constructor(scope) {
@@ -22,10 +23,24 @@ export default class PagesService extends Service {
     // console.log('finish');
 
     // Перед проверками заархивировать ошибки в базе. Очистить ошибки в памяти.
+    let documentState = 'LOADED';
 
     if (document?.errors?.length) {
-      await this.scope.documentGateway.archiveErrors(document);
-      document.errors = [];
+      for (let error of document.errors) {
+        if (error.type === 'VERIFICATION') {
+          await this.scope.documentErrorGateway.changeErrorState({
+            id: error.id,
+            errorState: 'ARCHIVE',
+          });
+        }
+      }
+      document.setErrors(document.errors.filter((error) => error.type !== 'VERIFICATION'));
+    }
+
+    if (document.verificationsList.length) {
+      this.scope.documentStateService.changeState(document, 'ON_AUTOMATIC_VERIFICATION');
+    } else {
+      await this.scope.documentStateService.changeState(document, documentState);
     }
 
     for (let verification of document.verificationsList) {
@@ -49,28 +64,68 @@ export default class PagesService extends Service {
         console.log(error);
         await this.scope.verificationService.cancel(verificationProcess);
       }
+
+      if (document.verificationsList.length) {
+        if (document.errors.length) {
+          documentState = 'VERIFICATIONS_ERROR';
+        } else {
+          documentState = 'VERIFICATION_SUCCESS';
+        }
+      }
+
+      await this.scope.documentStateService.changeState(document, documentState);
     }
   }
 
-  // async savePage(uuid, name, file, createdDate) {
-  //   const date = createdDate.split('.').reverse().join('/');
-  //   const destination = `documents/dossier/${date}/${uuid}/${name}`;
-  //   const filename = `${uuidv4()}.${file.originalname.split('.').pop()}`;
-  //   const path = `${destination}/${filename}`;
-  //   if (!fs.existsSync(destination)) {
-  //     fs.mkdirSync(destination, { recursive: true });
-  //   }
-  //   fs.writeFileSync(path, file.buffer);
-  //   return {
-  //     originalname: file.originalname,
-  //     encoding: file.encoding,
-  //     mimetype: file.mimetype,
-  //     destination,
-  //     filename,
-  //     path,
-  //     size: file.size,
-  //   };
-  // }
+  async validationRun(document) {
+    let errors = document.errors || [];
+
+    if (document.validationRules.length) {
+      for (let rule of document.validationRules) {
+        if (rule.type === 'pageLength') {
+          if (document.pages.length < rule.min) {
+            console.log('document.errors 1', document.errors);
+
+            const activeValidationError = document.errors.find(
+              (error) => error.type === 'VALIDATION',
+            );
+
+            if (!activeValidationError) {
+              const error = new DocumentError({
+                description: rule.message,
+                errorState: 'ACTIVE',
+                errorType: 'VALIDATION',
+              });
+              errors.push(error);
+              await this.scope.documentErrorGateway.addError(document, error);
+            }
+          } else {
+            const activeValidationError = document.errors.find(
+              (error) => error.type === 'VALIDATION',
+            );
+
+            if (activeValidationError) {
+              await this.scope.documentErrorGateway.changeErrorState({
+                id: activeValidationError.id,
+                errorState: 'SOLVED',
+              });
+            }
+
+            errors = errors.filter(({ type }) => {
+              type !== 'VALIDATION';
+            });
+          }
+        }
+      }
+    }
+
+    if (errors.length) {
+      await this.scope.documentStateService.changeState(document, 'VALIDATION_ERROR');
+      return {
+        errorFind: true,
+      };
+    }
+  }
 
   async add({ uuid, name, files }) {
     const dossier = await this.scope.dossierBuilder.build(uuid);
@@ -87,6 +142,11 @@ export default class PagesService extends Service {
     }
 
     await this.scope.documentGateway.addPages(document, filesArray);
+    const resultValidation = await this.validationRun(document);
+    if (resultValidation?.errorFind) {
+      return { files, name };
+    }
+
     await this.verificationsRun(document);
     return { files, name };
   }
@@ -117,6 +177,7 @@ export default class PagesService extends Service {
     const dossier = await this.scope.dossierBuilder.build(uuid);
     const document = dossier.getDocument(name);
     await this.scope.documentGateway.deletePage(document, pageUuid);
+    await this.validationRun(document);
   }
 
   async get({ uuid, name, version, number }) {
