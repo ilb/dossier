@@ -1,0 +1,2 @@
+INSERT INTO public."ErrorType"(code, description) VALUES ('VALIDATION', 'Ошибка валидации');
+INSERT INTO public."ErrorType"(code, description) VALUES ('VERIFICATION', 'Ошибка автоматической проверки');
