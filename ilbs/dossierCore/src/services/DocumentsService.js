@@ -86,6 +86,7 @@ export default class DocumentsService extends Service {
             pages: this.buildLinks(versionObj.pages, document.type, versionObj.version, uuid),
             lastModified: document.lastModified,
             errors: this.errorsBuilder(document),
+            state: document.state,
           };
         });
 
