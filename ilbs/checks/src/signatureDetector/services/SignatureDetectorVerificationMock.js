@@ -1,18 +1,23 @@
 import Service from '@ilbru/core/src/base/Service.js';
-import Errors from '../../dataMatrixReaderServises/services/Errors.js';
+import DocumentError from '../../../../dossierCore/src/document/DocumentError.js';
 
 export default class SignatureDetectorVerificationMock extends Service {
-  constructor({ documentGateway }) {
+  constructor({ documentErrorGateway }) {
     super();
     this.nameVerification = 'signatureDetectorVerification';
-    this.documentGateway = documentGateway;
+    this.documentErrorGateway = documentErrorGateway;
     this.errors = [];
     this.classifierTimeout = 30;
   }
 
   async check(document) {
-    const error = Errors.notFound('Подписи не найдены');
-    await this.documentGateway.addError(document, error);
+    const error = new DocumentError({
+      description: 'Подписи не найдены',
+      errorState: 'ACTIVE',
+      errorType: 'VERIFICATION',
+    });
+
+    await this.documentErrorGateway.addError(document, error);
     this.errors.push(error);
 
     return {
