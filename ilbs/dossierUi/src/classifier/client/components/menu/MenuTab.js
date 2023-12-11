@@ -37,6 +37,14 @@ const MenuTab = ({
   if (error) className += ' error';
   if (document.readonly) className += 'readonly';
 
+  // В зависимости от статуса отображать разные компоненты
+  // LOADED - Зеленая галочка, по наведению текст "Документ загружен",
+  // VALIDATION_ERROR -  Красный !, по наведению текст "Ошибка валидации" и ниже соджеражание массива documents[document.type]?.errors,
+  // ON_AUTOMATIC_VERIFICATION - Подобрать символ что то типо желтых часов. По наведения отображать текст "Документ На автоматической проверке"
+  // VERIFICATIONS_ERROR - Красный !. По наведения текст "Ошибки автоматической проверки" и ниже соджеражание массива documents[document.type]?.errors
+  // VERIFICATION_SUCCESS -  Зеленая галочка, по наведению текст "Все автоматическое проверки прошли успешно"
+  // ACCEPTED -  Зеленая галочка, по наведению текст "Документ актцептован на сделку"
+
   return (
     <div id={document.type}>
       {!hidden && (
