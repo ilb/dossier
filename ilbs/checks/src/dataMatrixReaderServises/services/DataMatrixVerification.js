@@ -1,8 +1,7 @@
 import Service from '@ilbru/core/src/base/Service.js';
 import DataMatrixCheckService from './DataMatrixCheckService.js';
-import DocumentError from '../../../../dossierCore/src/document/DocumentError.js';
 export default class DataMatrixVerification extends Service {
-  constructor({ documentRepository, documentGateway, documentErrorGateway }) {
+  constructor({ documentRepository, documentGateway, documentErrorService }) {
     super();
     this.documentRepository = documentRepository;
     this.dataMatrixCheckService = new DataMatrixCheckService();
@@ -11,7 +10,7 @@ export default class DataMatrixVerification extends Service {
     this.ok = true;
     this.errors = [];
     this.documentGateway = documentGateway;
-    this.documentErrorGateway = documentErrorGateway;
+    this.documentErrorService = documentErrorService;
   }
   /**
    *
@@ -49,14 +48,13 @@ export default class DataMatrixVerification extends Service {
     if (missingPages.length) {
       this.ok = false;
 
-      const error = new DocumentError({
+      await this.documentErrorService.addError(document, {
         description: `Не найденные страницы : ${missingPages.join(', ')}`,
         errorState: 'ACTIVE',
         errorType: 'VERIFICATION',
       });
 
       // await document.addError(error);
-      await this.documentErrorGateway.addError(document, error);
       this.errors.push(error);
     }
     return {

@@ -3,13 +3,12 @@ import fs from 'fs';
 import FormData from 'form-data';
 import fetch from 'isomorphic-fetch';
 import { timeoutPromise } from '../../../libs/utils.js';
-import DocumentError from '../../../../dossierCore/src/document/DocumentError.js';
 
 export default class SignatureDetectorVerification extends Service {
-  constructor({ documentErrorGateway }) {
+  constructor({ documentErrorService }) {
     super();
     this.nameVerification = 'signatureDetectorVerification';
-    this.documentErrorGateway = documentErrorGateway;
+    this.documentErrorService = documentErrorService;
     this.errors = [];
     this.classifierTimeout = 30;
   }
@@ -42,13 +41,11 @@ export default class SignatureDetectorVerification extends Service {
       const numberDetectedSignatures = signatures.filter((item) => item.detected).length;
 
       if (numberDetectedSignatures < signatures.length) {
-        const error = new DocumentError({
+        await this.documentErrorService.addError(document, {
           description: 'Подписи не найдены',
           errorState: 'ACTIVE',
           errorType: 'VERIFICATION',
         });
-
-        await this.documentErrorGateway.addError(document, error);
         this.errors.push(error);
       }
 

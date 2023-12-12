@@ -1,23 +1,20 @@
 import Service from '@ilbru/core/src/base/Service.js';
-import DocumentError from '../../../../dossierCore/src/document/DocumentError.js';
 
 export default class SignatureDetectorVerificationMock extends Service {
-  constructor({ documentErrorGateway }) {
+  constructor({ documentErrorService }) {
     super();
     this.nameVerification = 'signatureDetectorVerification';
-    this.documentErrorGateway = documentErrorGateway;
+    this.documentErrorService = documentErrorService;
     this.errors = [];
     this.classifierTimeout = 30;
   }
 
   async check(document) {
-    const error = new DocumentError({
+    await this.documentErrorService.addError(document, {
       description: 'Подписи не найдены',
       errorState: 'ACTIVE',
       errorType: 'VERIFICATION',
     });
-
-    await this.documentErrorGateway.addError(document, error);
     this.errors.push(error);
 
     return {
