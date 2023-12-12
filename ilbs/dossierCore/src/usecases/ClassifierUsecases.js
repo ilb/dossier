@@ -1,4 +1,7 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
+import createDebug from 'debug';
+
+const debug = createDebug('dossier');
 
 export default class ClassifierUsecases extends Usecases {
   /**
@@ -14,7 +17,10 @@ export default class ClassifierUsecases extends Usecases {
    * @returns {}
    */
   async classifyPages({ classifyService, request }) {
-    return await classifyService.classify(request);
+    debug('classifyPages start', request.uuid);
+    const result = await classifyService.classify(request);
+    debug('classifyPages end', request.uuid);
+    return result;
   }
 
   /**
@@ -28,7 +34,10 @@ export default class ClassifierUsecases extends Usecases {
    * @returns {Promise<{text: string}>}
    */
   async read({ classifyService, request }) {
-    return await classifyService.checkClassifications(request);
+    debug('checkClassifications start', request.uuid);
+    const result = await classifyService.checkClassifications(request);
+    debug('checkClassifications end', request.uuid);
+    return result;
   }
 
   async update() {}

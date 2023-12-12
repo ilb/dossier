@@ -1,4 +1,8 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
+import createDebug from 'debug';
+
+const debug = createDebug('dossier');
+
 export default class SchemasUsecases extends Usecases {
   /**
    * @param {DocumentsService} documentsService
@@ -20,7 +24,10 @@ export default class SchemasUsecases extends Usecases {
    * @returns {Promise<{text: string}>}
    */
   async read({ dossierSchema }) {
-    return dossierSchema;
+    debug('read dossierSchema start');
+    const schema = dossierSchema;
+    debug('read dossierSchema end');
+    return schema;
   }
 
   async update() {}

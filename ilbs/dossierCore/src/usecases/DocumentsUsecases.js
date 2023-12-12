@@ -1,4 +1,7 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
+import createDebug from 'debug';
+
+const debug = createDebug('dossier');
 
 export default class DocumentsUsecases extends Usecases {
   /**
@@ -7,7 +10,10 @@ export default class DocumentsUsecases extends Usecases {
    * @returns {}
    */
   async list({ documentsService, request }) {
-    return await documentsService.getDocuments({ ...request, withVersions: true });
+    debug('get list start');
+    const list = await documentsService.getDocuments({ ...request, withVersions: true });
+    debug('get list end');
+    return list;
   }
 
   /**
@@ -29,7 +35,9 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async update({ pagesService, request }) {
+    debug('update document start');
     await pagesService.add(request);
+    debug('update document end');
   }
 
   /**
@@ -51,7 +59,9 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async correctPages({ pagesService, request }) {
+    debug('correctPages start');
     await pagesService.correct(request);
+    debug('correctPages end');
   }
 
   /**
@@ -59,7 +69,9 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async deletePage({ pagesService, request }) {
+    debug('deletePage start');
     await pagesService.delete(request);
+    debug('deletePage end');
   }
 
   /**
@@ -67,7 +79,11 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async getPage({ pagesService, request }) {
-    return await pagesService.get(request);
+    debug('getPage start');
+    const page = await pagesService.get(request);
+    debug('getPage end');
+
+    return page;
   }
 
   /**
@@ -75,26 +91,45 @@ export default class DocumentsUsecases extends Usecases {
    * @returns {Promise<{file: Buffer, filename: *, contentType: *}>}
    */
   async print({ documentsService, request }) {
-    return await documentsService.getDocument(request);
+    debug('getDocument (print) start');
+    const document = await documentsService.getDocument(request);
+    debug('getDocument (print) end');
+
+    return document;
   }
 
   async getByVersion({ documentsService, request }) {
-    return await documentsService.getDocumentByVersion(request);
+    debug('getDocumentByVersion start');
+    const documentByVersion = await documentsService.getDocumentByVersion(request);
+    debug('getDocumentByVersion end');
+    return documentByVersion;
   }
 
   async getDate({ dossierService, request }) {
-    return await dossierService.getCreatedDate(request);
+    debug('getCreatedDate start');
+    const createdDate = await dossierService.getCreatedDate(request);
+    debug('getCreatedDate end');
+    return createdDate;
   }
 
   async changeVersion({ documentsService, request }) {
-    return await documentsService.changeDocumentVersion(request);
+    debug('changeDocumentVersion start');
+    const newVersion = await documentsService.changeDocumentVersion(request);
+    debug('changeDocumentVersion end');
+    return newVersion;
   }
 
   async documentsInfo({ documentsService, request }) {
-    return await documentsService.getDocumentsInfo(request);
+    debug('getDocumentsInfo start');
+    const documentsInfo = await documentsService.getDocumentsInfo(request);
+    debug('getDocumentsInfo end');
+    return documentsInfo;
   }
 
   async changeState({ documentsService, request }) {
-    return await documentsService.changeDocumentState(request);
+    debug('changeDocumentState start');
+    const result = await documentsService.changeDocumentState(request);
+    debug('changeDocumentState end');
+    return result;
   }
 }
