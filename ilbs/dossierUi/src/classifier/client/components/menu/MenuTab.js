@@ -2,8 +2,54 @@ import { useDroppable } from '@dnd-kit/core';
 import { useDocuments } from '../../hooks';
 import classNames from 'classnames';
 import Popup from '../elements/Popup';
-import { Alert, CheckSuccess, Question } from '../../icons/CustomIcons';
-import { useEffect, useState } from 'react';
+import {
+  Alert,
+  CheckSuccess,
+  Question,
+  Hourglass,
+} from '../../icons/CustomIcons';
+
+const statuses = {
+  LOADED: 'Документ загружен',
+  VALIDATION_ERROR: 'Ошибка валидации',
+  ON_AUTOMATIC_VERIFICATION: 'Документ на автоматической проверке',
+  VERIFICATIONS_ERROR: 'Ошибки автоматической проверки',
+  VERIFICATION_SUCCESS: 'Все автоматические проверки прошли успешно',
+  ACCEPTED: 'Документ акцептован на сделку',
+};
+
+const getStatusToShow = (status = '', errors = '') => {
+  const statusToShow = {};
+
+  switch (status) {
+    case 'LOADED':
+      statusToShow.content = statuses.LOADED;
+      statusToShow.icon = <CheckSuccess />;
+      break;
+    case 'VALIDATION_ERROR':
+      statusToShow.content = `${statuses.VALIDATION_ERROR}: \n ${errors}`;
+      statusToShow.icon = <Alert />;
+      break;
+    case 'ON_AUTOMATIC_VERIFICATION':
+      statusToShow.content = statuses.ON_AUTOMATIC_VERIFICATION;
+      statusToShow.icon = <Hourglass />;
+      break;
+    case 'VERIFICATIONS_ERROR':
+      statusToShow.content = `${statuses.VERIFICATIONS_ERROR}: \n ${errors}`;
+      statusToShow.icon = <Alert />;
+      break;
+    case 'VERIFICATION_SUCCESS':
+      statusToShow.content = statuses.VERIFICATION_SUCCESS;
+      statusToShow.icon = <CheckSuccess />;
+      break;
+    case 'ACCEPTED':
+      statusToShow.content = statuses.ACCEPTED;
+      statusToShow.icon = <CheckSuccess />;
+      break;
+  }
+
+  return statusToShow;
+};
 
 const MenuTab = ({
   uuid,
@@ -25,9 +71,11 @@ const MenuTab = ({
   const { documents } = useDocuments(uuid, dossierUrl);
   const tabDocuments = documents[document.type]?.pages;
   const countPages = tabDocuments?.length;
+
   if (countPages && !tabDocuments[0].type.includes('image/')) {
     isNotImage = true;
   }
+
   const { setNodeRef } = useDroppable({
     id: document.type,
     data: { tab: true },
@@ -36,6 +84,12 @@ const MenuTab = ({
 
   if (error) className += ' error';
   if (document.readonly) className += 'readonly';
+
+  const errors =
+    documents[document.type]?.errors &&
+    documents[document.type]?.errors.join('\n');
+  const currentStatus = documents[document.type]?.state;
+  const statusToShow = getStatusToShow(currentStatus, errors);
 
   return (
     <div id={document.type}>
@@ -47,46 +101,54 @@ const MenuTab = ({
               'menuItem',
               'menuItemTab',
               selected && 'menuItemSelected',
-              disabled && 'menuItemDisabled',
+              disabled && 'menuItemDisabled'
             )}
             onClick={(e) => {
               if (!disabled) {
                 onDocumentSelect(e, { name: document.type });
               }
-            }}>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <div className="icons" style={{ position: 'absolute', left: 8, display: 'flex' }}>
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <div className='icons' style={{ display: 'flex' }}>
                 {!!validationErrorMessage ? (
                   <Popup content={validationErrorMessage} trigger={<Alert />} />
                 ) : (
-                  <>
-                    {documents[document.type]?.verificationResult && // Заменить на статус проверок
-                      (documents[document.type]?.verificationResult === 'success' ? (
-                        <Popup
-                          content={'Все проверки завершены успешно'}
-                          trigger={<CheckSuccess />}
-                        />
-                      ) : documents[document.type]?.errors ? (
-                        <Popup content={documents[document.type]?.errors} trigger={<Alert />} />
-                      ) : (
-                        <></>
-                      ))}
-                  </>
+                  currentStatus && (
+                    <Popup
+                      content={statusToShow.content}
+                      trigger={statusToShow.icon}
+                    />
+                  )
                 )}
 
-                {document.tooltip && <Popup content={document.tooltip} trigger={<Question />} />}
+                {document.tooltip && (
+                  <Popup content={document.tooltip} trigger={<Question />} />
+                )}
               </div>
 
               {collapsed && (
                 <div
                   onClick={() => setIsVersionOpened(!isVersionOpened)}
-                  style={{ cursor: 'pointer', marginRight: '10px' }}>
-                  {isVersionOpened && <i className="iconChevronUp icon" />}
-                  {!isVersionOpened && <i className="iconChevronDown icon" />}
+                  style={{ cursor: 'pointer', marginRight: '10px' }}
+                >
+                  {isVersionOpened && <i className='iconChevronUp icon' />}
+                  {!isVersionOpened && <i className='iconChevronDown icon' />}
                 </div>
               )}
 
-              <div>
+              <div
+                style={{
+                  width: '100%',
+                  marginLeft: '5px',
+                  wordBreak: 'break-word',
+                }}
+              >
                 <span>
                   {document.name} {countPages ? '(' + countPages + ')' : ''}
                 </span>
