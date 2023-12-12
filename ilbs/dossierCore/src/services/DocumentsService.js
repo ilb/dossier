@@ -15,10 +15,10 @@ export default class DocumentsService extends Service {
       return {
         id: `${url}/${documentType}/version/${version}/number/${
           i + 1
-        }?_nocache=${new Date().toLocaleDateString()}`,
+        }?_nocache=${new Date().toLocaleString()}`,
         path: `${url}/${documentType}/version/${version}/number/${
           i + 1
-        }?_nocache=${new Date().toLocaleDateString()}`,
+        }?_nocache=${new Date().toLocaleString()}`,
         uuid: page.uuid,
         type: mime.lookup(page.extension),
       };
@@ -64,6 +64,12 @@ export default class DocumentsService extends Service {
     }));
   }
 
+  async changeDocumentState({ uuid, name, stateCode }) {
+    const dossier = await this.dossierBuilder.build(uuid);
+    let document = dossier.getDocument(name);
+    await this.documentStateService.changeState(document, stateCode);
+  }
+
   async getDocuments({ uuid }) {
     const dossier = await this.dossierBuilder.build(uuid);
 
@@ -80,13 +86,8 @@ export default class DocumentsService extends Service {
             pages: this.buildLinks(versionObj.pages, document.type, versionObj.version, uuid),
             lastModified: document.lastModified,
             errors: this.errorsBuilder(document),
+            state: document.state,
           };
-
-          if (links && links.length && i === 0) {
-            // Заменить на получение статуса проверок. Собирать ошибки
-            versions[document.type + '_' + versionObj.version].verificationResult =
-              document?.errors && document?.errors?.length > 0 ? 'error' : 'success';
-          }
         });
 
         result = {
@@ -100,14 +101,9 @@ export default class DocumentsService extends Service {
             pages: links,
             lastModified: document.lastModified,
             errors: this.errorsBuilder(document),
+            state: document.state,
           },
         };
-
-        if (links && links.length) {
-          // Заменить на получение статуса проверок. Собирать ошибки
-          result[document.type].verificationResult =
-            document?.errors && document?.errors?.length > 0 ? 'error' : 'success';
-        }
       }
       return result;
     }, {});

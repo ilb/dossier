@@ -3,13 +3,12 @@ import fs from 'fs';
 import FormData from 'form-data';
 import fetch from 'isomorphic-fetch';
 import { timeoutPromise } from '../../../libs/utils.js';
-import Errors from '../../dataMatrixReaderServises/services/Errors.js';
 
 export default class SignatureDetectorVerification extends Service {
-  constructor({ documentGateway }) {
+  constructor({ documentErrorService }) {
     super();
     this.nameVerification = 'signatureDetectorVerification';
-    this.documentGateway = documentGateway;
+    this.documentErrorService = documentErrorService;
     this.errors = [];
     this.classifierTimeout = 30;
   }
@@ -42,8 +41,11 @@ export default class SignatureDetectorVerification extends Service {
       const numberDetectedSignatures = signatures.filter((item) => item.detected).length;
 
       if (numberDetectedSignatures < signatures.length) {
-        const error = Errors.notFound('Подписи не найдены');
-        await this.documentGateway.addError(document, error);
+        await this.documentErrorService.addError(document, {
+          description: 'Подписи не найдены',
+          errorState: 'ACTIVE',
+          errorType: 'VERIFICATION',
+        });
         this.errors.push(error);
       }
 

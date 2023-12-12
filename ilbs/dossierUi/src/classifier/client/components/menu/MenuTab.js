@@ -2,12 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { useDocuments } from '../../hooks';
 import classNames from 'classnames';
 import Popup from '../elements/Popup';
-import {
-  Alert,
-  CheckSuccess,
-  Question,
-  Hourglass,
-} from '../../icons/CustomIcons';
+import { Alert, CheckSuccess, Question, Hourglass } from '../../icons/CustomIcons';
 
 const statuses = {
   LOADED: 'Документ загружен',
@@ -85,9 +80,7 @@ const MenuTab = ({
   if (error) className += ' error';
   if (document.readonly) className += 'readonly';
 
-  const errors =
-    documents[document.type]?.errors &&
-    documents[document.type]?.errors.join('\n');
+  const errors = documents[document.type]?.errors && documents[document.type]?.errors.join('\n');
   const currentStatus = documents[document.type]?.state;
   const statusToShow = getStatusToShow(currentStatus, errors);
 
@@ -101,44 +94,36 @@ const MenuTab = ({
               'menuItem',
               'menuItemTab',
               selected && 'menuItemSelected',
-              disabled && 'menuItemDisabled'
+              disabled && 'menuItemDisabled',
             )}
             onClick={(e) => {
               if (!disabled) {
                 onDocumentSelect(e, { name: document.type });
               }
-            }}
-          >
+            }}>
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-              }}
-            >
-              <div className='icons' style={{ display: 'flex' }}>
+              }}>
+              <div className="icons" style={{ display: 'flex' }}>
                 {!!validationErrorMessage ? (
                   <Popup content={validationErrorMessage} trigger={<Alert />} />
                 ) : (
                   currentStatus && (
-                    <Popup
-                      content={statusToShow.content}
-                      trigger={statusToShow.icon}
-                    />
+                    <Popup content={statusToShow.content} trigger={statusToShow.icon} />
                   )
                 )}
 
-                {document.tooltip && (
-                  <Popup content={document.tooltip} trigger={<Question />} />
-                )}
+                {document.tooltip && <Popup content={document.tooltip} trigger={<Question />} />}
               </div>
 
               {collapsed && (
                 <div
                   onClick={() => setIsVersionOpened(!isVersionOpened)}
-                  style={{ cursor: 'pointer', marginRight: '10px' }}
-                >
-                  {isVersionOpened && <i className='iconChevronUp icon' />}
-                  {!isVersionOpened && <i className='iconChevronDown icon' />}
+                  style={{ cursor: 'pointer', marginRight: '10px' }}>
+                  {isVersionOpened && <i className="iconChevronUp icon" />}
+                  {!isVersionOpened && <i className="iconChevronDown icon" />}
                 </div>
               )}
 
@@ -147,8 +132,7 @@ const MenuTab = ({
                   width: '100%',
                   marginLeft: '5px',
                   wordBreak: 'break-word',
-                }}
-              >
+                }}>
                 <span>
                   {document.name} {countPages ? '(' + countPages + ')' : ''}
                 </span>

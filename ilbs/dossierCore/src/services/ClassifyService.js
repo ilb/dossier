@@ -2,6 +2,9 @@ import Service from '@ilbru/core/src/base/Service.js';
 import { chunkArray, prepareClassifies } from '../../libs/utils.js';
 import queue from '../../pqueue/pqueue.js';
 import Page from '../document/Page.js';
+import createDebug from 'debug';
+
+const classifierDebug = createDebug('dossier-classifier');
 
 export default class ClassifyService extends Service {
   constructor({
@@ -30,7 +33,7 @@ export default class ClassifyService extends Service {
     let unknownDocument = dossier.getDocument('unknown');
     // сначала переместить все в нераспознанные
     //Проверить работу
-    await unknownDocument.addPages(pages);
+    await this.documentGateway.addPages(unknownDocument, pages);
     const path = `${uuid}.classification`;
     let verification;
     let currentClassificationResult = [];
@@ -39,6 +42,7 @@ export default class ClassifyService extends Service {
     this.queue
       .add(
         async () => {
+          classifierDebug('classify start');
           const chunks = chunkArray(pages, this.classifierQuantity);
           for (const chunk of chunks) {
             let previousClass;
@@ -96,6 +100,7 @@ export default class ClassifyService extends Service {
           await this.verificationService.finish(verification, {
             classifiedPages: currentClassificationResult,
           });
+          classifierDebug('classify end');
         },
         { path },
       )

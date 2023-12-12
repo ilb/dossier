@@ -1,6 +1,5 @@
 import { v4 } from 'uuid';
 import Page from '../document/Page.js';
-import PageDocumentVersion from '../document/PageDocumentVersion.js';
 
 export default class DocumentGateway {
   /**
@@ -23,6 +22,17 @@ export default class DocumentGateway {
     this.errorRepository = errorRepository;
   }
 
+  async changeDocumentState(document, stateCode) {
+    await this.documentVersionRepository.update({
+      id: document.currentVersion.id,
+      documentState: {
+        connect: {
+          code: stateCode,
+        },
+      },
+    });
+  }
+
   async addPages(document, pages) {
     await document.addPages(pages);
     await this.createPagesOnBase(document, pages);
@@ -38,36 +48,10 @@ export default class DocumentGateway {
     await this.deletePageInBase(pageUuid);
   }
 
-  async addError(document, error) {
-    await this.errorRepository.create({
-      code: error.type,
-      description: error.description,
-      documentVersion: {
-        connect: {
-          id: document.currentVersion.id,
-        },
-      },
-    });
-  }
-
   async reorderPages(pages) {
     for (const page of pages) {
       await this.pageRepository.updatePageNumber(page.uuid, page.pageNumber);
     }
-  }
-
-  async archiveErrors(document) {
-    const idsArray = document.errors.map(({ id }) => id);
-    await this.errorRepository.updateMany({
-      where: {
-        id: {
-          in: idsArray,
-        },
-      },
-      data: {
-        isArchive: true,
-      },
-    });
   }
 
   async initDossier(dossier) {
@@ -120,7 +104,11 @@ export default class DocumentGateway {
 
     const newVersionCartage = {
       version: versionNumber,
-      status: 'new',
+      documentState: {
+        connect: {
+          code: 'NOT_LOADED',
+        },
+      },
       currentDocument: {
         connect: {
           uuid: documentUuid,
@@ -280,9 +268,13 @@ export default class DocumentGateway {
   }
 
   // Возвращает номер версии документа
-  async changeDocumentVersion(document) {
+  async changeDocumentVersion(document, state = 'NOT_LOADED') {
     const versionCartage = {
-      status: document.currentVersion.status,
+      documentState: {
+        connect: {
+          code: state,
+        },
+      },
       version: document.currentVersion.version + 1,
       document: {
         connect: {

@@ -31,11 +31,18 @@ export default class DocumentRepository extends Repository {
         },
         currentDocumentVersion: {
           include: {
+            documentState: true,
             pages: { where: { isDelete: false } },
             verifications: true,
             errors: {
               where: {
-                isArchive: false,
+                errorState: {
+                  code: 'ACTIVE',
+                },
+              },
+              include: {
+                errorType: true,
+                errorState: true,
               },
             },
           },

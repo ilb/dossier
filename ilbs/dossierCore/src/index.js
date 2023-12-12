@@ -18,12 +18,15 @@ import FileService from './services/FileService.js';
 import PagesService from './services/PagesService.js';
 import VerificationService from './services/VerificationService.js';
 import BaseSchemaBuilder from './schemas/core/BaseSchemaBuilder.js';
+import DocumentErrorGateway from './gateway/DocumentErrorGateway.js';
+import DocumentStateService from './services/DocumentStateService.js';
 
 const registerPackageClasses = (container) => {
   container.register({
     documentMerger: asClass(DocumentMerger),
     dossierBuilder: asClass(DossierBuilder),
     documentGateway: asClass(DocumentGateway),
+    documentErrorGateway: asClass(DocumentErrorGateway),
     documentRepository: asClass(DocumentRepository),
     documentVersionRepository: asClass(DocumentVersionRepository),
     dossierRepository: asClass(DossierRepository),
@@ -36,6 +39,7 @@ const registerPackageClasses = (container) => {
     dossierSchema: asValue(mockSchema),
     classifyService: asClass(ClassifyService),
     documentsService: asClass(DocumentsService),
+    documentStateService: asClass(DocumentStateService),
     dossierService: asClass(DossierService),
     fileService: asClass(FileService),
     pagesService: asClass(PagesService),
