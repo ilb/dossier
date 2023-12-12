@@ -133,8 +133,8 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background: 0 0;
-  padding: 0.92857143em 1.24285714em;
+  background: 0 0;  
+  padding: 10px;
   text-transform: none;
   font-weight: 500;
   transition: background .1s ease,box-shadow .1s ease,color .1s ease;
@@ -334,8 +334,11 @@
 
 .target {
   width: auto;
-  height: 20px;
-  margin-left: 1px;
+  height: 20px;  
+}
+
+.target:not(:first-child) {
+  margin-left: 3px;
 }
 
 .tooltip {
