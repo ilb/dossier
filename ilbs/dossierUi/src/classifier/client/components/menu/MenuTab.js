@@ -80,7 +80,7 @@ const MenuTab = ({
   if (error) className += ' error';
   if (document.readonly) className += 'readonly';
 
-  const errors = documents[document.type]?.errors && documents[document.type]?.errors.join('\n');
+  const errors = documents[document.type]?.errors;
   const currentStatus = documents[document.type]?.state;
   const statusToShow = getStatusToShow(currentStatus, errors);
 
