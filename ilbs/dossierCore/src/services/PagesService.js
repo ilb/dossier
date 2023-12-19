@@ -126,7 +126,7 @@ export default class PagesService extends Service {
       }
     }
 
-    if (errors.length) {
+    if (errors.length && document?.validationRules?.length) {
       await this.scope.documentStateService.changeState(document, 'VALIDATION_ERROR');
       return {
         success: false,
