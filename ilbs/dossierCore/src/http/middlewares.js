@@ -6,6 +6,47 @@ import im from 'imagemagick';
 import { promisify } from 'util';
 import mime from 'mime-types';
 import Errors from '../util/Errors.js';
+import JsonContext from '@ilbru/core/src/contexts/JsonContext.js';
+import path from 'path';
+
+export const isFormDataHandler = async (req, res, next) => {
+  try {
+    const context = await JsonContext.build({ req, res });
+    if (context.request.buffer) {
+      const fileBuffer = Buffer.from(context.request.buffer, 'base64');
+      const date = context.request.createdDate?.split('.').reverse().join('/');
+      const destination = `documents/dossier/${date}/${context.request.uuid}/${context.request.name}`;
+      const filename = `${uuidv4()}.jpg`;
+      const filePath = `${destination}/${filename}`;
+      const directoryPath = path.dirname(filePath);
+
+      if (!fs.existsSync(directoryPath)) {
+        fs.mkdirSync(directoryPath, { recursive: true });
+      }
+
+      fs.writeFileSync(`./${filePath}`, fileBuffer, 'binary');
+
+      req.files = [
+        {
+          fieldname: 'documents',
+          originalname: '87721.jpg',
+          encoding: '7bit',
+          mimetype: 'image/jpeg',
+          destination,
+          filename,
+          path: filePath,
+          size: '36017',
+        },
+      ];
+
+      next();
+    } else {
+      uploadMiddleware.array('documents')(req, res, next);
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
 
 export const uploadMiddleware = multer({
   limits: {
@@ -36,6 +77,8 @@ export const getDossierDate = (req, res, next, result) => {
 };
 
 export const jfifToJpeg = async (req, res, next) => {
+  console.log('req.files', req.files);
+
   req.files = await req.files?.reduce(async (accumulator, file) => {
     const files = await accumulator;
     if (/\.jfif$/.test(file.originalname)) {

@@ -10,16 +10,17 @@ import {
   jfifToJpeg,
   splitPdf,
   checkMimeType,
+  isFormDataHandler,
 } from '@ilbru/dossier-core/src/http/middlewares.js';
 
 export default nc()
+  .use(bodyParser.json())
   .use(middlewareHandle(DocumentsUsecases, 'getDate', getDossierDate))
-  .use(uploadMiddleware.array('documents'))
+  .use(isFormDataHandler)
   .use(jfifToJpeg)
   .use(splitPdf)
   .use(checkMimeType)
   .use(checkEmptyList)
-  .use(bodyParser.json())
   .put(handle(DocumentsUsecases, 'update'))
   .get(handle(DocumentsUsecases, 'print', FileResponse));
 
