@@ -1,6 +1,6 @@
 {
   "name": "@ilbru/checks",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "dossier checks",
   "type": "module",
   "dependencies": {

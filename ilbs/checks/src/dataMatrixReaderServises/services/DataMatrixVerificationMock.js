@@ -17,11 +17,13 @@ export default class DataMatrixVerificationMock extends Service {
     const documentPages = document.pages;
     const cropped = context.params;
 
-    await this.documentErrorService.addError(document, {
+    const error = {
       description: 'Не найденные страницы : 1,3,4',
       errorState: 'ACTIVE',
       errorType: 'VERIFICATION',
-    });
+    };
+
+    await this.documentErrorService.addError(document, error);
     this.errors.push(error);
     return {
       nameVerification: this.nameVerification,

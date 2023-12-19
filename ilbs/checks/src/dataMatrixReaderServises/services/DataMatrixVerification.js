@@ -48,11 +48,13 @@ export default class DataMatrixVerification extends Service {
     if (missingPages.length) {
       this.ok = false;
 
-      await this.documentErrorService.addError(document, {
+      const error = {
         description: `Не найденные страницы : ${missingPages.join(', ')}`,
         errorState: 'ACTIVE',
         errorType: 'VERIFICATION',
-      });
+      };
+
+      await this.documentErrorService.addError(document, error);
 
       // await document.addError(error);
       this.errors.push(error);

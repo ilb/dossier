@@ -41,11 +41,13 @@ export default class SignatureDetectorVerification extends Service {
       const numberDetectedSignatures = signatures.filter((item) => item.detected).length;
 
       if (numberDetectedSignatures < signatures.length) {
-        await this.documentErrorService.addError(document, {
+        const error = {
           description: 'Подписи не найдены',
           errorState: 'ACTIVE',
           errorType: 'VERIFICATION',
-        });
+        };
+
+        await this.documentErrorService.addError(document, error);
         this.errors.push(error);
       }
 

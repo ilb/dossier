@@ -10,11 +10,13 @@ export default class SignatureDetectorVerificationMock extends Service {
   }
 
   async check(document) {
-    await this.documentErrorService.addError(document, {
+    const error = {
       description: 'Подписи не найдены',
       errorState: 'ACTIVE',
       errorType: 'VERIFICATION',
-    });
+    };
+
+    await this.documentErrorService.addError(document, error);
     this.errors.push(error);
 
     return {
