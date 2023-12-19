@@ -28,14 +28,14 @@ export default class Kernel {
       classifierQuantity: asValue(8),
       isClassifyMock: process.env.CLASSIFIER_GATE_MOCK === 'true',
       signatureDetectorVerification: asClass(
-        process.env.SIGNATURE_DETECTOR_MOCK === 'true'
-          ? SignatureDetectorVerificationMock
-          : SignatureDetectorVerification,
+        process.env['apps.loandossier.stub.signatureDetectorEnabled'] === 'true'
+          ? SignatureDetectorVerification
+          : SignatureDetectorVerificationMock,
       ),
       dataMatrixVerification: asClass(
-        process.env.DATA_MATRIX_MOCK === 'true'
-          ? DataMatrixVerificationMock
-          : DataMatrixVerification,
+        process.env['apps.loandossier.stub.dataMatrixEnabled'] === 'true'
+          ? DataMatrixVerification
+          : DataMatrixVerificationMock,
       ),
     });
   }
