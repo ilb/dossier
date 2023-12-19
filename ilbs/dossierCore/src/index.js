@@ -20,6 +20,7 @@ import VerificationService from './services/VerificationService.js';
 import BaseSchemaBuilder from './schemas/core/BaseSchemaBuilder.js';
 import DocumentErrorGateway from './gateway/DocumentErrorGateway.js';
 import DocumentStateService from './services/DocumentStateService.js';
+import DocumentErrorService from './services/DocumentErrorService.js';
 
 const registerPackageClasses = (container) => {
   container.register({
@@ -27,6 +28,7 @@ const registerPackageClasses = (container) => {
     dossierBuilder: asClass(DossierBuilder),
     documentGateway: asClass(DocumentGateway),
     documentErrorGateway: asClass(DocumentErrorGateway),
+    documentErrorService: asClass(DocumentErrorService),
     documentRepository: asClass(DocumentRepository),
     documentVersionRepository: asClass(DocumentVersionRepository),
     dossierRepository: asClass(DossierRepository),

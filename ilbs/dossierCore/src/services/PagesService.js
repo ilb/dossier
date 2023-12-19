@@ -80,6 +80,13 @@ export default class PagesService extends Service {
   async validationRun(document) {
     let errors = document.errors || [];
 
+    if (!document?.pages?.length) {
+      await this.scope.documentStateService.changeState(document, 'NOT_LOADED');
+      return {
+        success: false,
+      };
+    }
+
     if (document.validationRules.length) {
       for (let rule of document.validationRules) {
         if (rule.type === 'pageLength') {
@@ -122,9 +129,13 @@ export default class PagesService extends Service {
     if (errors.length) {
       await this.scope.documentStateService.changeState(document, 'VALIDATION_ERROR');
       return {
-        errorFind: true,
+        success: false,
       };
     }
+
+    return {
+      success: true,
+    };
   }
 
   async add({ uuid, name, files }) {
@@ -143,7 +154,7 @@ export default class PagesService extends Service {
 
     await this.scope.documentGateway.addPages(document, filesArray);
     const resultValidation = await this.validationRun(document);
-    if (resultValidation?.errorFind) {
+    if (!resultValidation?.success) {
       return { files, name };
     }
 
@@ -168,6 +179,15 @@ export default class PagesService extends Service {
           const fromDocument = await dossier.getDocument(from.class);
           const toDocument = await dossier.getDocument(to.class);
           await this.scope.dossierService.movePage(fromDocument, from.page, toDocument, to.page);
+
+          const resultValidationFrom = await this.validationRun(fromDocument);
+          if (resultValidationFrom.success) {
+            await this.verificationsRun(fromDocument);
+          }
+          const resultValidationTo = await this.validationRun(toDocument);
+          if (resultValidationTo.success) {
+            await this.verificationsRun(toDocument);
+          }
         }
       }),
     );
