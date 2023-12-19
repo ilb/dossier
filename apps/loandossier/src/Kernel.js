@@ -26,16 +26,16 @@ export default class Kernel {
       documentsPath: asValue(process.env.DOCUMENTS_PATH),
       request: asValue(context.request),
       classifierQuantity: asValue(8),
-      isClassifyMock: process.env.CLASSIFIER_GATE_MOCK === 'true',
+      isClassifyMock: process.env['apps.loandossier.stub.classifierEnabled'] === 'false',
       signatureDetectorVerification: asClass(
-        process.env['apps.loandossier.stub.signatureDetectorEnabled'] === 'true'
-          ? SignatureDetectorVerification
-          : SignatureDetectorVerificationMock,
+        process.env['apps.loandossier.stub.signatureDetectorEnabled'] === 'false'
+          ? SignatureDetectorVerificationMock
+          : SignatureDetectorVerification,
       ),
       dataMatrixVerification: asClass(
-        process.env['apps.loandossier.stub.dataMatrixEnabled'] === 'true'
-          ? DataMatrixVerification
-          : DataMatrixVerificationMock,
+        process.env['apps.loandossier.stub.dataMatrixEnabled'] === 'false'
+          ? DataMatrixVerificationMock
+          : DataMatrixVerification,
       ),
     });
   }
