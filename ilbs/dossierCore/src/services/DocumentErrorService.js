@@ -8,5 +8,6 @@ export default class DocumentErrorService {
   async addError(document, error) {
     const documentError = new DocumentError(error);
     await this.documentErrorGateway.addError(document, documentError);
+    document.addErrors([documentError]);
   }
 }

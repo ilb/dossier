@@ -29,6 +29,14 @@ export default class PageDocument extends Document {
     return errors.map((error) => new DocumentError(error));
   }
 
+  setState(state) {
+    this.state = state;
+  }
+
+  addErrors(errors) {
+    this.errors = [...this.errors, ...errors];
+  }
+
   setDbData(document) {
     this.setUuid = document.uuid;
     this.setId = document.id;

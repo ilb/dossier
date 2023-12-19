@@ -7,6 +7,7 @@ export default class DocumentStateService {
     if (document.state !== state) {
       console.log(`Change ${document.type} status from ${document.state} to ${state}`);
       await this.documentGateway.changeDocumentState(document, state);
+      document.setState(state);
     }
   }
 }
