@@ -60,11 +60,9 @@ export default class ClassifyService extends Service {
             await this.documentGateway.initDocumentPages(unknownDocument);
 
             const unknownPages = unknownDocument.getPagesByUuids(chunk.map((page) => page.uuid));
-            console.log('unknownPages', unknownPages);
-
             let classifies = await this.classifierGate.classify(unknownPages, previousClass);
 
-            classifies = prepareClassifies(classifies, availableClasses);
+            classifies = prepareClassifies(classifies, availableClasses, unknownPages);
 
             //Получить массив объектов с результатом классификаци.
             //Пройтись по массиву и обновить документы теми что пришли в резульатте классификации.
@@ -75,17 +73,22 @@ export default class ClassifyService extends Service {
             // current.link сохранить в новую версию документа
 
             const classifiedPages = classifies.reduce((acc, current, index) => {
-              acc[index] = { code: current.code, page: chunk[index], newPage: current.page };
+              acc[index] = {
+                code: current.code,
+                page: chunk[index],
+                newPage: current.page,
+                link: current.link,
+              };
               return acc;
             }, []);
 
             await this.documentGateway.initDocumentPages(unknownDocument);
-            for (const { code, page, newPage } of classifiedPages) {
+            for (const { code, page, newPage, link } of classifiedPages) {
               const unknownPage = unknownDocument.getPageByUuid(page.uuid);
               if (unknownPage) {
                 // страница может быть перемещена пользователем
                 const document = dossier.getDocument(code);
-                if (current.link) {
+                if (link) {
                   const classifyPage = new Page(newPage);
                   await document.addPage(classifyPage);
                   await unknownDocument.unlinkPage(page.uuid);
