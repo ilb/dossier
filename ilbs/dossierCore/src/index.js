@@ -36,7 +36,9 @@ const registerPackageClasses = (container) => {
     pageRepository: asClass(PageRepository),
     verificationRepository: asClass(VerificationRepository),
     classifierGate: asClass(
-      process.env.CLASSIFIER_GATE_MOCK === 'true' ? ClassifierGate : ClassifierGateMock,
+      process.env['apps.loandossier.stub.classifierEnabled'] === 'false'
+        ? ClassifierGate
+        : ClassifierGateMock,
     ),
     dossierSchema: asValue(mockSchema),
     classifyService: asClass(ClassifyService),

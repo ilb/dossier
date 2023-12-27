@@ -5,7 +5,7 @@ import { timeoutPromise } from '../../libs/utils.js';
 
 export default class ClassifierGate {
   constructor() {
-    this.classifierUrl = process.env.CLASSIFIER_URL;
+    this.classifierUrl = process.env['apps.loandossier.stub.classifierUrl'];
     this.classifierTimeout = parseInt(process.env['apps.loanbroker.classifiertimeout']) || 30;
   }
 
@@ -23,7 +23,7 @@ export default class ClassifierGate {
       formData.append('file', fs.createReadStream(page.uri));
     });
     const res = await timeoutPromise(
-      fetch(`${this.classifierUrl}/classify?${queryParams}`, {
+      fetch(`${this.classifierUrl}?${queryParams}`, {
         method: 'POST',
         headers: {
           ...formData.getHeaders(),
