@@ -13,6 +13,7 @@ const SegmentItem = ({ src, onClick, rotation, scale }) => {
 
   return (
     <ScrollContainer
+      hideScrollbars={false}
       innerRef={contentRef}
       style={{
         height: '75vh',
@@ -20,22 +21,27 @@ const SegmentItem = ({ src, onClick, rotation, scale }) => {
         overflow: 'auto',
         cursor: 'grab',
         lineHeight: 0,
-      }}>
+      }}
+    >
       {src && (
         <Image
           loader={() => {
             return src;
           }}
           src={src}
-          alt="alt"
+          alt='alt'
           //width={width * scale}
           //height={height * scale}
-          width={rotation === 0 || rotation === 180 ? width * scale : height * scale}
-          height={rotation === 90 || rotation === 270 ? width * scale : height * scale}
-          layout="fixed"
+          width={
+            rotation === 0 || rotation === 180 ? width * scale : height * scale
+          }
+          height={
+            rotation === 90 || rotation === 270 ? width * scale : height * scale
+          }
+          layout='fixed'
           quality={70}
           onClick={onClick}
-          objectFit="contain"
+          objectFit='contain'
           style={{
             overflow: 'visible',
             transform: `rotate(${rotation}deg)`,
