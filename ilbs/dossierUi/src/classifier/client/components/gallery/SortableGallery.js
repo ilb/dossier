@@ -6,8 +6,19 @@ import SegmentItem from './GalleryItem/SegmentItem';
 import React, { useEffect, useState } from 'react';
 import ControlsMenu from '../gallery/GalleryItem/ControlsMenu';
 
+const getPageNumFromImageId = (id) => {
+  const match = id.match(/number\/(\d+)/);
+
+  if (match && match[1]) {
+    return parseInt(match[1], 10);
+  }
+
+  return null;
+};
+
 const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
   const [state, setState] = useState({
+    currentPage: null,
     scale: 1,
     rotation: 0,
     src: '',
@@ -17,6 +28,24 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
   useEffect(() => {
     setState({ ...state, previewOpen: false });
   }, [tab?.type]);
+
+  const pageCount = srcSet.length;
+
+  const navigatePage = (direction) => {
+    if (direction === 'prev' && state.currentPage > 1) {
+      setState({
+        ...state,
+        currentPage: state.currentPage - 1,
+        src: srcSet[state.currentPage - 2].id,
+      });
+    } else if (direction === 'next' && state.currentPage < pageCount) {
+      setState({
+        ...state,
+        currentPage: state.currentPage + 1,
+        src: srcSet[state.currentPage].id,
+      });
+    }
+  };
 
   const rotateImage = async (event, { angle }) => {
     let newAngle = state.rotation + angle;
@@ -59,23 +88,33 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
       <SortableContext items={srcSet} strategy={rectSortingStrategy}>
         {state.previewOpen && (
           <ControlsMenu
-            attached="top"
+            pageCount={pageCount}
+            currentPage={state.currentPage}
+            navigatePage={navigatePage}
+            attached='top'
             rotateImage={rotateImage}
             zoomImageIn={zoomImageIn}
             zoomImageOut={zoomImageOut}
             closePreview={() =>
-              setState({ ...state, rotation: 0, scale: 1, previewOpen: false, src: null })
+              setState({
+                ...state,
+                rotation: 0,
+                scale: 1,
+                previewOpen: false,
+                src: null,
+              })
             }
             zoomImageWithDropdown={zoomImageWithDropdown}
             scale={state.scale}
           />
         )}
-        <div className="pagePreviewer">
+
+        <div className='pagePreviewer'>
           {!state.previewOpen && (
-            <div className="grid">
+            <div className='grid'>
               {srcSet.map((src) => {
                 return (
-                  <div key={src.id} className="column">
+                  <div key={src.id} className='column'>
                     <SortableGalleryItem
                       src={src}
                       errors={pageErrors[src.uuid]}
@@ -84,7 +123,12 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
                       height={4}
                       onRemove={onRemove}
                       onClick={() => {
-                        setState({ ...state, previewOpen: true, src: src.id });
+                        setState({
+                          ...state,
+                          previewOpen: true,
+                          src: src.id,
+                          currentPage: getPageNumFromImageId(src.id),
+                        });
                       }}
                     />
                   </div>
@@ -92,6 +136,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
               })}
             </div>
           )}
+
           {state.previewOpen && (
             <SegmentItem
               src={state.src}
@@ -103,6 +148,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
           )}
         </div>
       </SortableContext>
+
       <DragOverlay>
         {active ? (
           <GalleryItem

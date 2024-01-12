@@ -176,6 +176,18 @@
   border: 1px solid rgba(34,36,38,.15);
 }
 
+.classifier .page-counter {
+  min-width: 20px;
+  padding: 0 3px;
+
+  font-weight: bold;
+  color: #d9d6d6;
+}
+
+.classifier .navBtn:not(:disabled) {
+  cursor: pointer;
+}
+
 .icon {
   display: inline-block;
   margin: 0;
@@ -211,6 +223,20 @@
 .classifier .iconMinus:before {
   color: #c5c0c0;
   content: "\f068";
+}
+
+.classifier .iconLeft:before {
+  color: #c5c0c0;
+  font-weight: bold;
+
+  content: "\f060";  
+}
+
+.classifier .iconRight:before {
+  color: #c5c0c0;
+  font-weight: bold;
+
+  content: "\f061";
 }
 
 .classifier .iconUndo:before {

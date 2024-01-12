@@ -44,7 +44,7 @@ const Classifier = forwardRef(
       withViewTypes = false,
       defaultViewType = 'grid',
     },
-    ref,
+    ref
   ) => {
     const [classifier, setClassifier] = useState(schema.classifier);
     const { tasks } = useTasks(uuid, dossierUrl);
@@ -79,7 +79,10 @@ const Classifier = forwardRef(
     }));
 
     const selectedDocument =
-      (selectedTab?.type !== 'classifier' && documents[selectedTab?.type]?.pages) || [];
+      (selectedTab?.type !== 'classifier' &&
+        documents[selectedTab?.type]?.pages) ||
+      [];
+
     useEffect(() => {
       if (!prev && Object.keys(documents).length) {
         onInit && onInit(documents);
@@ -96,13 +99,16 @@ const Classifier = forwardRef(
       setDocumentsTabs(schema.tabs);
     }, [schema]);
 
-    const finishedTasks = tasks.filter(({ status }) => status.code === 'FINISHED');
+    const finishedTasks = tasks.filter(
+      ({ status }) => status.code === 'FINISHED'
+    );
+
     const sensors = useSensors(
       useSensor(PointerSensor),
       useSensor(MouseSensor),
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
-      }),
+      })
     );
 
     if (readonlyClassifier !== null) {
@@ -144,7 +150,7 @@ const Classifier = forwardRef(
 
     useEffect(() => {
       const processTasks = tasks.filter(
-        ({ status }) => status.code === 'STARTED' || status.code === 'IN_QUEUE',
+        ({ status }) => status.code === 'STARTED' || status.code === 'IN_QUEUE'
       );
       setCountStartedTasks(processTasks.length);
     }, [tasks]);
@@ -157,7 +163,8 @@ const Classifier = forwardRef(
             if (prev[type].length !== documents[type].pages.length) {
               const tab = documentsTabs.find((tab) => tab.type === type);
 
-              !['unknown', 'classifier'].includes(tab.type) && onUpdate(tab, documents);
+              !['unknown', 'classifier'].includes(tab.type) &&
+                onUpdate(tab, documents);
             }
           }
         }
@@ -167,7 +174,10 @@ const Classifier = forwardRef(
     }, [finishedTasks.length]);
 
     useEffect(() => {
-      const interval = setInterval(() => setTwainHandler() && clearInterval(interval), 1000);
+      const interval = setInterval(
+        () => setTwainHandler() && clearInterval(interval),
+        1000
+      );
     }, []);
 
     useEffect(() => {
@@ -183,8 +193,12 @@ const Classifier = forwardRef(
     useEffect(() => {
       selectTab(getSelectedTab());
     }, [uuid]);
+
     const setTwainHandler = () => {
-      return registerTwain((file) => file && handleDocumentsDrop([file]), selectedTab?.type);
+      return registerTwain(
+        (file) => file && handleDocumentsDrop([file]),
+        selectedTab?.type
+      );
     };
 
     const findContainer = (id) => {
@@ -197,7 +211,7 @@ const Classifier = forwardRef(
       }
 
       return Object.keys(documents).find((key) =>
-        documents[key]?.pages?.find((item) => item.path === id),
+        documents[key]?.pages?.find((item) => item.path === id)
       );
     };
 
@@ -226,7 +240,9 @@ const Classifier = forwardRef(
           .filter((tab) => !tab.readonly)
           .map((tab) => tab.type);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
-        classifyDocument(uuid, compressedFiles, availableClasses).then(revalidateDocuments);
+        classifyDocument(uuid, compressedFiles, availableClasses).then(
+          revalidateDocuments
+        );
       } else {
         setLoading(true);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
@@ -252,7 +268,7 @@ const Classifier = forwardRef(
           } else {
             return file;
           }
-        }),
+        })
       );
     };
 
@@ -290,7 +306,9 @@ const Classifier = forwardRef(
       const newDocumentsList = {
         ...documents,
         [activeContainer]: {
-          pages: documents[activeContainer]?.pages.filter((item) => item !== pageSrc),
+          pages: documents[activeContainer]?.pages.filter(
+            (item) => item !== pageSrc
+          ),
           errors: documents[activeContainer]?.errors | [],
           lastModified: documents[activeContainer]?.lastModified,
         },
@@ -332,7 +350,9 @@ const Classifier = forwardRef(
         const activeIndex = documents[activeContainer]?.pages
           .map((item) => item.path)
           .indexOf(active.id);
-        let overIndex = documents[overContainer]?.pages.map((item) => item.path).indexOf(overId);
+        let overIndex = documents[overContainer]?.pages
+          .map((item) => item.path)
+          .indexOf(overId);
         if (activeIndex === -1) {
           return;
         }
@@ -344,9 +364,13 @@ const Classifier = forwardRef(
           mutateDocuments(
             {
               ...documents,
-              [overContainer]: arrayMove(documents[overContainer]?.pages, activeIndex, overIndex),
+              [overContainer]: arrayMove(
+                documents[overContainer]?.pages,
+                activeIndex,
+                overIndex
+              ),
             },
-            false,
+            false
           );
         }
         const overContainerTo = overContainer.split('_')[0];
@@ -354,14 +378,20 @@ const Classifier = forwardRef(
         if (draggableOrigin.container !== overContainer) {
           await correctDocuments([
             {
-              from: { class: draggableOrigin.type, page: draggableOrigin.index + 1 },
+              from: {
+                class: draggableOrigin.type,
+                page: draggableOrigin.index + 1,
+              },
               to: { class: overContainerTo, page: overIndex + 1 },
             },
           ]);
         } else {
           await correctDocuments([
             {
-              from: { class: activeContainer.split('_')[0], page: activeIndex + 1 },
+              from: {
+                class: activeContainer.split('_')[0],
+                page: activeIndex + 1,
+              },
               to: { class: overContainerTo, page: overIndex + 1 },
             },
           ]);
@@ -376,7 +406,7 @@ const Classifier = forwardRef(
         onDrag(
           documentsTabs.find((tab) => tab.type === dragFrom.type),
           selectedTab,
-          documents,
+          documents
         );
     };
 
@@ -401,7 +431,9 @@ const Classifier = forwardRef(
         const activeItems = documents[activeContainer]?.pages;
         const overItems = documents[overContainer]?.pages;
         const overIndex = overItems.map((item) => item.path).indexOf(overId);
-        const activeIndex = activeItems.map((item) => item.path).indexOf(active.id);
+        const activeIndex = activeItems
+          .map((item) => item.path)
+          .indexOf(active.id);
 
         let newIndex;
 
@@ -411,17 +443,21 @@ const Classifier = forwardRef(
           const isBelowOverItem =
             over &&
             active.rect.current.translated &&
-            active.rect.current.translated.offsetTop > over.rect.offsetTop + over.rect.height;
+            active.rect.current.translated.offsetTop >
+              over.rect.offsetTop + over.rect.height;
 
           const modifier = isBelowOverItem ? 1 : 0;
 
-          newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+          newIndex =
+            overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
         }
         const newDocuments = {
           ...documents,
           [activeContainer]: {
             errors: documents[activeContainer].errors,
-            pages: documents[activeContainer]?.pages.filter((item) => item.path !== active.id),
+            pages: documents[activeContainer]?.pages.filter(
+              (item) => item.path !== active.id
+            ),
           },
           [overContainer]: {
             errors: documents[overContainer].errors,
@@ -430,7 +466,7 @@ const Classifier = forwardRef(
               documents[activeContainer]?.pages[activeIndex],
               ...documents[overContainer]?.pages.slice(
                 newIndex,
-                documents[overContainer]?.pages.length,
+                documents[overContainer]?.pages.length
               ),
             ],
           },
@@ -449,9 +485,10 @@ const Classifier = forwardRef(
       }
       selectTab(tab);
     };
+
     return (
-      <div className="dossier classifier">
-        <div className="grid gridCentered">
+      <div className='dossier classifier'>
+        <div className='grid gridCentered'>
           {view === 'grid' && (
             <>
               <DndContext
@@ -460,8 +497,9 @@ const Classifier = forwardRef(
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
-                onDragCancel={onDragCancel}>
-                <div className="dossier__wrap dossier__wrap__menu dossier__wrap__menu__grid">
+                onDragCancel={onDragCancel}
+              >
+                <div className='dossier__wrap dossier__wrap__menu dossier__wrap__menu__grid'>
                   <Menu
                     withViewTypes={withViewTypes}
                     view={view}
@@ -478,7 +516,7 @@ const Classifier = forwardRef(
                     dossierUrl={dossierUrl}
                   />
                 </div>
-                <div className="dossier__wrap_preview">
+                <div className='dossier__wrap_preview'>
                   {selectedTab && !selectedTab.readonly && (
                     <UploadDropzone
                       onDrop={handleDocumentsDrop}
@@ -486,12 +524,15 @@ const Classifier = forwardRef(
                       fileType={selectedTab.fileType}
                     />
                   )}
+
                   <Dimmable>
                     <Loader
                       active={
-                        (!!countStartedTasks && selectedTab?.type === 'classifier') || loading
+                        (!!countStartedTasks &&
+                          selectedTab?.type === 'classifier') ||
+                        loading
                       }
-                      loaderText="Загрузка..."
+                      loaderText='Загрузка...'
                     />
                     <SortableGallery
                       pageErrors={pageErrors}
@@ -505,8 +546,9 @@ const Classifier = forwardRef(
               </DndContext>
             </>
           )}
+
           {view === 'list' && (
-            <div className="dossier__wrap dossier__wrap__menu dossier__wrap__menu__list">
+            <div className='dossier__wrap dossier__wrap__menu dossier__wrap__menu__list'>
               <ListMenu
                 withViewTypes={withViewTypes}
                 view={view}
@@ -529,7 +571,7 @@ const Classifier = forwardRef(
         </div>
       </div>
     );
-  },
+  }
 );
 
 Classifier.displayName = 'Classifier';
