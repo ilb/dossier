@@ -16,18 +16,24 @@ const getPageNumFromImageId = (id) => {
   return null;
 };
 
+const initState = {
+  currentPage: null,
+  scale: 1,
+  rotation: 0,
+  src: '',
+  previewOpen: false,
+};
+
 const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
-  const [state, setState] = useState({
-    currentPage: null,
-    scale: 1,
-    rotation: 0,
-    src: '',
-    previewOpen: false,
-  });
+  const [state, setState] = useState(initState);
 
   useEffect(() => {
     setState({ ...state, previewOpen: false });
   }, [tab?.type]);
+
+  useEffect(() => {
+    setState(initState);
+  }, [tab?.name]);
 
   const pageCount = srcSet.length;
 
