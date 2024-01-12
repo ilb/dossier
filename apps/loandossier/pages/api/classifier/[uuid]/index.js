@@ -18,6 +18,10 @@ export default nc()
       await middlewareHandle(DocumentsUsecases, 'getDate', getDossierDate)(req, res, next);
     } else next();
   })
+  .use((req, res, next) => {
+    req.query.name = 'unknown';
+    next();
+  })
   .use(uploadMiddleware.array('documents'))
   .use(jfifToJpeg)
   .use(splitPdf)

@@ -1,64 +1,72 @@
 {
-  "classifier": { "disabled": true },
+  "classifier": { "disabled": false },
   "tabs": [
+    {
+      "name": "Не распознано",
+      "type": "unknown",
+      "block": "UNKNOWN_BLOCK",
+      "documentName": "unknown",
+      "tooltip": null,
+      "readonly": false
+    },
     {
       "name": "Паспорт",
       "type": "passport",
       "block": "OFFER_CREATE_BLOCK",
+      "documentName": "passport",
       "tooltip": null,
       "required": true,
-      "readonly": false,
-      "documentName": "passport"
+      "readonly": false
     },
     {
       "name": "Согласие",
       "type": "offerAgreement",
       "block": "OFFER_CREATE_BLOCK",
+      "documentName": "offerAgreement",
       "tooltip": null,
-      "required": false,
-      "readonly": false,
-      "documentName": "offerAgreement"
+      "required": true,
+      "readonly": false
     },
     {
       "name": "Фото",
       "type": "buyerPhoto",
       "block": "OFFER_CREATE_BLOCK",
+      "documentName": "buyerPhoto",
       "tooltip": null,
       "required": false,
-      "readonly": false,
-      "documentName": "buyerPhoto"
+      "readonly": false
     },
     {
       "name": "В/удостоверение",
       "type": "driverLicense",
       "block": "OFFER_CREATE_BLOCK",
+      "documentName": "driverLicense",
       "tooltip": null,
-      "readonly": false,
-      "documentName": "driverLicense"
+      "readonly": false
     },
     {
       "name": "СНИЛС",
       "type": "snils",
       "block": "OFFER_CREATE_BLOCK",
+      "documentName": "snils",
       "tooltip": null,
-      "readonly": false,
-      "documentName": "snils"
+      "readonly": false
     },
     {
       "name": "Согласие",
       "type": "offerAgreement",
+      "documentName": "offerAgreement",
       "tooltip": null,
-      "required": false,
-      "readonly": false,
-      "documentName": "offerAgreement"
+      "required": true,
+      "readonly": false
     },
     {
       "name": "Прочее",
       "type": "otherDocuments",
       "block": "OTHER_BLOCK",
+      "documentName": "otherDocuments",
       "tooltip": "Документы, которые распознались, но не могут быть загружены в необходимую вкладку",
-      "readonly": true,
-      "documentName": "otherDocuments"
+      "readonly": false
     }
   ],
   "blocks": [
@@ -90,5 +98,5 @@
     },
     { "name": "", "type": "OTHER_BLOCK", "collapsed": false, "open": false }
   ],
-  "meta": { "required": ["passport"] }
+  "meta": { "required": ["passport", "offerAgreement", "offerAgreement"] }
 }

@@ -37,7 +37,7 @@ export default class ClassifyService extends Service {
     const path = `${uuid}.classification`;
     let verification;
     let currentClassificationResult = [];
-    verification = await this.verificationService.add('classification', path);
+    verification = await this.verificationService.add('classification', { path });
 
     this.queue
       .add(
