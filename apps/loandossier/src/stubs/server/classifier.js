@@ -1,11 +1,11 @@
 import path from 'path';
-import { rest } from 'msw';
+import { http } from 'msw';
 import { stubResponse } from 'msw-symlinked';
 
-const stubPath = path.resolve(process.env['apps.loandeal.stub.root'] + '/classifier');
+const stubPath = path.resolve(process.env['apps.loandossier.stub.root'] + '/classifier');
 
 export default [
-  rest.post(RegExp(`http://apps04.broker18.ru:19001/classify`), () =>
+  http.post(RegExp(`http://apps04.broker18.ru:19001/classify`), () =>
     stubResponse(`${stubPath}/classify`),
   ),
 ];

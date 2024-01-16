@@ -27,16 +27,8 @@ export default class Kernel {
       request: asValue(context.request),
       classifierQuantity: asValue(8),
       isClassifyMock: process.env['apps.loandossier.stub.classifierEnabled'] === 'false',
-      signatureDetectorVerification: asClass(
-        process.env['apps.loandossier.stub.signatureDetectorEnabled'] === 'false'
-          ? SignatureDetectorVerificationMock
-          : SignatureDetectorVerification,
-      ),
-      dataMatrixVerification: asClass(
-        process.env['apps.loandossier.stub.dataMatrixEnabled'] === 'false'
-          ? DataMatrixVerificationMock
-          : DataMatrixVerification,
-      ),
+      signatureDetectorVerification: asClass(SignatureDetectorVerification),
+      dataMatrixVerification: asClass(DataMatrixVerification),
     });
   }
 
