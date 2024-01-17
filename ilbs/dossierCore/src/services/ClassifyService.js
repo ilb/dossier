@@ -72,12 +72,10 @@ export default class ClassifyService extends Service {
             // chunk[index] сохранить в старую версию документа
             // current.link сохранить в новую версию документа
 
-            const classifiedPages = classifies.reduce((acc, current, index) => {
+            const classifiedPages = chunk.reduce((acc, current, index) => {
               acc[index] = {
-                code: current.code,
-                page: chunk[index],
-                newPage: current.page,
-                link: current.link,
+                code: classifies[index].code,
+                page: current,
               };
               return acc;
             }, []);
@@ -108,7 +106,7 @@ export default class ClassifyService extends Service {
         { path },
       )
       .catch(async (error) => {
-        console.error(error);
+        console.error('classifyError', error);
         this.verificationService.cancel(verification);
       });
 
