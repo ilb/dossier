@@ -9,7 +9,6 @@ import ErrorRepository from './repositories/ErrorRepository.js';
 import PageRepository from './repositories/PageRepository.js';
 import VerificationRepository from './repositories/VerificationRepository.js';
 import ClassifierGate from './gates/ClassifierGate.js';
-import ClassifierGateMock from './gates/ClassifierGateMock.js';
 import mockSchema from './schemas/mockSchema.js';
 import ClassifyService from './services/ClassifyService.js';
 import DocumentsService from './services/DocumentsService.js';
@@ -35,11 +34,7 @@ const registerPackageClasses = (container) => {
     errorRepository: asClass(ErrorRepository),
     pageRepository: asClass(PageRepository),
     verificationRepository: asClass(VerificationRepository),
-    classifierGate: asClass(
-      process.env['apps.loandossier.stub.classifierEnabled'] === 'false'
-        ? ClassifierGate
-        : ClassifierGateMock,
-    ),
+    classifierGate: asClass(ClassifierGate),
     dossierSchema: asValue(mockSchema),
     classifyService: asClass(ClassifyService),
     documentsService: asClass(DocumentsService),

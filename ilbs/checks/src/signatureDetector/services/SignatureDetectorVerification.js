@@ -25,7 +25,7 @@ export default class SignatureDetectorVerification extends Service {
     }
 
     const res = await timeoutPromise(
-      fetch(process.env.SIGNATURE_DETECTOR_URL, {
+      fetch(process.env['apps.loandossier.stub.signatureDetectorUrl'], {
         method: 'POST',
         headers: {
           ...formData.getHeaders(),
