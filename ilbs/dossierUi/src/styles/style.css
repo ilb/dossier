@@ -161,6 +161,8 @@
   width: auto;
   display: flex;
   align-items: center;
+
+  cursor: unset;
 }
 
 .classifier .menuItemDropdown {
