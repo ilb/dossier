@@ -24,7 +24,6 @@ export default class Kernel {
       documentsPath: asValue(process.env.DOCUMENTS_PATH),
       request: asValue(context.request),
       classifierQuantity: asValue(8),
-      isClassifyMock: process.env['apps.loandossier.stub.classifierEnabled'] === 'false',
       signatureDetectorVerification: asClass(SignatureDetectorVerification),
       dataMatrixVerification: asClass(DataMatrixVerification),
     });
