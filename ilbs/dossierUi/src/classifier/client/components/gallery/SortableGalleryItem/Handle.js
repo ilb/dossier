@@ -12,7 +12,7 @@ export function Handle(props) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        cursor: 'grab',
+        cursor: `${props.dragOverlay ? 'grabbing' : 'grab'}`,
       }}
     >
       <svg
