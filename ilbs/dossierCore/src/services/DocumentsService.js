@@ -10,14 +10,13 @@ export default class DocumentsService extends Service {
 
   buildLinks(pages, documentType, version, uuid) {
     const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
-
-    return pages.map((page, i) => {
+    return pages.map((page) => {
       return {
         id: `${url}/${documentType}/version/${version}/number/${
-          i + 1
+          page.pageNumber
         }?_nocache=${new Date().toLocaleString()}`,
         path: `${url}/${documentType}/version/${version}/number/${
-          i + 1
+          page.pageNumber
         }?_nocache=${new Date().toLocaleString()}`,
         uuid: page.uuid,
         type: mime.lookup(page.extension),

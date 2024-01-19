@@ -40,8 +40,8 @@ export default class PageDocumentVersion extends Document {
     return this.pages || [];
   }
 
-  getPage(number) {
-    const page = this.getPages()[number - 1];
+  getPage(number = 1) {
+    const page = this.getPages().find((page) => page.pageNumber === number);
     return page || this.getDefaultPage();
   }
 
