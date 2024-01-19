@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import Image from 'next/image';
+
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
-import Image from 'next/image';
 
 const GalleryItem = React.memo(
   React.forwardRef(
@@ -19,17 +20,8 @@ const GalleryItem = React.memo(
         listeners,
         errors,
       },
-      ref,
+      ref
     ) => {
-      useEffect(() => {
-        if (!dragOverlay) {
-          return;
-        }
-        document.body.style.cursor = 'grabbing';
-        return () => {
-          document.body.style.cursor = '';
-        };
-      }, [dragOverlay]);
       const handleClick = (event) => {
         event.preventDefault();
         onRemove(src);
@@ -40,9 +32,10 @@ const GalleryItem = React.memo(
       };
 
       const getPath = () => src.path || src; // todo как-то избавиться от такого
+
       return (
         <div ref={ref} style={style}>
-          <div className="segment" style={{ margin: 3 }}>
+          <div className='segment' style={{ margin: 3 }}>
             <div style={{ padding: 4 }}>
               {/* todo проверка подписей, сделать без semantic-ui */}
               {/*{errors?.count && (*/}
@@ -63,7 +56,7 @@ const GalleryItem = React.memo(
               {/*    ))}*/}
               {/*  </Popup>*/}
               {/*)}*/}
-              {!disabled && <Handle {...listeners} />}
+              {!disabled && <Handle dragOverlay={dragOverlay} {...listeners} />}
               {!disabled && <Remove onClick={handleClick} />}
               <div {...attributes}>
                 {isImage() && (
@@ -72,11 +65,11 @@ const GalleryItem = React.memo(
                       return getPath();
                     }}
                     src={getPath()}
-                    alt="alt"
+                    alt='alt'
                     width={300}
                     height={400}
                     onClick={onClick}
-                    className="img-ofit"
+                    className='img-ofit'
                     style={{
                       userSelect: 'none',
                       MozUserSelect: 'none',
@@ -87,8 +80,11 @@ const GalleryItem = React.memo(
                 )}
                 {!isImage() && (
                   <div style={{ backgroundImage: 'none' }}>
-                    <div style={{ paddingTop: '51.5%', paddingBottom: '51.5%' }}>
-                      Невозможно отобразить или переместить. Документ не является картинкой.
+                    <div
+                      style={{ paddingTop: '51.5%', paddingBottom: '51.5%' }}
+                    >
+                      Невозможно отобразить или переместить. Документ не
+                      является картинкой.
                     </div>
                   </div>
                 )}
@@ -97,8 +93,8 @@ const GalleryItem = React.memo(
           </div>
         </div>
       );
-    },
-  ),
+    }
+  )
 );
 
 GalleryItem.displayName = 'GalleryItem';
