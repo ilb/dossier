@@ -1,20 +1,20 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import {
   DndContext,
   KeyboardSensor,
   MouseSensor,
-  PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
+  closestCorners,
 } from '@dnd-kit/core';
 
-import SortableGallery from './gallery/SortableGallery';
-import UploadDropzone from './UploadDropzone';
-import Menu from './menu/Menu';
-import { useDocuments, useTasks } from '../hooks';
-import { registerTwain } from '../utils/twain';
+import SortableGallery from './gallery/SortableGallery.js';
+import UploadDropzone from './UploadDropzone.js';
+import Menu from './menu/Menu.js';
+import { useDocuments, useTasks } from '../hooks/index.js';
+import { registerTwain } from '../utils/twain.js';
 import { compress } from '../utils/compressor.js';
 import Dimmable from './elements/Dimmable.js';
 import Loader from './elements/Loader.js';
@@ -104,8 +104,17 @@ const Classifier = forwardRef(
     );
 
     const sensors = useSensors(
-      useSensor(PointerSensor),
-      useSensor(MouseSensor),
+      useSensor(MouseSensor, {
+        activationConstraint: {
+          distance: 10,
+        },
+      }),
+      useSensor(TouchSensor, {
+        activationConstraint: {
+          delay: 250,
+          tolerance: 5,
+        },
+      }),
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
       })
@@ -322,7 +331,9 @@ const Classifier = forwardRef(
     const onDragStart = ({ active }) => {
       setDrugFrom(selectedTab);
       setActiveDraggable(active);
+
       const container = findContainer(active.id);
+
       setDraggableOrigin({
         container: container,
         type: selectedTab.documentName,
@@ -332,6 +343,7 @@ const Classifier = forwardRef(
 
     const onDragEnd = async ({ active, over }) => {
       const activeContainer = findContainer(active.id);
+
       if (!activeContainer) {
         setActiveDraggable(null);
         return;
@@ -350,9 +362,11 @@ const Classifier = forwardRef(
         const activeIndex = documents[activeContainer]?.pages
           .map((item) => item.path)
           .indexOf(active.id);
+
         let overIndex = documents[overContainer]?.pages
           .map((item) => item.path)
           .indexOf(overId);
+
         if (activeIndex === -1) {
           return;
         }
@@ -360,19 +374,36 @@ const Classifier = forwardRef(
         if (overIndex === -1) {
           overIndex = documents[overContainer]?.pages.length - 1;
         }
+
         if (activeIndex !== overIndex) {
+          // mutateDocuments(
+          //   {
+          //     ...documents,
+          //     [overContainer]: arrayMove(
+          //       documents[overContainer]?.pages,
+          //       activeIndex,
+          //       overIndex
+          //     ),
+          //   },
+          //   false
+          // );
+
           mutateDocuments(
             {
               ...documents,
-              [overContainer]: arrayMove(
-                documents[overContainer]?.pages,
-                activeIndex,
-                overIndex
-              ),
+              [overContainer]: {
+                ...documents[overContainer],
+                pages: arrayMove(
+                  documents[overContainer]?.pages,
+                  activeIndex,
+                  overIndex
+                ),
+              },
             },
             false
           );
         }
+
         const overContainerTo = overContainer.split('_')[0];
 
         if (draggableOrigin.container !== overContainer) {
@@ -402,6 +433,7 @@ const Classifier = forwardRef(
 
       setActiveDraggable(null);
       setDraggableOrigin(null);
+
       onDrag &&
         onDrag(
           documentsTabs.find((tab) => tab.type === dragFrom.type),
@@ -412,6 +444,7 @@ const Classifier = forwardRef(
 
     const onDragOver = ({ active, over }) => {
       const overId = over?.id;
+
       if (!overId || overId === 'void' || active.id in documents) {
         return;
       }
@@ -423,6 +456,7 @@ const Classifier = forwardRef(
 
       const overContainer = findContainer(overId);
       const activeContainer = findContainer(active.id);
+
       if (!overContainer || !activeContainer) {
         return;
       }
@@ -451,6 +485,7 @@ const Classifier = forwardRef(
           newIndex =
             overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
         }
+
         const newDocuments = {
           ...documents,
           [activeContainer]: {
@@ -493,11 +528,11 @@ const Classifier = forwardRef(
             <>
               <DndContext
                 sensors={sensors}
-                modifiers={[snapCenterToCursor]}
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
                 onDragCancel={onDragCancel}
+                collisionDetection={closestCorners}
               >
                 <div className='dossier__wrap dossier__wrap__menu dossier__wrap__menu__grid'>
                   <Menu
