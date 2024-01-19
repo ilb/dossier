@@ -143,6 +143,20 @@
   cursor: pointer;
 }
 
+.classifier .menuItem.pageNavigation {
+  margin-left: 10px;
+}
+
+.classifier .menuItem.undoItem,
+.classifier .menuItem.minusItem {
+  padding-right: 3px;
+}
+
+.classifier .menuItem.redoItem,
+.classifier .menuItem.plusItem {
+  padding-left: 3px;
+}
+
 .classifier .menuItemHorizontal {
   width: auto;
   display: flex;
@@ -184,6 +198,10 @@
   color: #d9d6d6;
 }
 
+.classifier .navBtn:disabled .icon {
+  color: #c5c0c0;
+}
+
 .classifier .navBtn:not(:disabled) {
   cursor: pointer;
 }
@@ -215,42 +233,48 @@
   content: "\f078";
 }
 
-.classifier .iconPlus:before {
-  color: #c5c0c0;
+.classifier .iconPlus:before {  
+  color: #767676;
   content: "\f067";
 }
 
-.classifier .iconMinus:before {
-  color: #c5c0c0;
+.classifier .iconMinus:before {  
+  color: #767676;
   content: "\f068";
 }
 
-.classifier .iconLeft:before {
-  color: #c5c0c0;
+.classifier .iconLeft:before {  
+  color: #767676;
   font-weight: bold;
 
   content: "\f060";  
 }
 
-.classifier .iconRight:before {
-  color: #c5c0c0;
+.classifier .iconRight:before {  
+  color: #767676;
   font-weight: bold;
 
   content: "\f061";
 }
 
-.classifier .iconUndo:before {
-  color: #c5c0c0;
+.classifier .iconUndo:before {  
+  color: #767676;
+  font-weight: bold;
+
   content: "\f0e2";
 }
 
-.classifier .iconRedo:before {
-  color: #c5c0c0;
+.classifier .iconRedo:before {  
+  color: #767676;
+  font-weight: bold;
+
   content: "\f01e";
 }
 
-.classifier .iconClose:before {
-  color: #c5c0c0;
+.classifier .iconClose:before {  
+  color: #767676;
+  font-weight: bold;
+
   content: "\f00d";
 }
 
@@ -264,6 +288,10 @@
   font-family: outline-icons;
   color: #f00808;
   content: "\0021";
+}
+
+.classifier button.navBtn:disabled .icon::before {
+  color: #c5c0c0;  
 }
 
 .classifier .divider {
@@ -390,7 +418,27 @@
   background-color: #2e3031;
 }
 
+.classifier .zoomDropdownWrapper {
+  position: relative;
+  margin-left: 5px;
+}
+
+.classifier .zoomCounter {
+  position: absolute;
+
+  width: 44px;
+  height: 17px;
+  padding-left: 5px;
+
+  color: #d9d6d6;
+  font-weight: bold;
+
+  background-color: #1b1c1d;
+}
+
 .classifier .zoomDropdown {
+  min-width: 70px;
+
   background: #1b1c1d;
   color: #d9d6d6;
   border: none;

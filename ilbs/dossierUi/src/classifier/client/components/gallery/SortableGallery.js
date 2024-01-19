@@ -41,12 +41,14 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
     if (direction === 'prev' && state.currentPage > 1) {
       setState({
         ...state,
+        rotation: 0,
         currentPage: state.currentPage - 1,
         src: srcSet[state.currentPage - 2].id,
       });
     } else if (direction === 'next' && state.currentPage < pageCount) {
       setState({
         ...state,
+        rotation: 0,
         currentPage: state.currentPage + 1,
         src: srcSet[state.currentPage].id,
       });
