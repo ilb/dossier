@@ -5,27 +5,27 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module',
     ecmaFeatures: {
-      jsx: true
-    }
+      jsx: true,
+    },
   },
   settings: {
     react: {
-      version: 'detect'
-    }
+      version: 'detect',
+    },
   },
   env: {
     browser: true,
     amd: true,
     node: true,
     es6: true,
-    'jest/globals': true
+    'jest/globals': true,
   },
   extends: [
     'plugin:@next/next/recommended',
     'plugin:react/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:prettier/recommended',
-    'plugin:jest/recommended'
+    'plugin:jest/recommended',
   ],
   rules: {
     'prettier/prettier': [
@@ -36,8 +36,8 @@ module.exports = {
         printWidth: 100,
         singleQuote: true,
         trailingComma: 'all',
-        jsxBracketSameLine: true
-      }
+        jsxBracketSameLine: true,
+      },
     ],
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
@@ -46,8 +46,8 @@ module.exports = {
       {
         components: ['Link'],
         specialLink: ['hrefLeft', 'hrefRight'],
-        aspects: ['invalidHref', 'preferButton']
-      }
-    ]
-  }
+        aspects: ['invalidHref', 'preferButton'],
+      },
+    ],
+  },
 };
