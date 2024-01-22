@@ -5,8 +5,6 @@ import prisma from '../libs/prisma/index.js';
 import registerPackageClasses from '@ilbru/dossier-core/src/index.js';
 import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerification.js';
 import DataMatrixVerification from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerification.js';
-import SignatureDetectorVerificationMock from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerificationMock.js';
-import DataMatrixVerificationMock from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerificationMock.js';
 
 export default class Kernel {
   constructor() {
@@ -26,17 +24,8 @@ export default class Kernel {
       documentsPath: asValue(process.env.DOCUMENTS_PATH),
       request: asValue(context.request),
       classifierQuantity: asValue(8),
-      isClassifyMock: process.env['apps.loandossier.stub.classifierEnabled'] === 'false',
-      signatureDetectorVerification: asClass(
-        process.env['apps.loandossier.stub.signatureDetectorEnabled'] === 'false'
-          ? SignatureDetectorVerificationMock
-          : SignatureDetectorVerification,
-      ),
-      dataMatrixVerification: asClass(
-        process.env['apps.loandossier.stub.dataMatrixEnabled'] === 'false'
-          ? DataMatrixVerificationMock
-          : DataMatrixVerification,
-      ),
+      signatureDetectorVerification: asClass(SignatureDetectorVerification),
+      dataMatrixVerification: asClass(DataMatrixVerification),
     });
   }
 
