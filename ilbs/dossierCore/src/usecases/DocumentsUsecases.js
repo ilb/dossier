@@ -132,4 +132,18 @@ export default class DocumentsUsecases extends Usecases {
     debug('changeDocumentState end', request.uuid);
     return result;
   }
+
+  async simpleList({ documentsService, request }) {
+    debug('simpleList start', request.uuid);
+    const result = await documentsService.getSimpleList(request);
+    debug('simpleList end', request.uuid);
+    return result;
+  }
+
+  async getContext({ documentsService, request }) {
+    debug('getContext start', request.uuid);
+    const result = await documentsService.getContext(request);
+    debug('getContext end', request.uuid);
+    return result;
+  }
 }

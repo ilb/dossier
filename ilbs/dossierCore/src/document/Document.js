@@ -3,6 +3,7 @@ export default class Document {
   #_uuid;
   #_data;
   #_type;
+  #_name;
   dossier;
 
   /**
@@ -14,6 +15,7 @@ export default class Document {
     this.#_uuid = documentData.uuid;
     this.#_data = documentData.data;
     this.#_type = documentData.type;
+    this.#_name = documentData.name;
     this.dossier = dossier;
     this.pages = [];
   }
@@ -29,6 +31,9 @@ export default class Document {
   }
   get type() {
     return this.#_type;
+  }
+  get name() {
+    return this.#_name;
   }
 
   set setUuid(uuid) {

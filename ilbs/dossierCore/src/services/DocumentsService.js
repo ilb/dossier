@@ -6,11 +6,13 @@ export default class DocumentsService extends Service {
     super();
     this.dossierBuilder = scope.dossierBuilder;
     this.documentGateway = scope.documentGateway;
+    this.BASE_URL = process.env['apps.loandossier.ws'];
   }
 
   buildLinks(pages, documentType, version, uuid) {
-    const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
-    return pages.map((page) => {
+    const url = `${this.BASE_URL}/api/dossier/${uuid}/documents`;
+
+    return pages.map((page, i) => {
       return {
         id: `${url}/${documentType}/version/${version}/number/${
           page.pageNumber
@@ -61,6 +63,25 @@ export default class DocumentsService extends Service {
       type: document.type,
       versions: document.versions,
     }));
+  }
+
+  async getSimpleList({ uuid }) {
+    const dossier = await this.dossierBuilder.build(uuid);
+    const documents = dossier.getDocuments();
+
+    return documents.map(({ name, type, lastModified }) => {
+      return {
+        name,
+        ext: 'pdf',
+        path: `${this.BASE_URL}/api/dossier/${uuid}/documents/${type}`,
+        lastModified,
+        context: `${this.BASE_URL}/api/dossier/${uuid}/documents/${type}/context`,
+      };
+    });
+  }
+
+  async getContext({ uuid, name }) {
+    return {};
   }
 
   async changeDocumentState({ uuid, name, stateCode }) {

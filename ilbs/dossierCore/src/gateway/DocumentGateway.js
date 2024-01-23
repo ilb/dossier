@@ -82,6 +82,7 @@ export default class DocumentGateway {
       documentFromDb = await this.documentRepository.create({
         uuid: v4(),
         code: document.type,
+        name: document.name,
         dossier: {
           connect: {
             uuid: uuid,

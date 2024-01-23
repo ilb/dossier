@@ -99,7 +99,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
             pageCount={pageCount}
             currentPage={state.currentPage}
             navigatePage={navigatePage}
-            attached='top'
+            attached="top"
             rotateImage={rotateImage}
             zoomImageIn={zoomImageIn}
             zoomImageOut={zoomImageOut}
@@ -117,12 +117,12 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
           />
         )}
 
-        <div className='pagePreviewer'>
+        <div className="pagePreviewer">
           {!state.previewOpen && (
-            <div className='grid'>
+            <div className="grid">
               {srcSet.map((src) => {
                 return (
-                  <div key={src.id} className='column'>
+                  <div key={src.id} className="column">
                     <SortableGalleryItem
                       src={src}
                       errors={pageErrors[src.uuid]}

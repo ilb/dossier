@@ -34,11 +34,12 @@ export default class DossierBuilder {
   #buildDocuments(dossier, context) {
     const { schema } = context;
 
-    return schema.documents.map((document) => {
+    return schema.documents.map(({ type, name, verifications, validationRules }) => {
       const docData = {
-        type: document.type,
-        verifications: document.verifications,
-        validationRules: document.validationRules,
+        type,
+        name,
+        verifications,
+        validationRules,
       };
 
       return new PageDocument(dossier, docData);
