@@ -59,6 +59,7 @@ const GalleryItem = React.memo(
               <div {...attributes}>
                 {isImage() && (
                   <Image
+                    unoptimized
                     src={src.path}
                     alt="alt"
                     width={260}
