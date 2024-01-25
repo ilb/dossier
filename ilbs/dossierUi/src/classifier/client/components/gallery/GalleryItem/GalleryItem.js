@@ -59,7 +59,7 @@ const GalleryItem = React.memo(
               <div {...attributes}>
                 {isImage() && (
                   <Image
-                    src={src}
+                    src={src.path}
                     alt="alt"
                     width={260}
                     height={350}

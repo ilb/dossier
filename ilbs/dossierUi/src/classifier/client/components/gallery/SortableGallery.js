@@ -120,22 +120,19 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
         <div className="pagePreviewer">
           {!state.previewOpen && (
             <div className="grid">
-              {srcSet.map(({ id, path, type, uuid }) => (
-                <div key={id} className="column">
+              {srcSet.map((src) => (
+                <div key={src.id} className="column">
                   <SortableGalleryItem
-                    key={id}
-                    src={path}
-                    id={id}
-                    type={type}
-                    errors={pageErrors[uuid]}
+                    src={src}
+                    errors={pageErrors[src.uuid]}
                     disabled={tab.readonly}
                     onRemove={onRemove}
                     onClick={() => {
                       setState({
                         ...state,
                         previewOpen: true,
-                        src: id,
-                        currentPage: getPageNumFromImageId(id),
+                        src: src.id,
+                        currentPage: getPageNumFromImageId(src.id),
                       });
                     }}
                   />
@@ -159,7 +156,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
       <DragOverlay>
         {active ? (
           <GalleryItem
-            src={active.id}
+            src={{ path: active.id }}
             width={3}
             height={4}
             style={{ backgroundColor: '#ffffff', opacity: 0.6 }}
