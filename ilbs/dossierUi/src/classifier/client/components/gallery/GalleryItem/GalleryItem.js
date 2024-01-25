@@ -20,7 +20,7 @@ const GalleryItem = React.memo(
         listeners,
         errors,
       },
-      ref
+      ref,
     ) => {
       const handleClick = (event) => {
         event.preventDefault();
@@ -31,11 +31,9 @@ const GalleryItem = React.memo(
         return src.type ? src.type.includes('image/') : true;
       };
 
-      const getPath = () => src.path || src; // todo как-то избавиться от такого
-
       return (
         <div ref={ref} style={style}>
-          <div className='segment' style={{ margin: 3 }}>
+          <div className="segment" style={{ margin: 3 }}>
             <div style={{ padding: 4 }}>
               {/* todo проверка подписей, сделать без semantic-ui */}
               {/*{errors?.count && (*/}
@@ -61,15 +59,12 @@ const GalleryItem = React.memo(
               <div {...attributes}>
                 {isImage() && (
                   <Image
-                    loader={() => {
-                      return getPath();
-                    }}
-                    src={getPath()}
-                    alt='alt'
-                    width={300}
-                    height={400}
+                    src={src}
+                    alt="alt"
+                    width={260}
+                    height={350}
                     onClick={onClick}
-                    className='img-ofit'
+                    className="img-ofit"
                     style={{
                       userSelect: 'none',
                       MozUserSelect: 'none',
@@ -80,11 +75,8 @@ const GalleryItem = React.memo(
                 )}
                 {!isImage() && (
                   <div style={{ backgroundImage: 'none' }}>
-                    <div
-                      style={{ paddingTop: '51.5%', paddingBottom: '51.5%' }}
-                    >
-                      Невозможно отобразить или переместить. Документ не
-                      является картинкой.
+                    <div style={{ paddingTop: '51.5%', paddingBottom: '51.5%' }}>
+                      Невозможно отобразить или переместить. Документ не является картинкой.
                     </div>
                   </div>
                 )}
@@ -93,8 +85,8 @@ const GalleryItem = React.memo(
           </div>
         </div>
       );
-    }
-  )
+    },
+  ),
 );
 
 GalleryItem.displayName = 'GalleryItem';
