@@ -19,15 +19,15 @@
     "msw": "^1.3.0",
     "msw-symlinked": "^1.1.6",
     "multer": "^1.4.5-lts.1",
-    "next": "^12.0.7",
+    "next": "^13.5.4",
     "next-compose-plugins": "^2.2.1",
     "next-connect": "^0.11.0",
     "next-transpile-modules": "^10.0.1",
     "node-cache": "^5.1.2",
     "node-poppler": "^6.2.1",
     "pino": "^7.5.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -50,7 +50,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "test": "jest",
     "ilb-build": "prisma generate && next build",
     "ilb-deploy": "prisma migrate deploy",

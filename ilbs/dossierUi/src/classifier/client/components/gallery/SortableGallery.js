@@ -4,7 +4,7 @@ import GalleryItem from './GalleryItem/GalleryItem';
 import SortableGalleryItem from './SortableGalleryItem';
 import SegmentItem from './GalleryItem/SegmentItem';
 import React, { useEffect, useState } from 'react';
-import ControlsMenu from '../gallery/GalleryItem/ControlsMenu';
+import ControlsMenu from './GalleryItem/ControlsMenu';
 
 const getPageNumFromImageId = (id) => {
   const match = id.match(/number\/(\d+)/);
@@ -99,7 +99,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
             pageCount={pageCount}
             currentPage={state.currentPage}
             navigatePage={navigatePage}
-            attached='top'
+            attached="top"
             rotateImage={rotateImage}
             zoomImageIn={zoomImageIn}
             zoomImageOut={zoomImageOut}
@@ -117,31 +117,27 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
           />
         )}
 
-        <div className='pagePreviewer'>
+        <div className="pagePreviewer">
           {!state.previewOpen && (
-            <div className='grid'>
-              {srcSet.map((src) => {
-                return (
-                  <div key={src.id} className='column'>
-                    <SortableGalleryItem
-                      src={src}
-                      errors={pageErrors[src.uuid]}
-                      disabled={tab.readonly}
-                      width={3}
-                      height={4}
-                      onRemove={onRemove}
-                      onClick={() => {
-                        setState({
-                          ...state,
-                          previewOpen: true,
-                          src: src.id,
-                          currentPage: getPageNumFromImageId(src.id),
-                        });
-                      }}
-                    />
-                  </div>
-                );
-              })}
+            <div className="grid">
+              {srcSet.map((src) => (
+                <div key={src.id} className="column">
+                  <SortableGalleryItem
+                    src={src}
+                    errors={pageErrors[src.uuid]}
+                    disabled={tab.readonly}
+                    onRemove={onRemove}
+                    onClick={() => {
+                      setState({
+                        ...state,
+                        previewOpen: true,
+                        src: src.id,
+                        currentPage: getPageNumFromImageId(src.id),
+                      });
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           )}
 
@@ -160,7 +156,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
       <DragOverlay>
         {active ? (
           <GalleryItem
-            src={active.id}
+            src={{ path: active.id }}
             width={3}
             height={4}
             style={{ backgroundColor: '#ffffff', opacity: 0.6 }}

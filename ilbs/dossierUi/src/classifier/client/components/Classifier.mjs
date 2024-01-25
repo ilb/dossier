@@ -1,13 +1,13 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import {
+  closestCenter,
   DndContext,
   KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
+  PointerSensor,
   useSensor,
   useSensors,
-  closestCorners,
 } from '@dnd-kit/core';
 
 import SortableGallery from './gallery/SortableGallery.js';
@@ -44,7 +44,7 @@ const Classifier = forwardRef(
       withViewTypes = false,
       defaultViewType = 'grid',
     },
-    ref
+    ref,
   ) => {
     const [classifier, setClassifier] = useState(schema.classifier);
     const { tasks } = useTasks(uuid, dossierUrl);
@@ -58,7 +58,7 @@ const Classifier = forwardRef(
       uploadPages,
     } = useDocuments(uuid, dossierUrl);
     const [documentsTabs, setDocumentsTabs] = useState(schema.tabs);
-    const [selectedTab, selectTab] = useState(getSelectedTab());
+    const [selectedTab, selectTab] = useState(null);
     const [clonedItems, setClonedItems] = useState(null);
     const [draggableOrigin, setDraggableOrigin] = useState(null);
     const [activeDraggable, setActiveDraggable] = useState(null);
@@ -69,6 +69,55 @@ const Classifier = forwardRef(
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState(defaultViewType);
 
+    const selectedDocument =
+      (selectedTab?.type !== 'classifier' && documents[selectedTab?.type]?.pages) || [];
+
+    useEffect(() => {
+      console.log('1');
+      selectTab(getSelectedTab());
+    }, [uuid]);
+
+    useEffect(() => {
+      if (documents[selectedTab?.type]?.pages?.length === 0) {
+        setView('grid');
+      }
+    }, [selectedTab]);
+
+    useEffect(() => {
+      setClassifier(schema.classifier);
+      setDocumentsTabs(schema.tabs);
+    }, [schema]);
+
+    useEffect(() => {
+      onChangeTab && onChangeTab(selectedTab);
+    }, [selectedTab?.type]);
+
+    /**
+     * Добавление документов в форму
+     */
+    useEffect(() => {
+      const uniformDocuments = {};
+      for (const type in documents) {
+        // Убрал проверку длины массива
+        if (documents[type]) {
+          uniformDocuments[type] = documents[type]?.pages;
+        }
+      }
+      if (Object.keys(documents).length) {
+        onAfterChange && onAfterChange(uniformDocuments);
+        onChange && onChange(uniformDocuments);
+      }
+    }, [documents, form]);
+
+    useEffect(() => {
+      if (!prev && Object.keys(documents).length) {
+        onInit && onInit(documents);
+        setPrev(documents);
+      }
+    }, [documents]);
+
+    const finishedTasks = tasks.filter(({ status }) => status.code === 'FINISHED');
+
     useImperativeHandle(ref, () => ({
       changeSelectedTab(type) {
         const tab = documentsTabs.find((tab) => tab.type === type);
@@ -78,46 +127,11 @@ const Classifier = forwardRef(
       },
     }));
 
-    const selectedDocument =
-      (selectedTab?.type !== 'classifier' &&
-        documents[selectedTab?.type]?.pages) ||
-      [];
-
-    useEffect(() => {
-      if (!prev && Object.keys(documents).length) {
-        onInit && onInit(documents);
-        setPrev(documents);
-      }
-    }, [documents]);
-
-    useEffect(() => {
-      onChangeTab && onChangeTab(selectedTab);
-    }, [selectedTab.type]);
-
-    useEffect(() => {
-      setClassifier(schema.classifier);
-      setDocumentsTabs(schema.tabs);
-    }, [schema]);
-
-    const finishedTasks = tasks.filter(
-      ({ status }) => status.code === 'FINISHED'
-    );
-
     const sensors = useSensors(
-      useSensor(MouseSensor, {
-        activationConstraint: {
-          distance: 10,
-        },
-      }),
-      useSensor(TouchSensor, {
-        activationConstraint: {
-          delay: 250,
-          tolerance: 5,
-        },
-      }),
+      useSensor(PointerSensor),
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
-      })
+      }),
     );
 
     if (readonlyClassifier !== null) {
@@ -138,28 +152,9 @@ const Classifier = forwardRef(
       return tab || { type: null };
     }
 
-    /**
-     * Добавление документов в форму
-     */
-    useEffect(() => {
-      const uniformDocuments = {};
-
-      for (const type in documents) {
-        // Убрал проверку длины массива
-        if (documents[type]) {
-          uniformDocuments[type] = documents[type]?.pages;
-        }
-      }
-
-      if (Object.keys(documents).length) {
-        onAfterChange && onAfterChange(uniformDocuments);
-        onChange && onChange(uniformDocuments);
-      }
-    }, [documents, form]);
-
     useEffect(() => {
       const processTasks = tasks.filter(
-        ({ status }) => status.code === 'STARTED' || status.code === 'IN_QUEUE'
+        ({ status }) => status.code === 'STARTED' || status.code === 'IN_QUEUE',
       );
       setCountStartedTasks(processTasks.length);
     }, [tasks]);
@@ -172,8 +167,7 @@ const Classifier = forwardRef(
             if (prev[type].length !== documents[type].pages.length) {
               const tab = documentsTabs.find((tab) => tab.type === type);
 
-              !['unknown', 'classifier'].includes(tab.type) &&
-                onUpdate(tab, documents);
+              !['unknown', 'classifier'].includes(tab.type) && onUpdate(tab, documents);
             }
           }
         }
@@ -183,31 +177,15 @@ const Classifier = forwardRef(
     }, [finishedTasks.length]);
 
     useEffect(() => {
-      const interval = setInterval(
-        () => setTwainHandler() && clearInterval(interval),
-        1000
-      );
+      const interval = setInterval(() => setTwainHandler() && clearInterval(interval), 1000);
     }, []);
 
     useEffect(() => {
       setTwainHandler();
     }, [selectedTab]);
 
-    useEffect(() => {
-      if (documents[selectedTab.type]?.pages?.length === 0) {
-        setView('grid');
-      }
-    }, [selectedTab]);
-
-    useEffect(() => {
-      selectTab(getSelectedTab());
-    }, [uuid]);
-
     const setTwainHandler = () => {
-      return registerTwain(
-        (file) => file && handleDocumentsDrop([file]),
-        selectedTab?.type
-      );
+      return registerTwain((file) => file && handleDocumentsDrop([file]), selectedTab?.type);
     };
 
     const findContainer = (id) => {
@@ -220,7 +198,7 @@ const Classifier = forwardRef(
       }
 
       return Object.keys(documents).find((key) =>
-        documents[key]?.pages?.find((item) => item.path === id)
+        documents[key]?.pages?.find((item) => item.path === id),
       );
     };
 
@@ -249,9 +227,7 @@ const Classifier = forwardRef(
           .filter((tab) => !tab.readonly)
           .map((tab) => tab.type);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
-        classifyDocument(uuid, compressedFiles, availableClasses).then(
-          revalidateDocuments
-        );
+        classifyDocument(uuid, compressedFiles, availableClasses).then(revalidateDocuments);
       } else {
         setLoading(true);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
@@ -277,7 +253,7 @@ const Classifier = forwardRef(
           } else {
             return file;
           }
-        })
+        }),
       );
     };
 
@@ -315,9 +291,7 @@ const Classifier = forwardRef(
       const newDocumentsList = {
         ...documents,
         [activeContainer]: {
-          pages: documents[activeContainer]?.pages.filter(
-            (item) => item !== pageSrc
-          ),
+          pages: documents[activeContainer]?.pages.filter((item) => item !== pageSrc),
           errors: documents[activeContainer]?.errors | [],
           lastModified: documents[activeContainer]?.lastModified,
         },
@@ -331,9 +305,7 @@ const Classifier = forwardRef(
     const onDragStart = ({ active }) => {
       setDrugFrom(selectedTab);
       setActiveDraggable(active);
-
       const container = findContainer(active.id);
-
       setDraggableOrigin({
         container: container,
         type: selectedTab.documentName,
@@ -363,9 +335,7 @@ const Classifier = forwardRef(
           .map((item) => item.path)
           .indexOf(active.id);
 
-        let overIndex = documents[overContainer]?.pages
-          .map((item) => item.path)
-          .indexOf(overId);
+        let overIndex = documents[overContainer]?.pages.map((item) => item.path).indexOf(overId);
 
         if (activeIndex === -1) {
           return;
@@ -376,31 +346,15 @@ const Classifier = forwardRef(
         }
 
         if (activeIndex !== overIndex) {
-          // mutateDocuments(
-          //   {
-          //     ...documents,
-          //     [overContainer]: arrayMove(
-          //       documents[overContainer]?.pages,
-          //       activeIndex,
-          //       overIndex
-          //     ),
-          //   },
-          //   false
-          // );
-
           mutateDocuments(
             {
               ...documents,
               [overContainer]: {
                 ...documents[overContainer],
-                pages: arrayMove(
-                  documents[overContainer]?.pages,
-                  activeIndex,
-                  overIndex
-                ),
+                pages: arrayMove(documents[overContainer]?.pages, activeIndex, overIndex),
               },
             },
-            false
+            false,
           );
         }
 
@@ -433,18 +387,16 @@ const Classifier = forwardRef(
 
       setActiveDraggable(null);
       setDraggableOrigin(null);
-
       onDrag &&
         onDrag(
           documentsTabs.find((tab) => tab.type === dragFrom.type),
           selectedTab,
-          documents
+          documents,
         );
     };
 
     const onDragOver = ({ active, over }) => {
       const overId = over?.id;
-
       if (!overId || overId === 'void' || active.id in documents) {
         return;
       }
@@ -456,7 +408,6 @@ const Classifier = forwardRef(
 
       const overContainer = findContainer(overId);
       const activeContainer = findContainer(active.id);
-
       if (!overContainer || !activeContainer) {
         return;
       }
@@ -465,9 +416,7 @@ const Classifier = forwardRef(
         const activeItems = documents[activeContainer]?.pages;
         const overItems = documents[overContainer]?.pages;
         const overIndex = overItems.map((item) => item.path).indexOf(overId);
-        const activeIndex = activeItems
-          .map((item) => item.path)
-          .indexOf(active.id);
+        const activeIndex = activeItems.map((item) => item.path).indexOf(active.id);
 
         let newIndex;
 
@@ -477,22 +426,18 @@ const Classifier = forwardRef(
           const isBelowOverItem =
             over &&
             active.rect.current.translated &&
-            active.rect.current.translated.offsetTop >
-              over.rect.offsetTop + over.rect.height;
+            active.rect.current.translated.offsetTop > over.rect.offsetTop + over.rect.height;
 
           const modifier = isBelowOverItem ? 1 : 0;
 
-          newIndex =
-            overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+          newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
         }
 
         const newDocuments = {
           ...documents,
           [activeContainer]: {
             errors: documents[activeContainer].errors,
-            pages: documents[activeContainer]?.pages.filter(
-              (item) => item.path !== active.id
-            ),
+            pages: documents[activeContainer]?.pages.filter((item) => item.path !== active.id),
           },
           [overContainer]: {
             errors: documents[overContainer].errors,
@@ -501,7 +446,7 @@ const Classifier = forwardRef(
               documents[activeContainer]?.pages[activeIndex],
               ...documents[overContainer]?.pages.slice(
                 newIndex,
-                documents[overContainer]?.pages.length
+                documents[overContainer]?.pages.length,
               ),
             ],
           },
@@ -522,8 +467,8 @@ const Classifier = forwardRef(
     };
 
     return (
-      <div className='dossier classifier'>
-        <div className='grid gridCentered'>
+      <div className="dossier classifier">
+        <div className="grid gridCentered">
           {view === 'grid' && (
             <>
               <DndContext
@@ -532,9 +477,8 @@ const Classifier = forwardRef(
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
                 onDragCancel={onDragCancel}
-                collisionDetection={closestCorners}
-              >
-                <div className='dossier__wrap dossier__wrap__menu dossier__wrap__menu__grid'>
+                collisionDetection={closestCenter}>
+                <div className="dossier__wrap dossier__wrap__menu dossier__wrap__menu__grid">
                   <Menu
                     withViewTypes={withViewTypes}
                     view={view}
@@ -551,7 +495,7 @@ const Classifier = forwardRef(
                     dossierUrl={dossierUrl}
                   />
                 </div>
-                <div className='dossier__wrap_preview'>
+                <div className="dossier__wrap_preview">
                   {selectedTab && !selectedTab.readonly && (
                     <UploadDropzone
                       onDrop={handleDocumentsDrop}
@@ -563,11 +507,9 @@ const Classifier = forwardRef(
                   <Dimmable>
                     <Loader
                       active={
-                        (!!countStartedTasks &&
-                          selectedTab?.type === 'classifier') ||
-                        loading
+                        (!!countStartedTasks && selectedTab?.type === 'classifier') || loading
                       }
-                      loaderText='Загрузка...'
+                      loaderText="Загрузка..."
                     />
                     <SortableGallery
                       pageErrors={pageErrors}
@@ -583,7 +525,7 @@ const Classifier = forwardRef(
           )}
 
           {view === 'list' && (
-            <div className='dossier__wrap dossier__wrap__menu dossier__wrap__menu__list'>
+            <div className="dossier__wrap dossier__wrap__menu dossier__wrap__menu__list">
               <ListMenu
                 withViewTypes={withViewTypes}
                 view={view}
@@ -606,7 +548,7 @@ const Classifier = forwardRef(
         </div>
       </div>
     );
-  }
+  },
 );
 
 Classifier.displayName = 'Classifier';
