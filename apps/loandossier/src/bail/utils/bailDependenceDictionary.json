@@ -1,0 +1,20 @@
+[
+  "vehiclePassport",
+  "sts",
+  "vehiclePhoto",
+  "otherDocuments",
+  "statementBroker",
+  "loanAgreement",
+  "certificate",
+  "medicalInsuranceContract",
+  "loanApplication",
+  "borrowerQuestionnaire",
+  "acceptanceCertificate",
+  "lighthouseChecklist",
+  "lighthousePhoto",
+  "refusalVehiclePassport",
+  "productQuestionnaire",
+  "createContract",
+  "otherDocumentsBank",
+  "borrowerConsent"
+]

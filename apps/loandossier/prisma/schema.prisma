@@ -7,146 +7,254 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Таблица досье
 model Dossier {
   id       Int        @id @default(autoincrement())
-  uuid     String     @unique
-  name     String?
+  // uuid совпадает с uuid заявки
+  uuid     String     @unique @db.Uuid
+  // Название/комментарий досьей
+  name     String?    @db.VarChar(255)
+  // Дата создания досье
   createAt DateTime?  @default(now())
+  // Дата обновления записи
   updateAt DateTime?  @updatedAt
+  // Связь с документами
   document Document[]
+  // Связь с залогами
+  bails    Bail[]
 }
 
+model Bail {
+  id        Int        @id @default(autoincrement())
+  // Показатель активности залога у dossier
+  active    Boolean
+  // vin залога
+  vin       String     @unique
+  // Id таблицы dossier
+  dossierId Int
+  // Дата создания записи
+  createAt  DateTime?  @default(now())
+  // Дата обновления записи
+  updateAt  DateTime?  @updatedAt
+  // Связь с таблицей dossier
+  dossier   Dossier    @relation(fields: [dossierId], references: [id])
+  // Связь с таблицей документов
+  documents Document[]
+}
+
+// Таблица статса документа
 model DocumentState {
   id               Int               @id @default(autoincrement())
-  code             String            @unique
-  name             String?
+  // Код статуса
+  code             String            @unique @db.VarChar(100)
+  // Название статуса
+  name             String?           @db.VarChar(255)
+  // Дата создания записи в таблице статусов документа
   createAt         DateTime?         @default(now())
+  // Дата обновления записи в таблице статусов документа
   updateAt         DateTime?         @updatedAt
+  // Связь с таблицей версии документа
   documentVersions DocumentVersion[]
 }
 
+// Таблица версий документов
 model DocumentVersion {
   id              Int            @id @default(autoincrement())
+  // Номер версии
   version         Int?
+  // Id статуса документа
   documentStateId Int?
-  documentState   DocumentState? @relation(fields: [documentStateId], references: [id])
+  // id документа
   documentId      Int?
+  // Дата создания версии документа
   createAt        DateTime?      @default(now())
+  // Дата обновления записи
   updateAt        DateTime?      @updatedAt
+  // Связь с таблицей статусов
+  documentState   DocumentState? @relation(fields: [documentStateId], references: [id])
+  // Связь с документом, для указания текущей версии
   currentDocument Document?      @relation("currentDocumentVersion")
+  // Связь с документом
   document        Document?      @relation(fields: [documentId], references: [id])
+  // Связь с таблицей ошибок
   errors          Error[]
+  // Связь с таблицей страниц
   pages           Page[]
+  // Связь с таблицей проверок
   verifications   Verification[]
 }
 
+// Таблица документов
 model Document {
   id                     Int               @id @default(autoincrement())
-  uuid                   String            @unique
-  code                   String
-  name                   String?
+  // uuid документа
+  uuid                   String            @unique @db.Uuid
+  // Тип документа
+  code                   String            @db.VarChar(100)
+  // Название документа
+  name                   String?           @db.VarChar(255)
+  // id текущей версии документов
   curentVersionId        Int?              @unique
+  // id досье
   dossierId              Int?
+  // id залога
+  bailId                 Int?
+  // Дата создания документа
   createAt               DateTime?         @default(now())
+  // Дата обновления записи
   updateAt               DateTime?         @updatedAt
+  // Связь с таблицей досье
   dossier                Dossier?          @relation(fields: [dossierId], references: [id])
+  // Связь с таблцие версий, указывающая на текущую версию
   currentDocumentVersion DocumentVersion?  @relation("currentDocumentVersion", fields: [curentVersionId], references: [id])
+  // Свзяь с таблицей залогов, для выборки при смене активного залога
+  bail                   Bail?             @relation(fields: [bailId], references: [id])
+  // Связь с таблицей ошибок
   errors                 Error[]
+  // Связь с таблицей версий, указывающая на прошлые версии документа
   documentVersions       DocumentVersion[]
 }
 
+// Таблица страниц
 model Page {
   id                Int              @id @default(autoincrement())
-  uuid              String           @unique
+  uuid              String           @unique @db.Uuid
+  // Данные по файлу
   data              Json?
+  // Кеш проверок
   context           Json? //В контекст записываем кеш проверок
+  // Номер страницы
   pageNumber        Int?
+  // Флаг отображения документа (легкое удаление)
   isDelete          Boolean          @default(false)
+  // Id версии документа, к которой привязана страница
   documentVersionId Int?
+  // Дата создания страницы
   createAt          DateTime?        @default(now())
+  // Дата обновления записи
   updateAt          DateTime?        @updatedAt
+  // Связл с таблицей версий документов
   documentVersion   DocumentVersion? @relation(fields: [documentVersionId], references: [id])
+  // Связь с таблицей ошибок
   errors            Error[]
 }
 
-// Статусы ошибок
-
+// Типы ошибок
 model ErrorType {
   id          Int       @id @default(autoincrement())
-  code        String    @unique
+  // Код типа ошибки
+  code        String    @unique @db.VarChar(100)
+  // Описание ошибки
   description String?
+  // Дата создания записи в таблице
   createAt    DateTime? @default(now())
+  // Дата обновления записи в таблице
   updateAt    DateTime? @updatedAt
+  // Связь с таблицей ошибки
   errors      Error[]
 }
 
+// Статусы ошибок
 model ErrorState {
   id          Int       @id @default(autoincrement())
-  code        String    @unique
+  // Код статуса ошибки
+  code        String    @unique @db.VarChar(100)
+  // описание статуса ошибки
   description String?
+  // Дата создания записи в таблице
   createAt    DateTime? @default(now())
+  // Дата обновления записи в таблице
   updateAt    DateTime? @updatedAt
+  // Связь с таблицей ошибки
   errors      Error[]
 }
 
+// Таблица ошибок
 model Error {
   id                Int              @id @default(autoincrement())
-  code              String?
+  // Код ошибки
+  code              String?          @db.VarChar(100)
+  // Описание ошибки
   description       String?
+  // Флаг архива
   isArchive         Boolean?         @default(false)
+  // Id документа, к которому привязана ошибка
   documentId        Int?
+  // Id версии документа, к которому привязана ошибка
   documentVersionId Int?
+  // Id страницы, к которой привязана ошибка
   pageId            Int?
+  // Id из таблицы типа ошибки
   errorTypeId       Int?
+  // Id из таблицы статуса ошибки
   errorStateId      Int?
+  // Дата создания ошибок
   createAt          DateTime?        @default(now())
+  // Дата обновления записи
   updateAt          DateTime?        @updatedAt
+  // Связь с таблицей документов
   document          Document?        @relation(fields: [documentId], references: [id])
+  // Связь с страниц
   page              Page?            @relation(fields: [pageId], references: [id])
+  // Связь с версий документов         @relation(fields: [pageId], references: [id])
   documentVersion   DocumentVersion? @relation(fields: [documentVersionId], references: [id])
+  // Связь с типом ошибки
   errorType         ErrorType?       @relation(fields: [errorTypeId], references: [id])
+  // Связь со статусом ошибки
   errorState        ErrorState?      @relation(fields: [errorStateId], references: [id])
 }
 
+// Таблица проверок
 model Verification {
   id                Int                 @id @default(autoincrement())
+  // Контекст проверок
   data              Json?
+  // id статуса проверки
   statusId          Int?
+  // id типа проверки
   typeId            Int?
+  // id версии документа, на котором вызвана проверка
   documentVersionId Int?
+  // Дата начала проверки
   begDate           DateTime?
+  // Дата окончания проверки
   endDate           DateTime?
+  // Связь с таблицей типов проверок
   type              VerificationType?   @relation(fields: [typeId], references: [id])
+  // Связь с таблицей статусов проверок
   status            VerificationStatus? @relation(fields: [statusId], references: [id])
+  // Связь с таблицей версий документов
   documentVersion   DocumentVersion?    @relation(fields: [documentVersionId], references: [id])
 }
 
-/// Тип проверки
+// Тип проверки
 model VerificationType {
-  ///Идентификатор
+  // Идентификатор
   id            Int            @id @default(autoincrement())
-  ///Дата создания
-  createdAt     DateTime       @default(now())
-  ///Дата модификации
-  updatedAt     DateTime?      @updatedAt
-  ///Код
+  // Дата создания записи
+  createAt      DateTime       @default(now())
+  // Дата обновления записи
+  updateAt      DateTime?      @updatedAt
+  // Код типа проверки
   code          String?        @unique @db.VarChar(100)
-  ///Наименование
+  // Наименование типа проверки
   name          String?        @db.VarChar(255)
+  // Связь с таблицей проверок
   verifications Verification[]
 }
 
-/// Статус проверки
+// Статус проверки
 model VerificationStatus {
-  ///Идентификатор
+  // Идентификатор
   id            Int            @id @default(autoincrement())
-  ///Дата создания
-  createdAt     DateTime       @default(now())
-  ///Дата модификации
-  updatedAt     DateTime?      @updatedAt
-  ///Код
+  // Дата создания записи
+  createAt      DateTime       @default(now())
+  // Дата обновления записи
+  updateAt      DateTime?      @updatedAt
+  // Код статуса проверки
   code          String?        @unique @db.VarChar(100)
-  ///Наименование
+  // Наименование статуса проверки
   name          String?        @db.VarChar(255)
+  // Связь с таблицей проверок
   verifications Verification[]
 }

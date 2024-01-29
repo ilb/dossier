@@ -5,6 +5,7 @@ import prisma from '../libs/prisma/index.js';
 import registerPackageClasses from '@ilbru/dossier-core/src/index.js';
 import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerification.js';
 import DataMatrixVerification from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerification.js';
+import LoandossierDocumentGateway from './gateway/LoandossierDocumentGateway.js';
 
 export default class Kernel {
   constructor() {
@@ -13,8 +14,8 @@ export default class Kernel {
 
   async createApplication(context) {
     await this.registerClasses();
-    await this.registerValues(context);
     await registerPackageClasses(this.container, asValue, asClass);
+    await this.registerValues(context);
     return this.container;
   }
 
@@ -26,12 +27,13 @@ export default class Kernel {
       classifierQuantity: asValue(8),
       signatureDetectorVerification: asClass(SignatureDetectorVerification),
       dataMatrixVerification: asClass(DataMatrixVerification),
+      documentGateway: asClass(LoandossierDocumentGateway),
     });
   }
 
   async registerClasses() {
     for (const file of glob.sync(
-      'src/**/@(services|repositories|adapters|validators|providers|document|events|dossier|gateway)/*.js',
+      'src/**/@(services|repositories|adapters|validators|providers|document|events|dossier|usecases)/*.js',
     )) {
       const pathFile = path.parse(file);
       const name = pathFile.name;

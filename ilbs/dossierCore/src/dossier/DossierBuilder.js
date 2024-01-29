@@ -26,6 +26,7 @@ export default class DossierBuilder {
       await this.documentGateway.initDocument(document, { uuid: dossier.uuid });
       await this.documentGateway.initDocumentPages(document);
     }
+
     dossier.setDocuments(documents);
 
     return dossier;
