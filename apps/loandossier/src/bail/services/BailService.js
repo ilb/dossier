@@ -1,22 +1,28 @@
 import bailDependenceDictionary from '../utils/bailDependenceDictionary.json';
 
 export default class BailService {
-  constructor({ bailRepository, dossierRepository, documentRepository }) {
+  constructor({ bailRepository, dossierRepository, documentRepository, documentGateway }) {
     this.bailRepository = bailRepository;
     this.dossierRepository = dossierRepository;
     this.documentRepository = documentRepository;
+    this.documentGateway = documentGateway;
   }
 
   async create({ uuid, vin }) {
     const bails = await this.bailRepository.findByFilter({ dossierUuid: uuid });
 
-    if (!bails.length) {
-      await this.bailRepository.create({
-        vin,
-        active: true,
-        dossier: { connect: { uuid } },
-      });
+    const isCurrentBail = bails.find((bail) => bail.vin === vin);
+    if (isCurrentBail) {
+      return;
+    }
 
+    await this.bailRepository.create({
+      vin,
+      active: true,
+      dossier: { connect: { uuid } },
+    });
+
+    if (!bails.length) {
       const documents = await this.documentRepository.findByFilter({
         dossier: {
           uuid,
@@ -39,18 +45,18 @@ export default class BailService {
       return;
     }
 
-    console.log('a bail here');
-
-    // Создаем bail
     // Создаем документы из списка привязываем к ним новый bail
-    // Старому bail ставим active = false
-    // Новому bail ставим active = true
+    for (let code of bailDependenceDictionary) {
+      await this.documentGateway.createDocument(uuid, code, vin);
+    }
+
+    // Убираем активность старому залогу
+    for (let bail of bails) {
+      await this.bailRepository.update({ vin: bail.vin, active: false });
+    }
   }
 
   async activeChange({ oldVin, vin }) {
-    console.log('BailService activeChange');
-    return;
-
     // Старому bail присвоить active = false
     // Новому bail присвоить active = true
     await this.bailRepository.update({ vin: oldVin, active: false });

@@ -16,10 +16,10 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
           uuid,
         },
         ...(activeBail.length && {
-          AND: [
+          OR: [
             {
               bail: {
-                vin,
+                vin: activeBail[0].vin,
               },
             },
             {
@@ -50,7 +50,24 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
     }
   }
 
-  async createDocument() {
-    // Создает документ с простановкой vin
+  async createDocument(dossierUuid, code, vin) {
+    const documentFromDb = await this.documentRepository.create({
+      uuid: v4(),
+      code,
+      dossier: {
+        connect: {
+          uuid: dossierUuid,
+        },
+      },
+      ...(vin && {
+        bail: {
+          connect: {
+            vin,
+          },
+        },
+      }),
+    });
+
+    await this.createDocumentVersion(documentFromDb.uuid, 1);
   }
 }
