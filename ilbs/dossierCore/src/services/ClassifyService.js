@@ -2,6 +2,9 @@ import Service from '@ilbru/core/src/base/Service.js';
 import { chunkArray, prepareClassifies } from '../../libs/utils.js';
 import queue from '../../pqueue/pqueue.js';
 import Page from '../document/Page.js';
+import createDebug from 'debug';
+
+const classifierDebug = createDebug('dossier-classifier');
 
 export default class ClassifyService extends Service {
   constructor({
@@ -30,15 +33,16 @@ export default class ClassifyService extends Service {
     let unknownDocument = dossier.getDocument('unknown');
     // сначала переместить все в нераспознанные
     //Проверить работу
-    await unknownDocument.addPages(pages);
+    await this.documentGateway.addPages(unknownDocument, pages);
     const path = `${uuid}.classification`;
     let verification;
     let currentClassificationResult = [];
-    verification = await this.verificationService.add('classification', path);
+    verification = await this.verificationService.add('classification', { path });
 
     this.queue
       .add(
         async () => {
+          classifierDebug('classify start');
           const chunks = chunkArray(pages, this.classifierQuantity);
           for (const chunk of chunks) {
             let previousClass;
@@ -56,11 +60,9 @@ export default class ClassifyService extends Service {
             await this.documentGateway.initDocumentPages(unknownDocument);
 
             const unknownPages = unknownDocument.getPagesByUuids(chunk.map((page) => page.uuid));
-            console.log('unknownPages', unknownPages);
-
             let classifies = await this.classifierGate.classify(unknownPages, previousClass);
 
-            classifies = prepareClassifies(classifies, availableClasses);
+            classifies = prepareClassifies(classifies, availableClasses, unknownPages);
 
             //Получить массив объектов с результатом классификаци.
             //Пройтись по массиву и обновить документы теми что пришли в резульатте классификации.
@@ -70,18 +72,21 @@ export default class ClassifyService extends Service {
             // chunk[index] сохранить в старую версию документа
             // current.link сохранить в новую версию документа
 
-            const classifiedPages = classifies.reduce((acc, current, index) => {
-              acc[index] = { code: current.code, page: chunk[index], newPage: current.page };
+            const classifiedPages = chunk.reduce((acc, current, index) => {
+              acc[index] = {
+                code: classifies[index].code,
+                page: current,
+              };
               return acc;
             }, []);
 
             await this.documentGateway.initDocumentPages(unknownDocument);
-            for (const { code, page, newPage } of classifiedPages) {
+            for (const { code, page, newPage, link } of classifiedPages) {
               const unknownPage = unknownDocument.getPageByUuid(page.uuid);
               if (unknownPage) {
                 // страница может быть перемещена пользователем
                 const document = dossier.getDocument(code);
-                if (current.link) {
+                if (link) {
                   const classifyPage = new Page(newPage);
                   await document.addPage(classifyPage);
                   await unknownDocument.unlinkPage(page.uuid);
@@ -96,11 +101,12 @@ export default class ClassifyService extends Service {
           await this.verificationService.finish(verification, {
             classifiedPages: currentClassificationResult,
           });
+          classifierDebug('classify end');
         },
         { path },
       )
       .catch(async (error) => {
-        console.error(error);
+        console.error('classifyError', error);
         this.verificationService.cancel(verification);
       });
 

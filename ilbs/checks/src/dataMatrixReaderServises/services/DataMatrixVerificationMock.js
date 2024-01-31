@@ -1,12 +1,11 @@
 import Service from '@ilbru/core/src/base/Service.js';
-import Errors from './Errors.js';
 import DataMatrixCheckService from './DataMatrixCheckService.js';
 
 export default class DataMatrixVerificationMock extends Service {
-  constructor({ documentGateway }) {
+  constructor({ documentErrorService }) {
     super();
     this.dataMatrixCheckService = new DataMatrixCheckService();
-    this.documentGateway = documentGateway;
+    this.documentErrorService = documentErrorService;
     this.result = [];
     this.nameVerification = 'DataMatrixCheck';
     this.ok = true;
@@ -17,8 +16,14 @@ export default class DataMatrixVerificationMock extends Service {
     // это массив страниц,
     const documentPages = document.pages;
     const cropped = context.params;
-    const error = Errors.notFound(`Не найденные страницы : 1,3,4`);
-    await this.documentGateway.addError(document, error);
+
+    const error = {
+      description: 'Не найденные страницы : 1,3,4',
+      errorState: 'ACTIVE',
+      errorType: 'VERIFICATION',
+    };
+
+    await this.documentErrorService.addError(document, error);
     this.errors.push(error);
     return {
       nameVerification: this.nameVerification,

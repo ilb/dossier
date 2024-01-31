@@ -25,11 +25,9 @@ export const chunkArray = (arr, length) => {
  * @return {*}
  */
 export const prepareClassifies = (classifies, availableClasses) => {
-  return classifies.map((pageResult) =>
-    availableClasses.includes(pageResult.code)
-      ? pageResult
-      : { ...pageResult, code: 'otherDocuments' },
-  );
+  return classifies.map((pageResult) => ({
+    code: availableClasses.includes(pageResult) ? pageResult : 'otherDocuments',
+  }));
 };
 
 export const timeoutPromise = async (promise, err, timeout) => {

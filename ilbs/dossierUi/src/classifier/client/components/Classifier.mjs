@@ -2,19 +2,19 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import {
+  closestCenter,
   DndContext,
   KeyboardSensor,
-  MouseSensor,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
 
-import SortableGallery from './gallery/SortableGallery';
-import UploadDropzone from './UploadDropzone';
-import Menu from './menu/Menu';
-import { useDocuments, useTasks } from '../hooks';
-import { registerTwain } from '../utils/twain';
+import SortableGallery from './gallery/SortableGallery.js';
+import UploadDropzone from './UploadDropzone.js';
+import Menu from './menu/Menu.js';
+import { useDocuments, useTasks } from '../hooks/index.js';
+import { registerTwain } from '../utils/twain.js';
 import { compress } from '../utils/compressor.js';
 import Dimmable from './elements/Dimmable.js';
 import Loader from './elements/Loader.js';
@@ -58,7 +58,7 @@ const Classifier = forwardRef(
       uploadPages,
     } = useDocuments(uuid, dossierUrl);
     const [documentsTabs, setDocumentsTabs] = useState(schema.tabs);
-    const [selectedTab, selectTab] = useState(getSelectedTab());
+    const [selectedTab, selectTab] = useState(null);
     const [clonedItems, setClonedItems] = useState(null);
     const [draggableOrigin, setDraggableOrigin] = useState(null);
     const [activeDraggable, setActiveDraggable] = useState(null);
@@ -69,6 +69,55 @@ const Classifier = forwardRef(
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState(defaultViewType);
 
+    const selectedDocument =
+      (selectedTab?.type !== 'classifier' && documents[selectedTab?.type]?.pages) || [];
+
+    useEffect(() => {
+      console.log('1');
+      selectTab(getSelectedTab());
+    }, [uuid]);
+
+    useEffect(() => {
+      if (documents[selectedTab?.type]?.pages?.length === 0) {
+        setView('grid');
+      }
+    }, [selectedTab]);
+
+    useEffect(() => {
+      setClassifier(schema.classifier);
+      setDocumentsTabs(schema.tabs);
+    }, [schema]);
+
+    useEffect(() => {
+      onChangeTab && onChangeTab(selectedTab);
+    }, [selectedTab?.type]);
+
+    /**
+     * Добавление документов в форму
+     */
+    useEffect(() => {
+      const uniformDocuments = {};
+      for (const type in documents) {
+        // Убрал проверку длины массива
+        if (documents[type]) {
+          uniformDocuments[type] = documents[type]?.pages;
+        }
+      }
+      if (Object.keys(documents).length) {
+        onAfterChange && onAfterChange(uniformDocuments);
+        onChange && onChange(uniformDocuments);
+      }
+    }, [documents, form]);
+
+    useEffect(() => {
+      if (!prev && Object.keys(documents).length) {
+        onInit && onInit(documents);
+        setPrev(documents);
+      }
+    }, [documents]);
+
+    const finishedTasks = tasks.filter(({ status }) => status.code === 'FINISHED');
+
     useImperativeHandle(ref, () => ({
       changeSelectedTab(type) {
         const tab = documentsTabs.find((tab) => tab.type === type);
@@ -78,28 +127,8 @@ const Classifier = forwardRef(
       },
     }));
 
-    const selectedDocument =
-      (selectedTab?.type !== 'classifier' && documents[selectedTab?.type]?.pages) || [];
-    useEffect(() => {
-      if (!prev && Object.keys(documents).length) {
-        onInit && onInit(documents);
-        setPrev(documents);
-      }
-    }, [documents]);
-
-    useEffect(() => {
-      onChangeTab && onChangeTab(selectedTab);
-    }, [selectedTab.type]);
-
-    useEffect(() => {
-      setClassifier(schema.classifier);
-      setDocumentsTabs(schema.tabs);
-    }, [schema]);
-
-    const finishedTasks = tasks.filter(({ status }) => status.code === 'FINISHED');
     const sensors = useSensors(
       useSensor(PointerSensor),
-      useSensor(MouseSensor),
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
       }),
@@ -122,25 +151,6 @@ const Classifier = forwardRef(
 
       return tab || { type: null };
     }
-
-    /**
-     * Добавление документов в форму
-     */
-    useEffect(() => {
-      const uniformDocuments = {};
-
-      for (const type in documents) {
-        // Убрал проверку длины массива
-        if (documents[type]) {
-          uniformDocuments[type] = documents[type]?.pages;
-        }
-      }
-
-      if (Object.keys(documents).length) {
-        onAfterChange && onAfterChange(uniformDocuments);
-        onChange && onChange(uniformDocuments);
-      }
-    }, [documents, form]);
 
     useEffect(() => {
       const processTasks = tasks.filter(
@@ -174,15 +184,6 @@ const Classifier = forwardRef(
       setTwainHandler();
     }, [selectedTab]);
 
-    useEffect(() => {
-      if (documents[selectedTab.type]?.pages?.length === 0) {
-        setView('grid');
-      }
-    }, [selectedTab]);
-
-    useEffect(() => {
-      selectTab(getSelectedTab());
-    }, [uuid]);
     const setTwainHandler = () => {
       return registerTwain((file) => file && handleDocumentsDrop([file]), selectedTab?.type);
     };
@@ -230,7 +231,8 @@ const Classifier = forwardRef(
       } else {
         setLoading(true);
         const compressedFiles = acceptedFiles; //await compressFiles(acceptedFiles);
-        uploadPages(uuid, selectedTab.type, compressedFiles)
+
+        uploadPages(uuid, selectedTab.documentName, compressedFiles)
           .then(async (result) => {
             const documents = await revalidateDocuments();
             onUpdate && onUpdate(selectedTab, documents);
@@ -291,6 +293,7 @@ const Classifier = forwardRef(
         [activeContainer]: {
           pages: documents[activeContainer]?.pages.filter((item) => item !== pageSrc),
           errors: documents[activeContainer]?.errors | [],
+          lastModified: documents[activeContainer]?.lastModified,
         },
       };
       mutateDocuments(newDocumentsList, false);
@@ -302,14 +305,17 @@ const Classifier = forwardRef(
     const onDragStart = ({ active }) => {
       setDrugFrom(selectedTab);
       setActiveDraggable(active);
+      const container = findContainer(active.id);
       setDraggableOrigin({
-        container: findContainer(active.id),
+        container: container,
+        type: selectedTab.documentName,
         index: active.data.current.sortable.index,
       });
     };
 
     const onDragEnd = async ({ active, over }) => {
       const activeContainer = findContainer(active.id);
+
       if (!activeContainer) {
         setActiveDraggable(null);
         return;
@@ -328,7 +334,9 @@ const Classifier = forwardRef(
         const activeIndex = documents[activeContainer]?.pages
           .map((item) => item.path)
           .indexOf(active.id);
+
         let overIndex = documents[overContainer]?.pages.map((item) => item.path).indexOf(overId);
+
         if (activeIndex === -1) {
           return;
         }
@@ -341,24 +349,35 @@ const Classifier = forwardRef(
           mutateDocuments(
             {
               ...documents,
-              [overContainer]: arrayMove(documents[overContainer]?.pages, activeIndex, overIndex),
+              [overContainer]: {
+                ...documents[overContainer],
+                pages: arrayMove(documents[overContainer]?.pages, activeIndex, overIndex),
+              },
             },
             false,
           );
         }
 
+        const overContainerTo = overContainer.split('_')[0];
+
         if (draggableOrigin.container !== overContainer) {
           await correctDocuments([
             {
-              from: { class: draggableOrigin.container, page: draggableOrigin.index + 1 },
-              to: { class: overContainer, page: overIndex + 1 },
+              from: {
+                class: draggableOrigin.type,
+                page: draggableOrigin.index + 1,
+              },
+              to: { class: overContainerTo, page: overIndex + 1 },
             },
           ]);
         } else {
           await correctDocuments([
             {
-              from: { class: activeContainer, page: activeIndex + 1 },
-              to: { class: overContainer, page: overIndex + 1 },
+              from: {
+                class: activeContainer.split('_')[0],
+                page: activeIndex + 1,
+              },
+              to: { class: overContainerTo, page: overIndex + 1 },
             },
           ]);
         }
@@ -413,6 +432,7 @@ const Classifier = forwardRef(
 
           newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
         }
+
         const newDocuments = {
           ...documents,
           [activeContainer]: {
@@ -445,6 +465,7 @@ const Classifier = forwardRef(
       }
       selectTab(tab);
     };
+
     return (
       <div className="dossier classifier">
         <div className="grid gridCentered">
@@ -452,11 +473,11 @@ const Classifier = forwardRef(
             <>
               <DndContext
                 sensors={sensors}
-                modifiers={[snapCenterToCursor]}
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
                 onDragOver={onDragOver}
-                onDragCancel={onDragCancel}>
+                onDragCancel={onDragCancel}
+                collisionDetection={closestCenter}>
                 <div className="dossier__wrap dossier__wrap__menu dossier__wrap__menu__grid">
                   <Menu
                     withViewTypes={withViewTypes}
@@ -482,6 +503,7 @@ const Classifier = forwardRef(
                       fileType={selectedTab.fileType}
                     />
                   )}
+
                   <Dimmable>
                     <Loader
                       active={
@@ -501,6 +523,7 @@ const Classifier = forwardRef(
               </DndContext>
             </>
           )}
+
           {view === 'list' && (
             <div className="dossier__wrap dossier__wrap__menu dossier__wrap__menu__list">
               <ListMenu

@@ -16,10 +16,20 @@ model Dossier {
   document Document[]
 }
 
+model DocumentState {
+  id               Int               @id @default(autoincrement())
+  code             String            @unique
+  name             String?
+  createAt         DateTime?         @default(now())
+  updateAt         DateTime?         @updatedAt
+  documentVersions DocumentVersion[]
+}
+
 model DocumentVersion {
   id              Int            @id @default(autoincrement())
   version         Int?
-  status          String? // Изменить на таблицу, когда определятся статусы документа
+  documentStateId Int?
+  documentState   DocumentState? @relation(fields: [documentStateId], references: [id])
   documentId      Int?
   createAt        DateTime?      @default(now())
   updateAt        DateTime?      @updatedAt
@@ -59,7 +69,25 @@ model Page {
   errors            Error[]
 }
 
-// Типы ошибок
+// Статусы ошибок
+
+model ErrorType {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  description String?
+  createAt    DateTime? @default(now())
+  updateAt    DateTime? @updatedAt
+  errors      Error[]
+}
+
+model ErrorState {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  description String?
+  createAt    DateTime? @default(now())
+  updateAt    DateTime? @updatedAt
+  errors      Error[]
+}
 
 model Error {
   id                Int              @id @default(autoincrement())
@@ -69,11 +97,15 @@ model Error {
   documentId        Int?
   documentVersionId Int?
   pageId            Int?
+  errorTypeId       Int?
+  errorStateId      Int?
   createAt          DateTime?        @default(now())
   updateAt          DateTime?        @updatedAt
   document          Document?        @relation(fields: [documentId], references: [id])
   page              Page?            @relation(fields: [pageId], references: [id])
   documentVersion   DocumentVersion? @relation(fields: [documentVersionId], references: [id])
+  errorType         ErrorType?       @relation(fields: [errorTypeId], references: [id])
+  errorState        ErrorState?      @relation(fields: [errorStateId], references: [id])
 }
 
 model Verification {

@@ -3,13 +3,12 @@ import fs from 'fs';
 import FormData from 'form-data';
 import fetch from 'isomorphic-fetch';
 import { timeoutPromise } from '../../../libs/utils.js';
-import Errors from '../../dataMatrixReaderServises/services/Errors.js';
 
 export default class SignatureDetectorVerification extends Service {
-  constructor({ documentGateway }) {
+  constructor({ documentErrorService }) {
     super();
     this.nameVerification = 'signatureDetectorVerification';
-    this.documentGateway = documentGateway;
+    this.documentErrorService = documentErrorService;
     this.errors = [];
     this.classifierTimeout = 30;
   }
@@ -26,7 +25,7 @@ export default class SignatureDetectorVerification extends Service {
     }
 
     const res = await timeoutPromise(
-      fetch(process.env.SIGNATURE_DETECTOR_URL, {
+      fetch(process.env['apps.loandossier.stub.signatureDetectorUrl'], {
         method: 'POST',
         headers: {
           ...formData.getHeaders(),
@@ -42,8 +41,13 @@ export default class SignatureDetectorVerification extends Service {
       const numberDetectedSignatures = signatures.filter((item) => item.detected).length;
 
       if (numberDetectedSignatures < signatures.length) {
-        const error = Errors.notFound('Подписи не найдены');
-        await this.documentGateway.addError(document, error);
+        const error = {
+          description: 'Подписи не найдены',
+          errorState: 'ACTIVE',
+          errorType: 'VERIFICATION',
+        };
+
+        await this.documentErrorService.addError(document, error);
         this.errors.push(error);
       }
 

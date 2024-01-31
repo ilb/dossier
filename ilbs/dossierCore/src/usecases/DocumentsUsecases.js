@@ -1,4 +1,7 @@
 import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
+import createDebug from 'debug';
+
+const debug = createDebug('dossier');
 
 export default class DocumentsUsecases extends Usecases {
   /**
@@ -7,7 +10,10 @@ export default class DocumentsUsecases extends Usecases {
    * @returns {}
    */
   async list({ documentsService, request }) {
-    return await documentsService.getDocuments(request);
+    debug('get list start', request.uuid);
+    const list = await documentsService.getDocuments({ ...request, withVersions: true });
+    debug('get list end', request.uuid);
+    return list;
   }
 
   /**
@@ -29,7 +35,9 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async update({ pagesService, request }) {
+    debug('update document start', request.uuid);
     await pagesService.add(request);
+    debug('update document end', request.uuid);
   }
 
   /**
@@ -51,7 +59,9 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async correctPages({ pagesService, request }) {
+    debug('correctPages start', request.uuid);
     await pagesService.correct(request);
+    debug('correctPages end', request.uuid);
   }
 
   /**
@@ -59,7 +69,9 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async deletePage({ pagesService, request }) {
+    debug('deletePage start', request.uuid);
     await pagesService.delete(request);
+    debug('deletePage end', request.uuid);
   }
 
   /**
@@ -67,7 +79,11 @@ export default class DocumentsUsecases extends Usecases {
    * @param {object} request
    */
   async getPage({ pagesService, request }) {
-    return await pagesService.get(request);
+    debug('getPage start', request.uuid);
+    const page = await pagesService.get(request);
+    debug('getPage end', request.uuid);
+
+    return page;
   }
 
   /**
@@ -75,14 +91,45 @@ export default class DocumentsUsecases extends Usecases {
    * @returns {Promise<{file: Buffer, filename: *, contentType: *}>}
    */
   async print({ documentsService, request }) {
-    return await documentsService.getDocument(request);
+    debug('getDocument (print) start', request.uuid);
+    const document = await documentsService.getDocument(request);
+    debug('getDocument (print) end', request.uuid);
+
+    return document;
   }
 
   async getByVersion({ documentsService, request }) {
-    return await documentsService.getDocumentByVersion(request);
+    debug('getDocumentByVersion start', request.uuid);
+    const documentByVersion = await documentsService.getDocumentByVersion(request);
+    debug('getDocumentByVersion end', request.uuid);
+    return documentByVersion;
   }
 
   async getDate({ dossierService, request }) {
-    return await dossierService.getCreatedDate(request);
+    debug('getCreatedDate start', request.uuid);
+    const createdDate = await dossierService.getCreatedDate(request);
+    debug('getCreatedDate end', request.uuid);
+    return createdDate;
+  }
+
+  async changeVersion({ documentsService, request }) {
+    debug('changeDocumentVersion start', request.uuid);
+    const newVersion = await documentsService.changeDocumentVersion(request);
+    debug('changeDocumentVersion end', request.uuid);
+    return newVersion;
+  }
+
+  async documentsInfo({ documentsService, request }) {
+    debug('getDocumentsInfo start', request.uuid);
+    const documentsInfo = await documentsService.getDocumentsInfo(request);
+    debug('getDocumentsInfo end', request.uuid);
+    return documentsInfo;
+  }
+
+  async changeState({ documentsService, request }) {
+    debug('changeDocumentState start', request.uuid);
+    const result = await documentsService.changeDocumentState(request);
+    debug('changeDocumentState end', request.uuid);
+    return result;
   }
 }

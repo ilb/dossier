@@ -1,10 +1,15 @@
 import Classifier from '@ilbru/dossier-ui/src/classifier/client/components/Classifier.mjs';
 // import { useRef, useState } from 'react';
 import { useEffect, useState } from 'react';
+import loanbrokerTestSchema from '../test/loanbrokerTestSchema.json';
+import loandealTestSchema from '../test/loandealTestSchema.json';
 
 export default function App() {
-  const uuid = '7533b049-88ca-489b-878a-3ac1c8616fe7';
-  const dossierUrl = process.env.BASE_URL + '/loandossier';
+  const uuid = '6f19eeac-53ba-4f4d-adab-2dbb89f008d8';
+  const dossierUrl = process.env.BASE_URL;
+
+  // console.log('loanbrokerTestSchema', loanbrokerTestSchema);
+  // console.log('loandealTestSchema', loandealTestSchema);
 
   const [schema, setSchema] = useState({});
   const [isSchemaLoaded, setSchemaLoaded] = useState(false);
@@ -12,13 +17,13 @@ export default function App() {
   const [errorText, setErrorText] = useState('');
 
   const fetchSchema = async (params) => {
-    const query = Object.keys(params)
-      .map((key) => `${key}=${params[key]}`)
-      .join('&');
+    const path = `${dossierUrl}/api/schema`;
 
-    const path = `${dossierUrl}/api/schema?${query}`;
+    const res = await fetch(path, {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
 
-    const res = await fetch(path);
     const body = await res.json();
     if (res.ok) {
       setSchema(body);
@@ -32,8 +37,15 @@ export default function App() {
 
   useEffect(() => {
     fetchSchema({
-      dossierCode: 'client',
+      tabs: {
+        client: ['*'],
+        product: ['*'],
+        bail: ['*'],
+        dealShopDocuments: ['*'],
+        dealBankDocuments: ['*'],
+      },
       stateCode: 'CREATED',
+      uuid,
     });
   }, []);
 
@@ -74,8 +86,8 @@ export default function App() {
             defaultViewType="grid"
             dossierUrl={dossierUrl}
             uuid={uuid}
-            schema={schema}
-            onChangeTab={(tab) => console.log('tab', tab)}
+            schema={loanbrokerTestSchema}
+            onChangeTab={() => {}}
             // onInit={documentStore.setDocuments}
             // onAfterChange={documentStore.updateDocuments}
             defaultTab="passport"

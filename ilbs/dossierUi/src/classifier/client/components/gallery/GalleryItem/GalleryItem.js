@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import Image from 'next/image';
+
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
 
@@ -20,15 +22,6 @@ const GalleryItem = React.memo(
       },
       ref,
     ) => {
-      useEffect(() => {
-        if (!dragOverlay) {
-          return;
-        }
-        document.body.style.cursor = 'grabbing';
-        return () => {
-          document.body.style.cursor = '';
-        };
-      }, [dragOverlay]);
       const handleClick = (event) => {
         event.preventDefault();
         onRemove(src);
@@ -38,7 +31,6 @@ const GalleryItem = React.memo(
         return src.type ? src.type.includes('image/') : true;
       };
 
-      const getPath = () => src.path || src; // todo как-то избавиться от такого
       return (
         <div ref={ref} style={style}>
           <div className="segment" style={{ margin: 3 }}>
@@ -62,18 +54,19 @@ const GalleryItem = React.memo(
               {/*    ))}*/}
               {/*  </Popup>*/}
               {/*)}*/}
-              {!disabled && <Handle {...listeners} />}
+              {!disabled && <Handle dragOverlay={dragOverlay} {...listeners} />}
               {!disabled && <Remove onClick={handleClick} />}
               <div {...attributes}>
                 {isImage() && (
-                  <img
-                    src={getPath()}
-                    quality={10}
+                  <Image
+                    unoptimized
+                    src={src.path}
+                    alt="alt"
+                    width={260}
+                    height={350}
                     onClick={onClick}
                     className="img-ofit"
                     style={{
-                      width: '100%',
-                      height: '100%',
                       userSelect: 'none',
                       MozUserSelect: 'none',
                       WebkitUserSelect: 'none',

@@ -30,7 +30,7 @@ export const uploadMiddleware = multer({
   }),
 });
 
-export const getDossierDate = async (req, res, next, result) => {
+export const getDossierDate = (req, res, next, result) => {
   req.query = { ...req.query, createdDate: result.createdDate };
   next();
 };

@@ -1,0 +1,102 @@
+{
+  "classifier": { "disabled": false },
+  "tabs": [
+    {
+      "name": "Не распознано",
+      "type": "unknown",
+      "block": "UNKNOWN_BLOCK",
+      "documentName": "unknown",
+      "tooltip": null,
+      "readonly": false
+    },
+    {
+      "name": "Паспорт",
+      "type": "passport",
+      "block": "OFFER_CREATE_BLOCK",
+      "documentName": "passport",
+      "tooltip": null,
+      "required": true,
+      "readonly": false
+    },
+    {
+      "name": "Согласие",
+      "type": "offerAgreement",
+      "block": "OFFER_CREATE_BLOCK",
+      "documentName": "offerAgreement",
+      "tooltip": null,
+      "required": true,
+      "readonly": false
+    },
+    {
+      "name": "Фото",
+      "type": "buyerPhoto",
+      "block": "OFFER_CREATE_BLOCK",
+      "documentName": "buyerPhoto",
+      "tooltip": null,
+      "required": false,
+      "readonly": false
+    },
+    {
+      "name": "В/удостоверение",
+      "type": "driverLicense",
+      "block": "OFFER_CREATE_BLOCK",
+      "documentName": "driverLicense",
+      "tooltip": null,
+      "readonly": false
+    },
+    {
+      "name": "СНИЛС",
+      "type": "snils",
+      "block": "OFFER_CREATE_BLOCK",
+      "documentName": "snils",
+      "tooltip": null,
+      "readonly": false
+    },
+    {
+      "name": "Согласие",
+      "type": "offerAgreement",
+      "documentName": "offerAgreement",
+      "tooltip": null,
+      "required": true,
+      "readonly": false
+    },
+    {
+      "name": "Прочее",
+      "type": "otherDocuments",
+      "block": "OTHER_BLOCK",
+      "documentName": "otherDocuments",
+      "tooltip": "Документы, которые распознались, но не могут быть загружены в необходимую вкладку",
+      "readonly": false
+    }
+  ],
+  "blocks": [
+    { "name": "", "type": "UNKNOWN_BLOCK", "collapsed": false, "open": false },
+    { "name": "Создание заявки", "type": "OFFER_CREATE_BLOCK", "collapsed": true, "open": true },
+    {
+      "name": "Проверка залога",
+      "type": "BAIL_VERIFICATION_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    {
+      "name": "Документы на авто",
+      "type": "AUTO_DOCUMENTS_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    {
+      "name": "Документы на доп. сервисы",
+      "type": "SERVICES_DOCUMENTS_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    {
+      "name": "Оформление сделки",
+      "type": "DEAL_PROCESSING_BLOCK",
+      "collapsed": true,
+      "open": false
+    },
+    { "name": "", "type": "OTHER_BLOCK", "collapsed": false, "open": false }
+  ],
+  "meta": { "required": ["passport", "offerAgreement", "offerAgreement"] }
+}

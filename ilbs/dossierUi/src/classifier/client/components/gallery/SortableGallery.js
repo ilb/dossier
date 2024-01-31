@@ -4,19 +4,56 @@ import GalleryItem from './GalleryItem/GalleryItem';
 import SortableGalleryItem from './SortableGalleryItem';
 import SegmentItem from './GalleryItem/SegmentItem';
 import React, { useEffect, useState } from 'react';
-import ControlsMenu from '../gallery/GalleryItem/ControlsMenu';
+import ControlsMenu from './GalleryItem/ControlsMenu';
+
+const getPageNumFromImageId = (id) => {
+  const match = id.match(/number\/(\d+)/);
+
+  if (match && match[1]) {
+    return parseInt(match[1], 10);
+  }
+
+  return null;
+};
+
+const initState = {
+  currentPage: null,
+  scale: 1,
+  rotation: 0,
+  src: '',
+  previewOpen: false,
+};
 
 const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
-  const [state, setState] = useState({
-    scale: 1,
-    rotation: 0,
-    src: '',
-    previewOpen: false
-  });
+  const [state, setState] = useState(initState);
 
   useEffect(() => {
     setState({ ...state, previewOpen: false });
   }, [tab?.type]);
+
+  useEffect(() => {
+    setState(initState);
+  }, [tab?.name]);
+
+  const pageCount = srcSet.length;
+
+  const navigatePage = (direction) => {
+    if (direction === 'prev' && state.currentPage > 1) {
+      setState({
+        ...state,
+        rotation: 0,
+        currentPage: state.currentPage - 1,
+        src: srcSet[state.currentPage - 2].id,
+      });
+    } else if (direction === 'next' && state.currentPage < pageCount) {
+      setState({
+        ...state,
+        rotation: 0,
+        currentPage: state.currentPage + 1,
+        src: srcSet[state.currentPage].id,
+      });
+    }
+  };
 
   const rotateImage = async (event, { angle }) => {
     let newAngle = state.rotation + angle;
@@ -59,39 +96,51 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
       <SortableContext items={srcSet} strategy={rectSortingStrategy}>
         {state.previewOpen && (
           <ControlsMenu
+            pageCount={pageCount}
+            currentPage={state.currentPage}
+            navigatePage={navigatePage}
             attached="top"
             rotateImage={rotateImage}
             zoomImageIn={zoomImageIn}
             zoomImageOut={zoomImageOut}
             closePreview={() =>
-              setState({ ...state, rotation: 0, scale: 1, previewOpen: false, src: null })
+              setState({
+                ...state,
+                rotation: 0,
+                scale: 1,
+                previewOpen: false,
+                src: null,
+              })
             }
             zoomImageWithDropdown={zoomImageWithDropdown}
             scale={state.scale}
           />
         )}
+
         <div className="pagePreviewer">
           {!state.previewOpen && (
             <div className="grid">
-              {srcSet.map((src) => {
-                return (
-                  <div key={src.id} className="column">
-                    <SortableGalleryItem
-                      src={src}
-                      errors={pageErrors[src.uuid]}
-                      disabled={tab.readonly}
-                      width={3}
-                      height={4}
-                      onRemove={onRemove}
-                      onClick={() => {
-                        setState({ ...state, previewOpen: true, src: src.id });
-                      }}
-                    />
-                  </div>
-                );
-              })}
+              {srcSet.map((src) => (
+                <div key={src.id} className="column">
+                  <SortableGalleryItem
+                    src={src}
+                    errors={pageErrors[src.uuid]}
+                    disabled={tab.readonly}
+                    onRemove={onRemove}
+                    onClick={() => {
+                      setState({
+                        ...state,
+                        previewOpen: true,
+                        src: src.id,
+                        currentPage: getPageNumFromImageId(src.id),
+                      });
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           )}
+
           {state.previewOpen && (
             <SegmentItem
               src={state.src}
@@ -103,10 +152,11 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
           )}
         </div>
       </SortableContext>
+
       <DragOverlay>
         {active ? (
           <GalleryItem
-            src={active.id}
+            src={{ path: active.id }}
             width={3}
             height={4}
             style={{ backgroundColor: '#ffffff', opacity: 0.6 }}

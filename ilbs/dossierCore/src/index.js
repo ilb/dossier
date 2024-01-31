@@ -9,7 +9,6 @@ import ErrorRepository from './repositories/ErrorRepository.js';
 import PageRepository from './repositories/PageRepository.js';
 import VerificationRepository from './repositories/VerificationRepository.js';
 import ClassifierGate from './gates/ClassifierGate.js';
-import ClassifierGateMock from './gates/ClassifierGateMock.js';
 import mockSchema from './schemas/mockSchema.js';
 import ClassifyService from './services/ClassifyService.js';
 import DocumentsService from './services/DocumentsService.js';
@@ -17,31 +16,33 @@ import DossierService from './services/DossierService.js';
 import FileService from './services/FileService.js';
 import PagesService from './services/PagesService.js';
 import VerificationService from './services/VerificationService.js';
-import RoleDossierProcessor from './schemas/core/RoleDossierProcessor.js';
 import BaseSchemaBuilder from './schemas/core/BaseSchemaBuilder.js';
+import DocumentErrorGateway from './gateway/DocumentErrorGateway.js';
+import DocumentStateService from './services/DocumentStateService.js';
+import DocumentErrorService from './services/DocumentErrorService.js';
 
 const registerPackageClasses = (container) => {
   container.register({
     documentMerger: asClass(DocumentMerger),
     dossierBuilder: asClass(DossierBuilder),
     documentGateway: asClass(DocumentGateway),
+    documentErrorGateway: asClass(DocumentErrorGateway),
+    documentErrorService: asClass(DocumentErrorService),
     documentRepository: asClass(DocumentRepository),
     documentVersionRepository: asClass(DocumentVersionRepository),
     dossierRepository: asClass(DossierRepository),
     errorRepository: asClass(ErrorRepository),
     pageRepository: asClass(PageRepository),
     verificationRepository: asClass(VerificationRepository),
-    classifierGate: asClass(
-      process.env.CLASSIFIER_GATE_MOCK === 'true' ? ClassifierGate : ClassifierGateMock,
-    ),
+    classifierGate: asClass(ClassifierGate),
     dossierSchema: asValue(mockSchema),
     classifyService: asClass(ClassifyService),
     documentsService: asClass(DocumentsService),
+    documentStateService: asClass(DocumentStateService),
     dossierService: asClass(DossierService),
     fileService: asClass(FileService),
     pagesService: asClass(PagesService),
     verificationService: asClass(VerificationService),
-    roleDossierProcessor: asClass(RoleDossierProcessor),
     baseSchemaBuilder: asClass(BaseSchemaBuilder),
   });
 };

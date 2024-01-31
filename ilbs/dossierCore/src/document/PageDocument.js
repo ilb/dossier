@@ -5,6 +5,8 @@ import mime from 'mime-types';
 import Page from './Page.js';
 import Document from './Document.js';
 import DocumentMerger from '../dossier/DocumentMerger.js';
+import PageDocumentVersion from './PageDocumentVersion.js';
+import DocumentError from './DocumentError.js';
 
 export default class PageDocument extends Document {
   /**
@@ -17,20 +19,47 @@ export default class PageDocument extends Document {
     this.dossierPath = this.documentsPath + '/dossier';
     this.documentMerger = new DocumentMerger(this.dossierPath);
     this.verificationsList = docData.verifications || [];
+    this.validationRules = docData.validationRules || [];
     this.verificationsResult = [];
     this.currentVersion = null;
     this.versions = [];
   }
 
+  initErrors(errors = []) {
+    return errors.map((error) => new DocumentError(error));
+  }
+
+  setState(state) {
+    this.state = state;
+  }
+
+  addErrors(errors) {
+    this.errors = [...this.errors, ...errors];
+  }
+
   setDbData(document) {
     this.setUuid = document.uuid;
     this.setId = document.id;
-    this.errors = document.currentDocumentVersion.errors;
-    this.currentVersion = document.currentDocumentVersion;
-    this.status = document.currentDocumentVersion.status || '';
-    this.versions = document.versions;
+    this.errors = this.initErrors(document.currentDocumentVersion?.errors);
+    this.initCurrentDocumentVersion(document.currentDocumentVersion);
+    this.state = document.currentDocumentVersion?.documentState?.code || '';
+    this.initVersions(document.documentVersions);
     this.lastModified = document.updateAt || document.createAt;
-    this.verificationsResult = document.currentDocumentVersion.verifications || [];
+    this.verificationsResult = document.currentDocumentVersion?.verifications || [];
+  }
+
+  initCurrentDocumentVersion(version) {
+    this.currentVersion = new PageDocumentVersion({ type: this.type, ...version });
+  }
+
+  initVersions(versions) {
+    this.versions = versions.map(
+      (version) =>
+        new PageDocumentVersion({
+          type: this.type,
+          ...version,
+        }),
+    );
   }
 
   setCurrentVersion(version) {
@@ -39,6 +68,14 @@ export default class PageDocument extends Document {
 
   setVersions(versions) {
     this.versions = versions;
+  }
+
+  getVersion(versionNumber) {
+    return this.versions.find(({ version }) => version === versionNumber);
+  }
+
+  setErrors(errors) {
+    this.errors = errors;
   }
 
   /**

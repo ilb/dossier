@@ -1,12 +1,12 @@
 import SchemaBuilder from './SchemaBuilder.js';
 
 export default class BaseSchemaBuilder extends SchemaBuilder {
-  build(schema, context) {
+  async build(schema, context) {
     this.init(schema, context);
 
     const classifier = this.getClassifierProperties(context.access);
-    const blocks = this.getBlocksProperties();
-    const tabs = this.getTabsProperties(context.access);
+    const blocks = await this.getBlocksProperties();
+    const tabs = await this.getTabsProperties(context.access);
     const meta = this.getMeta(tabs);
 
     return { classifier, tabs, blocks, meta };

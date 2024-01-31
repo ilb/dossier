@@ -5,11 +5,7 @@ import prisma from '../libs/prisma/index.js';
 import registerPackageClasses from '@ilbru/dossier-core/src/index.js';
 import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerification.js';
 import DataMatrixVerification from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerification.js';
-import SignatureDetectorVerificationMock from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerificationMock.js';
-import DataMatrixVerificationMock from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerificationMock.js';
 import DataMatrixCheckService from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixCheckService.js';
-import CropService from '@ilbru/checks/src/dataMatrixReaderServises/services/CropService.js';
-import FlipService from '@ilbru/checks/src/dataMatrixReaderServises/services/FlipService.js';
 export default class Kernel {
   constructor() {
     this.container = createContainer();
@@ -28,16 +24,9 @@ export default class Kernel {
       documentsPath: asValue(process.env.DOCUMENTS_PATH),
       request: asValue(context.request),
       classifierQuantity: asValue(8),
-      isClassifyMock: process.env.CLASSIFIER_GATE_MOCK === 'true',
-      signatureDetectorVerification: asClass(
-        process.env.SIGNATURE_DETECTOR_MOCK === 'true'
-          ? SignatureDetectorVerificationMock
-          : SignatureDetectorVerification,
-      ),
+      signatureDetectorVerification: asClass(SignatureDetectorVerification),
       dataMatrixCheckService: asClass(DataMatrixCheckService),
       dataMatrixVerification: asClass(DataMatrixVerification),
-      cropService: asClass(CropService),
-      flipService: asClass(FlipService),
     });
   }
 

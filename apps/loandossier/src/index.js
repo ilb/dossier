@@ -1,4 +1,4 @@
-import Kernel from '../src/Kernel.mjs';
+import Kernel from './Kernel.js';
 import JsonResponse from '@ilbru/core/src/responses/JsonResponse.js';
 import JsonContext from '@ilbru/core/src/contexts/JsonContext.js';
 // import nc from 'next-connect';

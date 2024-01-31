@@ -10,7 +10,7 @@ module.exports = withPlugins([withTM], {
   assetPrefix: basePath,
   env: {
     API_PATH: basePath + '/api',
-    BASE_URL: process.env.BASE_URL,
+    BASE_URL: process.env['apps.loandossier.ws'],
   },
   trailingSlash: false,
   images: {

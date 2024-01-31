@@ -22,6 +22,17 @@ export default class DocumentGateway {
     this.errorRepository = errorRepository;
   }
 
+  async changeDocumentState(document, stateCode) {
+    await this.documentVersionRepository.update({
+      id: document.currentVersion.id,
+      documentState: {
+        connect: {
+          code: stateCode,
+        },
+      },
+    });
+  }
+
   async addPages(document, pages) {
     await document.addPages(pages);
     await this.createPagesOnBase(document, pages);
@@ -37,36 +48,10 @@ export default class DocumentGateway {
     await this.deletePageInBase(pageUuid);
   }
 
-  async addError(document, error) {
-    await this.errorRepository.create({
-      code: error.type,
-      description: error.description,
-      documentVersion: {
-        connect: {
-          id: document.currentVersion.id,
-        },
-      },
-    });
-  }
-
   async reorderPages(pages) {
     for (const page of pages) {
       await this.pageRepository.updatePageNumber(page.uuid, page.pageNumber);
     }
-  }
-
-  async archiveErrors(document) {
-    const idsArray = document.errors.map(({ id }) => id);
-    await this.errorRepository.updateMany({
-      where: {
-        id: {
-          in: idsArray,
-        },
-      },
-      data: {
-        isArchive: true,
-      },
-    });
   }
 
   async initDossier(dossier) {
@@ -105,9 +90,8 @@ export default class DocumentGateway {
       });
       const version = await this.createDocumentVersion(documentFromDb.uuid, 1);
       documentFromDb.currentDocumentVersion = version;
-      documentFromDb.versions = [version];
+      documentFromDb.documentVersions = [version];
     }
-
     if (documentFromDb) {
       document.setDbData(documentFromDb);
     }
@@ -120,7 +104,11 @@ export default class DocumentGateway {
 
     const newVersionCartage = {
       version: versionNumber,
-      status: 'new',
+      documentState: {
+        connect: {
+          code: 'NOT_LOADED',
+        },
+      },
       currentDocument: {
         connect: {
           uuid: documentUuid,
@@ -137,23 +125,27 @@ export default class DocumentGateway {
   }
 
   async initDocumentPages(document) {
-    const pages = await this.pageRepository.findByFilter({
-      documentVersion: {
-        id: document.currentVersion.id,
-      },
-      isDelete: false,
-    });
+    if (document.currentVersion?.id) {
+      const pages = await this.pageRepository.findByFilter({
+        documentVersion: {
+          id: document.currentVersion.id,
+        },
+        isDelete: false,
+      });
 
-    document.pages = pages.map(
-      (item) =>
-        new Page({
-          uuid: item.uuid,
-          errors: item.errors,
-          pageNumber: item.pageNumber,
-          context: item.context,
-          ...item.data,
-        }),
-    );
+      document.pages = pages.map(
+        (item) =>
+          new Page({
+            uuid: item.uuid,
+            errors: item.errors,
+            pageNumber: item.pageNumber,
+            context: item.context,
+            ...item.data,
+          }),
+      );
+    } else {
+      document.pages = [];
+    }
   }
 
   async changeDocumentOnPage(uuid, currentDocumentId, pageNumber) {
@@ -167,7 +159,7 @@ export default class DocumentGateway {
       isDelete: true,
     });
 
-    // Получение страниц после удоляемой
+    // Получение страниц после удаляемой
     const pages = await this.pageRepository.findGreaterThan({
       documentVersionId: deletePage.documentVersion.id,
       pageNumber: deletePage.pageNumber,
@@ -275,44 +267,57 @@ export default class DocumentGateway {
     }
   }
 
-  // // Возвращает номер версии документа
-  // async changeDocumentVersion(document, unknownPage) {
-  //   const versionCartage = {
-  //     code: document.type,
-  //     version: document.version,
-  //     document: {
-  //       connect: {
-  //         uuid: document.uuid,
-  //       },
-  //     },
-  //     errors: {
-  //       connect: document.errors?.map((error) => ({ id: error.id })),
-  //     },
-  //     pages: {
-  //       connect: document.pages.map((page) => ({ uuid: page.uuid })),
-  //     },
-  //   };
+  // Возвращает номер версии документа
+  async changeDocumentVersion(document, state = 'NOT_LOADED') {
+    const versionCartage = {
+      documentState: {
+        connect: {
+          code: state,
+        },
+      },
+      version: document.currentVersion.version + 1,
+      document: {
+        connect: {
+          uuid: document.uuid,
+        },
+      },
+    };
 
-  //   if (unknownPage) {
-  //     versionCartage.pages = {
-  //       connect: {
-  //         uuid: unknownPage,
-  //       },
-  //     };
-  //   }
+    const pages = [];
 
-  //   await this.documentVersionRepository.create(versionCartage);
+    for (let page of document.pages) {
+      const { uuid, pageNumber, errors, context, ...data } = page;
 
-  //   await this.documentRepository.update({
-  //     uuid: document.uuid,
-  //     errors: {
-  //       disconnect: document.errors?.map((error) => ({ id: error.id })),
-  //     },
-  //     version: document.version + 1,
-  //   });
+      const pageCartage = {
+        uuid: v4(),
+        pageNumber,
+        data,
+      };
 
-  //   return document.version;
-  // }
+      pages.push(pageCartage);
+    }
+
+    if (pages.length > 0) {
+      versionCartage.pages = {
+        createMany: {
+          data: pages,
+        },
+      };
+    }
+
+    const newVersion = await this.documentVersionRepository.create(versionCartage);
+
+    await this.documentRepository.update({
+      uuid: document.uuid,
+      currentDocumentVersion: {
+        connect: {
+          id: newVersion.id,
+        },
+      },
+    });
+
+    return versionCartage.version;
+  }
 
   // async unlinkPage(document, page) {
   //   let documentFromDb = (
