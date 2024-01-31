@@ -1,15 +1,23 @@
 import Service from '@ilbru/core/src/base/Service.js';
-import DataMatrixCheckService from './DataMatrixCheckService.js';
+
 export default class DataMatrixVerification extends Service {
-  constructor({ documentRepository, documentGateway, documentErrorService }) {
+  constructor({
+    dataMatrixCheckService,
+    documentGateway,
+    documentErrorService,
+    pageRepository,
+    documentErrorGateway,
+  }) {
     super();
     this.dataMatrixCheckService = dataMatrixCheckService;
-    this.result = [];
-    this.nameVerification = 'DataMatrixCheck';
-    this.ok = true;
-    this.errors = [];
     this.documentGateway = documentGateway;
     this.documentErrorService = documentErrorService;
+    this.pageRepository = pageRepository;
+    this.documentErrorGateway = documentErrorGateway;
+    this.result = [];
+    this.nameVerification = 'dataMatrixVerification';
+    this.ok = true;
+    this.errors = [];
   }
   /**
    *
@@ -19,19 +27,31 @@ export default class DataMatrixVerification extends Service {
    */
   async check(document, context) {
     for (let page of document.pages) {
-      const res = await this.dataMatrixCheckService.decodeFile(page, context.params);
-      let obj = null;
-      if (res) {
-        obj = this.objCreate(res);
+      if (page?.context?.dataMatrixCheck.numberPage) {
+        this.result.push({
+          verification: page?.context?.dataMatrixCheck,
+          uuid: page.uuid,
+        });
+      } else {
+        const res = await this.dataMatrixCheckService.decodeFile(page, context.params);
+        let obj = null;
+        if (res) {
+          obj = this.objCreate(res);
+
+          await this.pageRepository.update({
+            uuid: page.uuid,
+            context: { ...page.context, dataMatrixCheck: obj },
+          });
+        }
+
+        this.result.push({
+          verification: obj,
+          uuid: page.uuid,
+        });
       }
-      this.result.push({
-        verification: obj,
-        pageName: page.name,
-      });
     }
     // const pageNumber = await this.takePageNumber(context.uuid);
     const arrMissingPages = this.searchMissingPages();
-    //Ошибки сохранять в базу через addError
     // await this.updateDocumentPage(pageNumber);
     return await this.response(document, arrMissingPages);
   }
@@ -48,14 +68,13 @@ export default class DataMatrixVerification extends Service {
       this.ok = false;
 
       const error = {
-        description: `Не найденные страницы : ${missingPages.join(', ')}`,
+        description: `Не найденные страницы: ${missingPages.join(', ')}`,
         errorState: 'ACTIVE',
         errorType: 'VERIFICATION',
+        source: this.nameVerification,
       };
 
       await this.documentErrorService.addError(document, error);
-
-      // await document.addError(error);
       this.errors.push(error);
     }
     return {
@@ -81,14 +100,14 @@ export default class DataMatrixVerification extends Service {
    * @returns {Array} возвращает отсутствующие страница исходя из проверок
    */
   //Возвращает отсутствующие страницы исходя из распознаного dtmx для формирования ошибки
-  searchMissingPages() {
+  searchMissingPages(context) {
     const objectDataFullPage = this.result.find(
       (obj) => typeof obj?.verification?.fullPage === 'number',
     );
     const missingPages = [];
     if (objectDataFullPage) {
-      const FullPage = objectDataFullPage?.verification?.fullPage;
-      for (let i = 1; i <= FullPage; i++) {
+      const fullPage = objectDataFullPage?.verification?.fullPage;
+      for (let i = 1; i <= fullPage; i++) {
         const searchPage = this.result.find((obj) => obj?.verification?.numberPage === i);
         if (!searchPage) {
           missingPages.push(i);
@@ -98,6 +117,33 @@ export default class DataMatrixVerification extends Service {
       missingPages.push(0);
     }
     return missingPages;
+  }
+
+  async onDelete(document, page) {
+    const error = document.errors.find(({ source }) => source === this.nameVerification);
+
+    const deletePageNumber = page?.context?.dataMatrixCheck?.numberPage;
+
+    if (error && deletePageNumber) {
+      await this.documentErrorGateway.changeErrorState({
+        id: error.id,
+        errorState: 'ARCHIVE',
+      });
+
+      let numbers = error.description.replace('Не найденные страницы: ', '').split(', ');
+      numbers.push(deletePageNumber);
+      numbers = numbers.map((item) => Number(item)).sort();
+
+      const newError = {
+        description: `Не найденные страницы: ${numbers.join(', ')}`,
+        errorState: 'ACTIVE',
+        errorType: 'VERIFICATION',
+        source: this.nameVerification,
+      };
+
+      await this.documentErrorService.addError(document, newError);
+      this.errors.push(newError);
+    }
   }
 }
 

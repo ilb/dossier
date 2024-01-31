@@ -1,6 +1,7 @@
 import Service from '@ilbru/core/src/base/Service.js';
-
-import { loadImage } from 'canvas'
+import CropService from './CropService';
+import FlipService from './FlipService';
+import { loadImage } from 'canvas';
 import {
   MultiFormatReader,
   BinaryBitmap,
@@ -11,10 +12,10 @@ import { exec } from 'child_process';
 import fs from 'fs';
 
 export default class DataMatrixCheckService extends Service {
-  constructor({ cropService, flipService }) {
+  constructor() {
     super();
-    this.flipService = flipService;
-    this.cropService = cropService;
+    this.flipService = new FlipService();
+    this.cropService = new CropService();
     this.reader = new MultiFormatReader();
   }
 

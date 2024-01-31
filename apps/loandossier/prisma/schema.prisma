@@ -94,6 +94,7 @@ model Error {
   code              String?
   description       String?
   isArchive         Boolean?         @default(false)
+  source            String?
   documentId        Int?
   documentVersionId Int?
   pageId            Int?

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 export default class CropService extends Service {
   constructor() {
     super();
-    this.destination = './verificationsDocuments/dtmxReader/'
+    this.destination = './verificationsDocuments/dtmxReader/';
   }
   async crop(img, cropped, name) {
     // Устанавливаем размеры нового canvas и рисуем его

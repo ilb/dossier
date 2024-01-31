@@ -233,7 +233,7 @@ export default class PageDocument extends Document {
    * @param {string} pageUuid
    */
   async deletePage(pageUuid) {
-    await this.#processDeletePage(pageUuid);
+    return await this.#processDeletePage(pageUuid);
   }
 
   /**
@@ -347,8 +347,9 @@ export default class PageDocument extends Document {
    * @returns {Promise<void>}
    */
   async #processDeletePage(pageUuid) {
-    this.getPageByUuid(pageUuid);
+    const deletedPage = this.getPageByUuid(pageUuid);
     // fs.unlinkSync(page.uri);
     this.pages = this.getPages().filter((page) => page.uuid !== pageUuid);
+    return deletedPage;
   }
 }
