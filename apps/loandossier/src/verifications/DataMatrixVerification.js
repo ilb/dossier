@@ -143,6 +143,19 @@ export default class DataMatrixVerification extends Service {
 
       await this.documentErrorService.addError(document, newError);
       this.errors.push(newError);
+      return;
+    }
+
+    if (deletePageNumber) {
+      const newError = {
+        description: `Не найденные страницы: ${deletePageNumber}`,
+        errorState: 'ACTIVE',
+        errorType: 'VERIFICATION',
+        source: this.nameVerification,
+      };
+
+      await this.documentErrorService.addError(document, newError);
+      this.errors.push(newError);
     }
   }
 }
