@@ -27,8 +27,8 @@ export default class ClassifyService extends Service {
     this.classifierGate = classifierGate;
   }
 
-  async classify({ uuid, availableClasses = [], files }) {
-    const dossier = await this.dossierBuilder.build(uuid);
+  async classify({ uuid, availableClasses = [], files, ...context }) {
+    const dossier = await this.dossierBuilder.build(uuid, context);
     const pages = Object.values(files).map((file) => new Page(file));
     let unknownDocument = dossier.getDocument('unknown');
     // сначала переместить все в нераспознанные

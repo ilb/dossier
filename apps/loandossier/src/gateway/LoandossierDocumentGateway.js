@@ -7,29 +7,46 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
     this.bailRepository = scope.bailRepository;
   }
 
-  async initDocument(document, { uuid }) {
+  async initDocument(document, context) {
+    const { uuid, vin } = context;
+
     const activeBail = await this.bailRepository.findByFilter({ dossierUuid: uuid, active: true });
 
-    let documentFromDb = (
-      await this.documentRepository.findByFilter({
-        dossier: {
-          uuid,
+    const filter = {
+      dossier: {
+        uuid,
+      },
+      code: document.type,
+    };
+
+    if (vin) {
+      filter.OR = [
+        {
+          bail: {
+            vin,
+          },
         },
-        ...(activeBail.length && {
-          OR: [
-            {
-              bail: {
-                vin: activeBail[0].vin,
-              },
-            },
-            {
-              bail: null,
-            },
-          ],
-        }),
-        code: document.type,
-      })
-    )[0];
+        {
+          bail: null,
+        },
+      ];
+    } else if (activeBail.length) {
+      filter.OR = [
+        {
+          bail: {
+            vin: activeBail[0].vin,
+          },
+        },
+        ,
+        {
+          bail: null,
+        },
+      ];
+    } else {
+      filter.bail = null;
+    }
+
+    let documentFromDb = (await this.documentRepository.findByFilter(filter))[0];
 
     if (!documentFromDb) {
       documentFromDb = await this.documentRepository.create({

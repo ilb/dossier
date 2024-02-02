@@ -43,6 +43,7 @@ const Classifier = forwardRef(
       defaultTab = 'classifier',
       withViewTypes = false,
       defaultViewType = 'grid',
+      context = null,
     },
     ref,
   ) => {
@@ -56,7 +57,7 @@ const Classifier = forwardRef(
       classifyDocument,
       deletePage,
       uploadPages,
-    } = useDocuments(uuid, dossierUrl);
+    } = useDocuments(uuid, dossierUrl, context);
     const [documentsTabs, setDocumentsTabs] = useState(schema.tabs);
     const [selectedTab, selectTab] = useState(null);
     const [clonedItems, setClonedItems] = useState(null);
@@ -493,6 +494,7 @@ const Classifier = forwardRef(
                     selected={selectedTab?.type}
                     onDocumentSelect={changeTab}
                     dossierUrl={dossierUrl}
+                    context={context}
                   />
                 </div>
                 <div className="dossier__wrap_preview">

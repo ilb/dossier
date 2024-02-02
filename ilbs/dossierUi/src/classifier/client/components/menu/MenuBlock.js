@@ -9,6 +9,7 @@ const MenuBlock = ({
   onDocumentSelect,
   dossierUrl,
   errors = {},
+  context,
 }) => {
   const [isOpened, setOpen] = useState(block.open);
   const [isVersionOpened, setIsVersionOpened] = useState(false);
@@ -35,6 +36,7 @@ const MenuBlock = ({
                 collapsed={mainBlock.collapsed}
                 isVersionOpened={isVersionOpened}
                 setIsVersionOpened={setIsVersionOpened}
+                context={context}
               />
               {versionBlock.map((doc) => (
                 <MenuTab
@@ -48,6 +50,7 @@ const MenuBlock = ({
                   onDocumentSelect={onDocumentSelect}
                   hidden={!isVersionOpened}
                   dossierUrl={dossierUrl}
+                  context={context}
                 />
               ))}
             </div>
@@ -64,6 +67,7 @@ const MenuBlock = ({
                   selected={document.type === selected}
                   onDocumentSelect={onDocumentSelect}
                   dossierUrl={dossierUrl}
+                  context={context}
                 />
               ))}
             </>

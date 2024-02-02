@@ -8,16 +8,20 @@ export default class DocumentsService extends Service {
     this.documentGateway = scope.documentGateway;
   }
 
-  buildLinks(pages, documentType, version, uuid) {
+  buildLinks(pages, documentType, version, uuid, context) {
     const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
+    const queryObj = { ...context, _nocache: new Date().toLocaleString() };
+
+    const buildQuery = queryObj
+      ? `?${Object.entries(queryObj)
+          .map(([key, value]) => `${key}=${value}`)
+          .join('&')}`
+      : '';
+
     return pages.map((page) => {
       return {
-        id: `${url}/${documentType}/version/${version}/number/${
-          page.pageNumber
-        }?_nocache=${new Date().toLocaleString()}`,
-        path: `${url}/${documentType}/version/${version}/number/${
-          page.pageNumber
-        }?_nocache=${new Date().toLocaleString()}`,
+        id: `${url}/${documentType}/version/${version}/number/${page.pageNumber}${buildQuery}`,
+        path: `${url}/${documentType}/version/${version}/number/${page.pageNumber}${buildQuery}`,
         uuid: page.uuid,
         type: mime.lookup(page.extension),
       };
@@ -34,14 +38,14 @@ export default class DocumentsService extends Service {
     }, ``);
   }
 
-  async changeDocumentVersion({ uuid, name }) {
-    const dossier = await this.dossierBuilder.build(uuid);
+  async changeDocumentVersion({ uuid, name, ...context }) {
+    const dossier = await this.dossierBuilder.build(uuid, context);
     let document = dossier.getDocument(name);
     return await this.documentGateway.changeDocumentVersion(document);
   }
 
-  async getDocument({ uuid, name, version }) {
-    const dossier = await this.dossierBuilder.build(uuid);
+  async getDocument({ uuid, name, version, ...context }) {
+    const dossier = await this.dossierBuilder.build(uuid, context);
     let document = dossier.getDocument(name);
 
     if (version) {
@@ -55,26 +59,23 @@ export default class DocumentsService extends Service {
     };
   }
 
-  async getDocumentsInfo({ uuid }) {
-    const dossier = await this.dossierBuilder.build(uuid);
+  async getDocumentsInfo({ uuid, ...context }) {
+    const dossier = await this.dossierBuilder.build(uuid, context);
     return dossier.getDocuments().map((document) => ({
       type: document.type,
       versions: document.versions,
     }));
   }
 
-  async changeDocumentState({ uuid, name, stateCode }) {
-    const dossier = await this.dossierBuilder.build(uuid);
+  async changeDocumentState({ uuid, name, stateCode, ...context }) {
+    const dossier = await this.dossierBuilder.build(uuid, context);
     let document = dossier.getDocument(name);
     await this.documentStateService.changeState(document, stateCode);
   }
 
-  async getDocuments({ uuid }) {
-    const dossier = await this.dossierBuilder.build(uuid);
-
+  async getDocuments({ uuid, ...context }) {
+    const dossier = await this.dossierBuilder.build(uuid, context);
     const res = dossier.getDocuments().reduce((accumulator, document) => {
-      const links = this.buildLinks(document.getPages(), document.type, 1, uuid);
-
       let result;
 
       if (document.versions.length > 1) {
@@ -82,7 +83,13 @@ export default class DocumentsService extends Service {
 
         document.versions.map((versionObj, i) => {
           versions[document.type + '_' + versionObj.version] = {
-            pages: this.buildLinks(versionObj.pages, document.type, versionObj.version, uuid),
+            pages: this.buildLinks(
+              versionObj.pages,
+              document.type,
+              versionObj.version,
+              uuid,
+              context,
+            ),
             lastModified: document.lastModified,
             errors: this.errorsBuilder(document),
             state: document.state,
@@ -97,7 +104,7 @@ export default class DocumentsService extends Service {
         result = {
           ...accumulator,
           [document.type]: {
-            pages: links,
+            pages: this.buildLinks(document.getPages(), document.type, 1, uuid, context),
             lastModified: document.lastModified,
             errors: this.errorsBuilder(document),
             state: document.state,

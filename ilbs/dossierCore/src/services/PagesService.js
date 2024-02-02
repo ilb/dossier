@@ -138,8 +138,8 @@ export default class PagesService extends Service {
     };
   }
 
-  async add({ uuid, name, files }) {
-    const dossier = await this.scope.dossierBuilder.build(uuid);
+  async add({ uuid, name, files, ...context }) {
+    const dossier = await this.scope.dossierBuilder.build(uuid, context);
     const document = dossier.getDocument(name);
     files = Object.values(files);
     // если загружается не картинка или документ не является набором картинок, то все страницы документа затираются
@@ -162,8 +162,8 @@ export default class PagesService extends Service {
     return { files, name };
   }
 
-  async correct({ uuid, documents }) {
-    const dossier = await this.scope.dossierBuilder.build(uuid);
+  async correct({ uuid, documents, ...context }) {
+    const dossier = await this.scope.dossierBuilder.build(uuid, context);
     await Promise.all(
       Object.values(documents).map(async (correction) => {
         const { from, to } = correction;
@@ -193,15 +193,15 @@ export default class PagesService extends Service {
     );
   }
 
-  async delete({ uuid, name, pageUuid }) {
-    const dossier = await this.scope.dossierBuilder.build(uuid);
+  async delete({ uuid, name, pageUuid, ...context }) {
+    const dossier = await this.scope.dossierBuilder.build(uuid, context);
     const document = dossier.getDocument(name);
     await this.scope.documentGateway.deletePage(document, pageUuid);
     await this.validationRun(document);
   }
 
-  async get({ uuid, name, version, number }) {
-    const dossier = await this.scope.dossierBuilder.build(uuid);
+  async get({ uuid, name, version, number, ...context }) {
+    const dossier = await this.scope.dossierBuilder.build(uuid, context);
     const document = dossier.getDocument(name);
     const versionDocument = document.getVersion(Number(version));
     const page = versionDocument.pages.find(({ pageNumber }) => pageNumber === Number(number));

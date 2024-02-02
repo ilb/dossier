@@ -16,6 +16,7 @@ const Menu = ({
   onChangeView,
   dossierUrl,
   errors,
+  context,
 }) => {
   const [docBlocks, setDocBlocks] = useState([]);
 
@@ -77,6 +78,7 @@ const Menu = ({
                 onDocumentSelect={onDocumentSelect}
                 block={block}
                 dossierUrl={dossierUrl}
+                context={context}
               />
             );
           })}

@@ -59,11 +59,12 @@ const MenuTab = ({
   isVersionOpened,
   setIsVersionOpened,
   collapsed,
+  context,
 }) => {
   let className = '';
   let isNotImage = false;
   let isRequired = !document.readonly && document.required;
-  const { documents } = useDocuments(uuid, dossierUrl);
+  const { documents } = useDocuments(uuid, dossierUrl, context);
   const tabDocuments = documents[document.type]?.pages;
   const countPages = tabDocuments?.length;
 
