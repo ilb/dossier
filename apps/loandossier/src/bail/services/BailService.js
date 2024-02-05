@@ -18,7 +18,7 @@ export default class BailService {
 
     await this.bailRepository.create({
       vin,
-      active: true,
+      active: false,
       dossier: { connect: { uuid } },
     });
 
@@ -48,11 +48,6 @@ export default class BailService {
     // Создаем документы из списка привязываем к ним новый bail
     for (let code of bailDependenceDictionary) {
       await this.documentGateway.createDocument(uuid, code, vin);
-    }
-
-    // Убираем активность старому залогу
-    for (let bail of bails) {
-      await this.bailRepository.update({ vin: bail.vin, active: false });
     }
   }
 
