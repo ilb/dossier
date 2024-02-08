@@ -1,6 +1,6 @@
 {
   "name": "@ilbru/dossier-core",
-  "version": "2.1.13",
+  "version": "2.1.14",
   "description": "dossier-core",
   "type": "module",
   "dependencies": {
