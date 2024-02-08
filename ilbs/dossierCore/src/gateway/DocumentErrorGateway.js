@@ -23,6 +23,7 @@ export default class DocumentErrorGateway {
           code: error.state,
         },
       },
+      source: error.source,
       documentVersion: {
         connect: {
           id: document.currentVersion.id,

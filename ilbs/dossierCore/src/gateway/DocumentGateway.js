@@ -44,8 +44,9 @@ export default class DocumentGateway {
   }
 
   async deletePage(document, pageUuid) {
-    await document.deletePage(pageUuid);
+    const deletedPage = await document.deletePage(pageUuid);
     await this.deletePageInBase(pageUuid);
+    return deletedPage;
   }
 
   async reorderPages(pages) {

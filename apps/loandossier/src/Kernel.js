@@ -4,8 +4,8 @@ import glob from 'glob';
 import prisma from '../libs/prisma/index.js';
 import registerPackageClasses from '@ilbru/dossier-core/src/index.js';
 import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/services/SignatureDetectorVerification.js';
-import DataMatrixVerification from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixVerification.js';
-
+import DataMatrixVerification from './verifications/DataMatrixVerification.js';
+import DataMatrixCheckService from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixCheckService.js';
 export default class Kernel {
   constructor() {
     this.container = createContainer();
@@ -25,6 +25,7 @@ export default class Kernel {
       request: asValue(context.request),
       classifierQuantity: asValue(8),
       signatureDetectorVerification: asClass(SignatureDetectorVerification),
+      dataMatrixCheckService: asClass(DataMatrixCheckService),
       dataMatrixVerification: asClass(DataMatrixVerification),
     });
   }
