@@ -9,6 +9,13 @@ export default class PagesService extends Service {
     this.scope = scope;
   }
 
+  async verificationRunOnDelete(document, deletedPage) {
+    for (let verification of document.verificationsList) {
+      const handler = this.scope[verification.code];
+      await handler.onDelete(document, deletedPage);
+    }
+  }
+
   async verificationsRun(document) {
     // console.log('document', document);
     // let date = new Date();
@@ -196,8 +203,12 @@ export default class PagesService extends Service {
   async delete({ uuid, name, pageUuid, ...context }) {
     const dossier = await this.scope.dossierBuilder.build(uuid, context);
     const document = dossier.getDocument(name);
-    await this.scope.documentGateway.deletePage(document, pageUuid);
-    await this.validationRun(document);
+    const resultValidation = await this.validationRun(document);
+    const deletedPage = await this.scope.documentGateway.deletePage(document, pageUuid);
+    if (!resultValidation?.success) {
+      return;
+    }
+    await this.verificationRunOnDelete(document, deletedPage);
   }
 
   async get({ uuid, name, version, number, ...context }) {

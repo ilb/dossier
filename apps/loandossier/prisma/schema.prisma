@@ -178,6 +178,8 @@ model Error {
   description       String?
   // Флаг архива
   isArchive         Boolean?         @default(false)
+  // Код сервиса ошибки
+  source            String?
   // Id документа, к которому привязана ошибка
   documentId        Int?
   // Id версии документа, к которому привязана ошибка

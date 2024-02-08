@@ -1,9 +1,12 @@
-import { createCanvas, ImageData } from 'canvas';
 import Service from '@ilbru/core/src/base/Service.js';
+import { createCanvas, ImageData } from 'canvas';
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class CropService extends Service {
   constructor() {
     super();
+    this.destination = './verificationsDocuments/dtmxReader/';
   }
   async crop(img, cropped, name) {
     // Устанавливаем размеры нового canvas и рисуем его
@@ -26,32 +29,67 @@ export default class CropService extends Service {
       canvas.height,
     );
 
-    const matrix = [0, -1, 0, -1, 5, -1, 0, -1, 0];
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let pixels = imageData.data;
-    const filteredData = await this.convolutionFilter(imageData, matrix);
-    ctx.putImageData(filteredData, 0, 0);
+    const avg = this.findDominantColor(imageData.data);
 
     const imageDataBlackСolorСontrast = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let pixelsBlackСolorСontrast = imageData.data;
 
-    pixels = this.blackСolorСontrast(pixelsBlackСolorСontrast);
+    let pixels = this.blackСolorСontrast(pixelsBlackСolorСontrast, avg);
     ctx.putImageData(imageData, 0, 0);
+    if (!fs.existsSync(this.destination)) {
+      fs.mkdirSync(this.destination, { recursive: true });
+    }
+    const path = this.destination + uuidv4() + '.png';
 
-    // раскоментировать если надо увидеть что нарезано
-    // const buffer = canvas.toBuffer('image/png');
-    // fs.writeFileSync('./' + name, buffer);
+    const buffer = canvas.toBuffer('image/png');
+    fs.writeFileSync(path, buffer);
 
-    return canvas;
+    return { canvas, path };
+  }
+
+  findDominantColor(imageData) {
+    // Создаем объект для хранения количества пикселей каждого цвета
+    const colorCounts = {};
+    // Итерируем через все пиксели изображения
+    for (let i = 0; i < imageData.length; i += 4) {
+      const [r, g, b] = imageData.slice(i, i + 3);
+      const rgb = `${r},${g},${b}`;
+
+      // Увеличиваем счетчик для цвета
+      if (colorCounts[rgb]) {
+        colorCounts[rgb]++;
+      } else {
+        colorCounts[rgb] = 1;
+      }
+    }
+
+    // Находим цвет с наибольшим количеством пикселей
+    let dominantColor;
+    let maxCount = 0;
+
+    for (const color in colorCounts) {
+      if (colorCounts[color] > maxCount) {
+        dominantColor = color;
+        maxCount = colorCounts[color];
+      }
+    }
+    const numbers = dominantColor.match(/\d+/g);
+    let avg = 0;
+    for (let i = 0; i < numbers.length; i++) {
+      avg += parseInt(numbers[i]); // Суммируем числа, предварительно преобразовав их в числовой формат с помощью parseInt()
+    }
+    // Возвращаем наиболее часто встречающийся цвет
+    return avg / 5;
   }
 
   //контрастируем черный цвет
-  async blackСolorСontrast(pixels) {
+  async blackСolorСontrast(pixels, avgBg) {
     for (let i = 0; i < pixels.length; i += 4) {
       const [r, g, b] = pixels.slice(i, i + 3);
       const avg = (r + g + b) / 3;
 
-      if (avg > 127) {
+      if (avg > Math.round(avgBg)) {
         pixels[i] = 255;
         pixels[i + 1] = 255;
         pixels[i + 2] = 255;
@@ -62,33 +100,5 @@ export default class CropService extends Service {
       }
     }
     return pixels;
-  }
-
-  // добавляем резкости
-  async convolutionFilter(imageData, matrix) {
-    const { width, height, data } = imageData;
-    const outputData = new Uint8ClampedArray(data.length);
-
-    for (let i = 0; i < data.length; i += 4) {
-      let r = 0,
-        g = 0,
-        b = 0,
-        a = data[i + 3];
-      for (let j = 0; j < 9; j++) {
-        const row = Math.floor(j / 3);
-        const col = j % 3;
-        const x = i + (col - 1) * 4 + (row - 1) * width * 4;
-        const value = matrix[j];
-        r += data[x] * value;
-        g += data[x + 1] * value;
-        b += data[x + 2] * value;
-      }
-      outputData[i] = r;
-      outputData[i + 1] = g;
-      outputData[i + 2] = b;
-      outputData[i + 3] = a;
-    }
-
-    return new ImageData(outputData, width, height);
   }
 }

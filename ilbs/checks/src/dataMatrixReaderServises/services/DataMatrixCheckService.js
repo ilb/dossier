@@ -1,28 +1,57 @@
-import { loadImage } from 'canvas';
 import Service from '@ilbru/core/src/base/Service.js';
+import CropService from './CropService';
+import FlipService from './FlipService';
+import { loadImage } from 'canvas';
 import {
   MultiFormatReader,
   BinaryBitmap,
   HTMLCanvasElementLuminanceSource,
-  GlobalHistogramBinarizer,
+  HybridBinarizer,
 } from '@zxing/library';
-import CropService from './CropService.js';
-import FlipService from './FlipService.js';
-import DeviationCheck from './DeviationCheck.js';
+import { exec } from 'child_process';
+import fs from 'fs';
 
 export default class DataMatrixCheckService extends Service {
   constructor() {
     super();
     this.flipService = new FlipService();
-    this.deviationCheck = new DeviationCheck({ flipService: this.flipService });
     this.cropService = new CropService();
     this.reader = new MultiFormatReader();
   }
 
   async decodeCanvas(canvas, name) {
-    //  расшифровываем Матрицу Данных
+    let result;
+    try {
+      const zXingPromise = this.zXing(canvas.canvas);
+      const dmtxReadPromise = this.dmtxRead(canvas.path);
+      result = await Promise.race([
+        Promise.any([zXingPromise, dmtxReadPromise]),
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            reject(new Error('Тайм-аут операции'));
+          }, 300);
+        }),
+      ]);
+    } catch (err) {}
+    fs.unlink(canvas.path, (error) => {});
+    return result;
+  }
+
+  async dmtxRead(path, callback) {
+    return new Promise((resolve, reject) => {
+      exec(`dmtxread -N1 ${path}`, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(stdout);
+      });
+    });
+  }
+
+  async zXing(canvas) {
     const luminanceSource = new HTMLCanvasElementLuminanceSource(canvas);
-    const bitmap = new BinaryBitmap(new GlobalHistogramBinarizer(luminanceSource));
+    const bitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
     const hints = new Map();
     const result = await this.reader.decode(bitmap, hints);
     return result.text;
@@ -31,13 +60,10 @@ export default class DataMatrixCheckService extends Service {
   async decodeImage(image, params, name) {
     let decoded = null;
     for (let param of params) {
-      try {
-        const croppCanvas = await this.cropService.crop(image, param, name);
-        decoded = await this.decodeCanvas(croppCanvas, name);
+      const croppCanvas = await this.cropService.crop(image, param, name);
+      decoded = await this.decodeCanvas(croppCanvas, name);
+      if (decoded) {
         break;
-      } catch (err) {
-        // если не найден dmtx то начнет спамить
-        // console.log(err);
       }
     }
     return decoded;
@@ -46,7 +72,7 @@ export default class DataMatrixCheckService extends Service {
   async decodeFile(file, params) {
     const image = await loadImage(file.uri);
     let decode = await this.decodeImage(image, params, file.name);
-    //this.deviationCheck.check(file.uri, file.name);
+
     if (!decode) {
       const turnOverImage = await this.flipService.turnOver(image);
       decode = await this.decodeImage(turnOverImage, params, file.name);
