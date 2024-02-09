@@ -37,7 +37,6 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
             vin: activeBail[0].vin,
           },
         },
-        ,
         {
           bail: null,
         },

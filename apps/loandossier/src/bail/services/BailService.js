@@ -51,10 +51,18 @@ export default class BailService {
     }
   }
 
-  async activeChange({ oldVin, vin }) {
-    // Старому bail присвоить active = false
-    // Новому bail присвоить active = true
-    await this.bailRepository.update({ vin: oldVin, active: false });
+  async activeChange({ vin, uuid }) {
+    // Активным залогам присвоить  active = false
+    // Залогу по vin присвоить active = true
+    await this.bailRepository.updateMany({
+      where: {
+        dossier: {
+          uuid,
+        },
+        active: true,
+      },
+      active: false,
+    });
     await this.bailRepository.update({ vin, active: true });
   }
 }

@@ -23,4 +23,11 @@ export default class BailRepository extends Repository {
       data,
     });
   }
+
+  async updateMany({ where, ...data }) {
+    return await this.prisma.bail.updateMany({
+      where,
+      data,
+    });
+  }
 }
