@@ -44,6 +44,7 @@ const Classifier = forwardRef(
       withViewTypes = false,
       defaultViewType = 'grid',
       context = null,
+      disabled = false,
     },
     ref,
   ) => {
@@ -498,7 +499,7 @@ const Classifier = forwardRef(
                   />
                 </div>
                 <div className="dossier__wrap_preview">
-                  {selectedTab && !selectedTab.readonly && (
+                  {!disabled && selectedTab && !selectedTab.readonly && (
                     <UploadDropzone
                       onDrop={handleDocumentsDrop}
                       accept={selectedTab.accept}
@@ -519,6 +520,7 @@ const Classifier = forwardRef(
                       srcSet={selectedDocument}
                       onRemove={handlePageDelete}
                       active={activeDraggable}
+                      disabled={disabled}
                     />
                   </Dimmable>
                 </div>
