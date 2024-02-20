@@ -11,7 +11,7 @@ export default class DocumentsUsecases extends Usecases {
    */
   async list({ documentsService, request }) {
     debug('get list start', request.uuid);
-    const list = await documentsService.getDocuments({ ...request, withVersions: true });
+    const list = await documentsService.getDocuments({ ...request });
     debug('get list end', request.uuid);
     return list;
   }

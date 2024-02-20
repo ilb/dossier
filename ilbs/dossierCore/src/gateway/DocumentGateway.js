@@ -215,7 +215,6 @@ export default class DocumentGateway {
     let pages;
 
     if (from < to) {
-      // Проверить, не понятно как перемещает, ведь не указан тип документа.
       pages = await this.pageRepository.findByMove({
         documentVersion: {
           id: document.currentVersion.id,

@@ -17,23 +17,22 @@ export default class DossierBuilder {
    * @param context
    * @returns {Promise<Dossier>}
    */
-  async build(uuid, context = { schema }) {
+  async build(uuid, context) {
     const dossier = this.#buildDossier(uuid, context);
     await this.documentGateway.initDossier(dossier);
     const documents = this.#buildDocuments(dossier, context);
 
     for (let document of documents) {
-      await this.documentGateway.initDocument(document, { uuid: dossier.uuid });
+      await this.documentGateway.initDocument(document, { uuid: dossier.uuid, ...context });
       await this.documentGateway.initDocumentPages(document);
     }
+
     dossier.setDocuments(documents);
 
     return dossier;
   }
 
   #buildDocuments(dossier, context) {
-    const { schema } = context;
-
     return schema.documents.map((document) => {
       const docData = {
         type: document.type,

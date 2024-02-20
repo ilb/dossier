@@ -11,43 +11,18 @@ export default function App() {
   // console.log('loanbrokerTestSchema', loanbrokerTestSchema);
   // console.log('loandealTestSchema', loandealTestSchema);
 
-  const [schema, setSchema] = useState({});
-  const [isSchemaLoaded, setSchemaLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState('');
+  const [context, setContext] = useState(null);
 
-  const fetchSchema = async (params) => {
-    const path = `${dossierUrl}/api/schema`;
-
-    const res = await fetch(path, {
-      method: 'POST',
-      body: JSON.stringify(params),
-    });
-
-    const body = await res.json();
-    if (res.ok) {
-      setSchema(body);
-      setSchemaLoaded(true);
-    } else {
-      setIsError(true);
-      setErrorText('Error');
-      console.log('error', body);
-    }
+  const setOne = () => {
+    console.log('setOne');
+    setContext({ vin: '123' });
   };
-
-  useEffect(() => {
-    fetchSchema({
-      tabs: {
-        client: ['*'],
-        product: ['*'],
-        bail: ['*'],
-        dealShopDocuments: ['*'],
-        dealBankDocuments: ['*'],
-      },
-      stateCode: 'CREATED',
-      uuid,
-    });
-  }, []);
+  const setTwo = () => {
+    setContext({ vin: '124' });
+    console.log('setTwo');
+  };
 
   return (
     <>
@@ -60,6 +35,10 @@ export default function App() {
           <span style={{ textAlign: 'center', fontSize: '20', color: 'red' }}>{errorText}</span>
         </div>
       )}
+      <div>
+        <button onClick={setOne}>123</button>
+        <button onClick={setTwo}>124</button>
+      </div>
       <div
         style={{
           border: '1px solid #b0b0b0',
@@ -79,20 +58,22 @@ export default function App() {
         {/*}}>*/}
         {/*  Select passport*/}
         {/*</button>*/}
-        {isSchemaLoaded && (
-          <Classifier
-            name="classifier"
-            withViewTypes
-            defaultViewType="grid"
-            dossierUrl={dossierUrl}
-            uuid={uuid}
-            schema={loanbrokerTestSchema}
-            onChangeTab={() => {}}
-            // onInit={documentStore.setDocuments}
-            // onAfterChange={documentStore.updateDocuments}
-            defaultTab="passport"
-          />
-        )}
+
+        <Classifier
+          name="classifier"
+          withViewTypes
+          defaultViewType="grid"
+          dossierUrl={dossierUrl}
+          uuid={uuid}
+          schema={loanbrokerTestSchema}
+          onChangeTab={() => {}}
+          // onInit={documentStore.setDocuments}
+          // onAfterChange={documentStore.updateDocuments}
+          defaultTab="passport"
+          selectionMode={true}
+          context={context}
+          disabled={false}
+        />
       </div>
     </>
   );

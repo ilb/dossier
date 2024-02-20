@@ -24,7 +24,7 @@ const initState = {
   previewOpen: false,
 };
 
-const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
+const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled }) => {
   const [state, setState] = useState(initState);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors }) => {
                   <SortableGalleryItem
                     src={src}
                     errors={pageErrors[src.uuid]}
-                    disabled={tab.readonly}
+                    disabled={disabled || tab.readonly}
                     onRemove={onRemove}
                     onClick={() => {
                       setState({

@@ -3,7 +3,7 @@ import { fetcher } from '../utils/fetcher';
 
 const basePath = process.env.API_PATH || '/api';
 
-export const classifyDocument = async (uuid, files, availableClasses, dossierUrl) => {
+export const classifyDocument = async (uuid, files, availableClasses, dossierUrl, buildQuery) => {
   const formData = new FormData();
   files.forEach((f) => {
     formData.append(`documents`, f);
@@ -11,7 +11,7 @@ export const classifyDocument = async (uuid, files, availableClasses, dossierUrl
 
   availableClasses.map((availableClass) => formData.append(`availableClasses`, availableClass));
 
-  const result = await fetch(`${dossierUrl}/api/classifier/${uuid}`, {
+  const result = await fetch(`${dossierUrl}/api/classifier/${uuid}${buildQuery}`, {
     method: 'PUT',
     headers: {
       accept: '*/*',
@@ -26,19 +26,22 @@ export const classifyDocument = async (uuid, files, availableClasses, dossierUrl
   }
 };
 
-export const uploadPages = async (uuid, document, files, dossierUrl) => {
+export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery) => {
   const formData = new FormData();
   files.forEach((f) => {
     formData.append(`documents`, f);
   });
 
-  const result = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/${document}`, {
-    method: 'PUT',
-    headers: {
-      accept: '*/*',
+  const result = await fetch(
+    `${dossierUrl}/api/dossier/${uuid}/documents/${document}${buildQuery}`,
+    {
+      method: 'PUT',
+      headers: {
+        accept: '*/*',
+      },
+      body: formData,
     },
-    body: formData,
-  });
+  );
 
   if (result.ok) {
     return { ok: true };
@@ -47,8 +50,12 @@ export const uploadPages = async (uuid, document, files, dossierUrl) => {
   }
 };
 
-export const deletePage = async (pageSrc) => {
-  const url = pageSrc.path.slice(0, pageSrc.path.indexOf('?')) + `?pageUuid=${pageSrc.uuid}`;
+export const deletePage = async (pageSrc, buildQuery) => {
+  const url =
+    pageSrc.path.slice(0, pageSrc.path.indexOf('?')) +
+    `${buildQuery}` +
+    `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
+  console.log('url', url);
   const result = await fetch(url, {
     method: 'DELETE',
   });
@@ -60,8 +67,8 @@ export const deletePage = async (pageSrc) => {
   }
 };
 
-export const correctDocuments = async (uuid, documents, dossierUrl) => {
-  const res = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/correction`, {
+export const correctDocuments = async (uuid, documents, dossierUrl, buildQuery) => {
+  const res = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/correction${buildQuery}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -111,10 +118,16 @@ export const usePages = (uuid, documentName, dossierUrl) => {
   };
 };
 
-export const useDocuments = (uuid, dossierUrl) => {
+export const useDocuments = (uuid, dossierUrl, context) => {
+  const buildQuery = context
+    ? `?${Object.entries(context)
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&')}`
+    : '';
+
   const { mutate: mutateGlobal } = useSWRConfig();
   const { data: documents, mutate } = useSWR(
-    `${dossierUrl}/api/dossier/${uuid}/documents`,
+    `${dossierUrl}/api/dossier/${uuid}/documents${buildQuery}`,
     fetcher,
     {
       fallbackData: {},
@@ -123,12 +136,14 @@ export const useDocuments = (uuid, dossierUrl) => {
   return {
     documents,
     mutateDocuments: mutate,
-    correctDocuments: (documents) => correctDocuments(uuid, documents, dossierUrl),
-    revalidateDocuments: () => mutateGlobal(`${dossierUrl}/api/dossier/${uuid}/documents`),
+    correctDocuments: (documents) => correctDocuments(uuid, documents, dossierUrl, buildQuery),
+    revalidateDocuments: () =>
+      mutateGlobal(`${dossierUrl}/api/dossier/${uuid}/documents${buildQuery}`),
     classifyDocument: (uuid, files, availableClasses) =>
-      classifyDocument(uuid, files, availableClasses, dossierUrl),
-    uploadPages: (uuid, document, files) => uploadPages(uuid, document, files, dossierUrl),
-    deletePage: (pageSrc) => deletePage(pageSrc),
+      classifyDocument(uuid, files, availableClasses, dossierUrl, buildQuery),
+    uploadPages: (uuid, document, files) =>
+      uploadPages(uuid, document, files, dossierUrl, buildQuery),
+    deletePage: (pageSrc) => deletePage(pageSrc, buildQuery),
   };
 };
 
