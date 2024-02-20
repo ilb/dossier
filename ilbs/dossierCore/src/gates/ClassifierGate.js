@@ -5,8 +5,8 @@ import { timeoutPromise } from '../../libs/utils.js';
 
 export default class ClassifierGate {
   constructor() {
-    this.classifierUrl = process.env['apps.loandossier.stub.classifierUrl'];
-    this.classifierTimeout = parseInt(process.env['apps.loanbroker.classifiertimeout']) || 30;
+    this.classifierUrl = process.env['apps.classifierUrl.ws'];
+    this.classifierTimeout = parseInt(process.env['apps.loandossier.classifiertimeout']) || 30;
   }
 
   /**
