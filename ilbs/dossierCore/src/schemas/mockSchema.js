@@ -54,6 +54,16 @@ export default {
         show: '*',
         editable: '*',
       },
+      verifications: [
+        {
+          code: 'dataMatrixVerification',
+          params: [
+            { sx: 345, sy: 1543, width: 350, height: 140 },
+            { sx: 345, sy: 1578, width: 350, height: 140 },
+            { sx: 345, sy: 1613, width: 350, height: 140 },
+          ],
+        },
+      ],
     },
     {
       name: 'Согласие',
