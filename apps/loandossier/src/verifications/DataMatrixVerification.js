@@ -55,7 +55,7 @@ export default class DataMatrixVerification extends Service {
 
     const arrMissingPages = this.searchMissingPages();
 
-    if (!arrMissingPages) {
+    if (!arrMissingPages.length) {
       for (let page of document.pages) {
         if (page?.context?.dataMatrixCheck?.numberPage) {
           await this.pageRepository.update({
