@@ -7,6 +7,7 @@ export default class DataMatrixVerification extends Service {
     documentErrorService,
     pageRepository,
     documentErrorGateway,
+    documentStateService,
   }) {
     super();
     this.dataMatrixCheckService = dataMatrixCheckService;
@@ -14,6 +15,7 @@ export default class DataMatrixVerification extends Service {
     this.documentErrorService = documentErrorService;
     this.pageRepository = pageRepository;
     this.documentErrorGateway = documentErrorGateway;
+    this.documentStateService = documentStateService;
     this.result = [];
     this.nameVerification = 'dataMatrixVerification';
     this.ok = true;
@@ -154,10 +156,7 @@ export default class DataMatrixVerification extends Service {
 
       await this.documentErrorService.addError(document, newError);
       this.errors.push(newError);
-      return;
-    }
-
-    if (deletePageNumber) {
+    } else if (deletePageNumber) {
       const newError = {
         description: `Не найденные страницы: ${deletePageNumber}`,
         errorState: 'ACTIVE',
@@ -167,6 +166,20 @@ export default class DataMatrixVerification extends Service {
 
       await this.documentErrorService.addError(document, newError);
       this.errors.push(newError);
+    } else {
+      const newError = {
+        description: `Документ не полный. Загрузите страницу для запуска проверки.`,
+        errorState: 'ACTIVE',
+        errorType: 'VERIFICATION',
+        source: this.nameVerification,
+      };
+
+      await this.documentErrorService.addError(document, newError);
+      this.errors.push(newError);
+    }
+
+    if (this.errors.length) {
+      await this.documentStateService.changeState(document, 'VERIFICATIONS_ERROR');
     }
   }
 }
