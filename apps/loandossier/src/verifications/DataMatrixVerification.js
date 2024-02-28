@@ -56,8 +56,14 @@ export default class DataMatrixVerification extends Service {
     const arrMissingPages = this.searchMissingPages();
 
     if (!arrMissingPages.length) {
-      for (let page of document.pages) {
-        if (page?.context?.dataMatrixCheck?.numberPage) {
+      await this.documentGateway.initDocumentPages(document);
+
+      const foundPageNumber = document.pages.filter(
+        (page) => !!page?.context?.dataMatrixCheck?.numberPage,
+      );
+
+      if (foundPageNumber.length === 5) {
+        for (let page of document.pages) {
           await this.pageRepository.update({
             uuid: page.uuid,
             pageNumber: page?.context?.dataMatrixCheck?.numberPage,
