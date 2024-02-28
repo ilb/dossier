@@ -12,7 +12,9 @@ export default class PagesService extends Service {
   async verificationRunOnDelete(document, deletedPage) {
     for (let verification of document.verificationsList) {
       const handler = this.scope[verification.code];
-      await handler.onDelete(document, deletedPage);
+      if (handler.onDelete) {
+        await handler.onDelete(document, deletedPage);
+      }
     }
   }
 
@@ -203,8 +205,8 @@ export default class PagesService extends Service {
   async delete({ uuid, name, pageUuid, ...context }) {
     const dossier = await this.scope.dossierBuilder.build(uuid, context);
     const document = dossier.getDocument(name);
-    const resultValidation = await this.validationRun(document);
     const deletedPage = await this.scope.documentGateway.deletePage(document, pageUuid);
+    const resultValidation = await this.validationRun(document);
     if (!resultValidation?.success) {
       return;
     }
