@@ -54,6 +54,13 @@ export default class BailService {
   async activeChange({ vin, uuid }) {
     // Активным залогам присвоить  active = false
     // Залогу по vin присвоить active = true
+
+    const bails = await this.bailRepository.findByFilter({ dossierUuid: uuid, vin, active: true });
+    if (bails.length) {
+      return;
+    }
+
+    await this.create({ uuid, vin });
     await this.bailRepository.updateMany({
       where: {
         dossier: {
