@@ -75,7 +75,6 @@ const Classifier = forwardRef(
       (selectedTab?.type !== 'classifier' && documents[selectedTab?.type]?.pages) || [];
 
     useEffect(() => {
-      console.log('1');
       selectTab(getSelectedTab());
     }, [uuid]);
 
