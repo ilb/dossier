@@ -58,7 +58,6 @@ export default function App() {
         {/*}}>*/}
         {/*  Select passport*/}
         {/*</button>*/}
-
         <Classifier
           name="classifier"
           withViewTypes

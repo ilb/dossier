@@ -1,5 +1,6 @@
 import DocumentGateway from '@ilbru/dossier-core/src/gateway/DocumentGateway';
 import { v4 } from 'uuid';
+import bailDependenceDictionary from '../bail/utils/bailDependenceDictionary.json';
 
 export default class LoandossierDocumentGateway extends DocumentGateway {
   constructor(scope) {
@@ -9,7 +10,6 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
 
   async initDocument(document, context) {
     const { uuid, vin } = context;
-
     const activeBail = await this.bailRepository.findByFilter({ dossierUuid: uuid, active: true });
 
     const filter = {
@@ -20,27 +20,21 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
     };
 
     if (vin) {
-      filter.OR = [
-        {
-          bail: {
-            vin,
-          },
-        },
-        {
-          bail: null,
-        },
-      ];
+      if (bailDependenceDictionary.includes(document.type)) {
+        filter.bail = {
+          vin,
+        };
+      } else {
+        filter.bail = null;
+      }
     } else if (activeBail.length) {
-      filter.OR = [
-        {
-          bail: {
-            vin: activeBail[0].vin,
-          },
-        },
-        {
-          bail: null,
-        },
-      ];
+      if (bailDependenceDictionary.includes(document.type)) {
+        filter.bail = {
+          vin: activeBail[0].vin,
+        };
+      } else {
+        filter.bail = null;
+      }
     } else {
       filter.bail = null;
     }
@@ -56,6 +50,14 @@ export default class LoandossierDocumentGateway extends DocumentGateway {
             uuid: uuid,
           },
         },
+        ...(vin &&
+          bailDependenceDictionary.includes(document.type) && {
+            bail: {
+              connect: {
+                vin,
+              },
+            },
+          }),
       });
       const version = await this.createDocumentVersion(documentFromDb.uuid, 1);
       documentFromDb.currentDocumentVersion = version;
