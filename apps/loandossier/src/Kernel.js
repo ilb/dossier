@@ -7,6 +7,9 @@ import SignatureDetectorVerification from '@ilbru/checks/src/signatureDetector/s
 import DataMatrixVerification from './verifications/DataMatrixVerification.js';
 import DataMatrixCheckService from '@ilbru/checks/src/dataMatrixReaderServises/services/DataMatrixCheckService.js';
 import LoandossierDocumentGateway from './gateway/LoandossierDocumentGateway.js';
+import DocumentHandlers from './handlers/DocumentHandlers.js';
+import LoandossierPagesService from './page/services/LoandossierPagesService.js';
+import LoandossierClassifyService from './classifier/services/LoandossierClassifyService.js';
 export default class Kernel {
   constructor() {
     this.container = createContainer();
@@ -29,6 +32,9 @@ export default class Kernel {
       dataMatrixCheckService: asClass(DataMatrixCheckService),
       dataMatrixVerification: asClass(DataMatrixVerification),
       documentGateway: asClass(LoandossierDocumentGateway),
+      documentHandlers: asClass(DocumentHandlers),
+      pagesService: asClass(LoandossierPagesService),
+      classifyService: asClass(LoandossierClassifyService),
     });
   }
 
