@@ -49,7 +49,7 @@ const Menu = ({
                   'menuItem',
                   'menuItemTab',
                   classifier.readonly && 'menuItemDisabled',
-                  selected === 'classifier' && 'menuItemSelected',
+                  selected === 'classifier' && !classifier.readonly && 'menuAutomatBtnSelected',
                 )}
                 onClick={(e) => {
                   onDocumentSelect(e, { name: 'classifier' });
@@ -64,6 +64,7 @@ const Menu = ({
                   {/*/>*/}
                 </div>
               </div>
+
               <div className="divider" />
             </>
           )}
