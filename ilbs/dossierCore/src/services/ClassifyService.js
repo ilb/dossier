@@ -27,12 +27,11 @@ export default class ClassifyService extends Service {
     this.classifierGate = classifierGate;
   }
 
-  async classify({ uuid, availableClasses = [], files, ...context }) {
+  async classify({ uuid, availableClasses = [], files, handlers = [], ...context }) {
     const dossier = await this.dossierBuilder.build(uuid, context);
     const pages = Object.values(files).map((file) => new Page(file));
     let unknownDocument = dossier.getDocument('unknown');
     // сначала переместить все в нераспознанные
-    //Проверить работу
     await this.documentGateway.addPages(unknownDocument, pages);
     const path = `${uuid}.classification`;
     let verification;
@@ -93,6 +92,11 @@ export default class ClassifyService extends Service {
                 } else {
                   await this.documentGateway.initDocumentPages(document);
                   await this.dossierService.movePage(unknownDocument, 1, document);
+                  if (handlers.length) {
+                    for (const handler of handlers) {
+                      await handler(document);
+                    }
+                  }
                 }
               }
             }

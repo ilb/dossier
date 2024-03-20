@@ -115,7 +115,7 @@ export default [
     },
   },
   {
-    name: 'ДКП и Акт с пред. собственником',
+    name: 'Документы продавец-автосалон',
     type: 'prevSaleContractAndCheck',
     access: {
       show: '*',
@@ -155,7 +155,7 @@ export default [
     },
   },
   {
-    name: 'Сертификат',
+    name: 'Договор/Сертификат на доп.оборудование/услуги',
     type: 'applicationAdditionalProducts',
     access: {
       show: '*',
@@ -163,7 +163,7 @@ export default [
     },
   },
   {
-    name: 'Счет на оплату допов',
+    name: 'Счет на оплату допов (оборудования/услуг)',
     type: 'servicesInvoice',
     access: {
       show: '*',

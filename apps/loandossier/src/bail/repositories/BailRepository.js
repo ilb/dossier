@@ -15,6 +15,16 @@ export default class BailRepository extends Repository {
     });
   }
 
+  async upsert({ vin, ...data }) {
+    return await this.prisma.bail.upsert({
+      where: {
+        vin,
+      },
+      create: { vin, ...data },
+      update: data,
+    });
+  }
+
   async update({ vin, ...data }) {
     return await this.prisma.bail.update({
       where: {

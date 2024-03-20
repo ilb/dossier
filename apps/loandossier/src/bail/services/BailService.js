@@ -1,14 +1,23 @@
 import bailDependenceDictionary from '../utils/bailDependenceDictionary.json';
 
 export default class BailService {
-  constructor({ bailRepository, dossierRepository, documentRepository, documentGateway }) {
+  constructor({
+    bailRepository,
+    dossierRepository,
+    documentRepository,
+    documentGateway,
+    dossierBuilder,
+  }) {
     this.bailRepository = bailRepository;
     this.dossierRepository = dossierRepository;
     this.documentRepository = documentRepository;
     this.documentGateway = documentGateway;
+    this.dossierBuilder = dossierBuilder;
   }
 
   async create({ uuid, vin }) {
+    await this.dossierBuilder.build(uuid);
+
     const bails = await this.bailRepository.findByFilter({ dossierUuid: uuid });
 
     const isCurrentBail = bails.find((bail) => bail.vin === vin);
@@ -16,10 +25,19 @@ export default class BailService {
       return;
     }
 
-    await this.bailRepository.create({
+    await this.bailRepository.upsert({
       vin,
       active: false,
-      dossier: { connect: { uuid } },
+      dossier: {
+        connectOrCreate: {
+          where: {
+            uuid,
+          },
+          create: {
+            uuid,
+          },
+        },
+      },
     });
 
     if (!bails.length) {
@@ -43,11 +61,6 @@ export default class BailService {
         });
       }
       return;
-    }
-
-    // Создаем документы из списка привязываем к ним новый bail
-    for (let code of bailDependenceDictionary) {
-      await this.documentGateway.createDocument(uuid, code, vin);
     }
   }
 
