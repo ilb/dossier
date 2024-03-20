@@ -457,13 +457,31 @@ const Classifier = forwardRef(
       }
     };
 
+    // const changeTab = (_, { name }) => {
+    //   let tab;
+    //   if (name === 'classifier') {
+    //     tab = { type: 'classifier', name: 'Автоматически' };
+    //   } else {
+    //     tab = documentsTabs.find((tab) => tab.type === name);
+    //   }
+    //   selectTab(tab);
+    // };
+
     const changeTab = (_, { name }) => {
       let tab;
+
       if (name === 'classifier') {
+        if (selectedTab?.type === 'classifier') {
+          selectTab(null);
+          return;
+        }
+
         tab = { type: 'classifier', name: 'Автоматически' };
       } else {
+        if (selectedTab?.type === name) return;
         tab = documentsTabs.find((tab) => tab.type === name);
       }
+
       selectTab(tab);
     };
 
