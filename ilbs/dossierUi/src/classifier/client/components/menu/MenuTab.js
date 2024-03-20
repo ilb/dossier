@@ -72,7 +72,7 @@ const MenuTab = ({
     isNotImage = true;
   }
 
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef, isOver } = useDroppable({
     id: document.type,
     data: { tab: true },
     disabled: document.readonly || disabled || isNotImage,
@@ -96,6 +96,7 @@ const MenuTab = ({
               'menuItemTab',
               selected && 'menuItemSelected',
               disabled && 'menuItemDisabled',
+              selected && isOver && 'menuItemTargeted ',
             )}
             onClick={(e) => {
               if (!disabled) {
