@@ -159,7 +159,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled }
             src={{ path: active.id }}
             width={3}
             height={4}
-            style={{ backgroundColor: '#ffffff', opacity: 0.6 }}
+            style={{ backgroundColor: '#ffffff', opacity: 0.2 }}
             dragOverlay
           />
         ) : null}

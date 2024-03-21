@@ -176,12 +176,22 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.classifier .menuItemTab:not(.menuItemDisabled):hover {
+.classifier .menuItemTab:not(.menuItemDisabled):not(.menuAutomatBtnSelected):hover {
   background-color: rgb(241, 243, 246);
 }
 
 .classifier .menuItemSelected {
   background-color: rgb(232, 234, 238);
+}
+
+.classifier .menuAutomatBtnSelected,
+.classifier .menuItemTargeted {
+  color: #fff;  
+  background-color: #1677ff;
+}
+
+.menuAutomatBtnSelected:hover {
+  background-color: #4096ff;
 }
 
 .classifier .menuItemDisabled {

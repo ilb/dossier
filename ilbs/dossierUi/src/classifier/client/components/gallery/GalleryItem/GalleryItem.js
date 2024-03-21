@@ -33,7 +33,9 @@ const GalleryItem = React.memo(
 
       return (
         <div ref={ref} style={style}>
-          <div className="segment" style={{ margin: 3 }}>
+          <div
+            className="segment"
+            style={{ margin: 3, cursor: `${dragOverlay ? 'grabbing' : 'grab'}` }}>
             <div style={{ padding: 4 }}>
               {/* todo проверка подписей, сделать без semantic-ui */}
               {/*{errors?.count && (*/}
@@ -54,9 +56,10 @@ const GalleryItem = React.memo(
               {/*    ))}*/}
               {/*  </Popup>*/}
               {/*)}*/}
-              {!disabled && <Handle dragOverlay={dragOverlay} {...listeners} />}
+              {/* {!disabled && <Handle dragOverlay={dragOverlay} {...listeners} />} */}
+              {!disabled && <Handle onClick={onClick} />}
               {!disabled && <Remove onClick={handleClick} />}
-              <div {...attributes}>
+              <div {...attributes} {...listeners}>
                 {isImage() && (
                   <Image
                     unoptimized
@@ -64,7 +67,7 @@ const GalleryItem = React.memo(
                     alt="alt"
                     width={260}
                     height={350}
-                    onClick={onClick}
+                    // onClick={onClick}
                     className="img-ofit"
                     style={{
                       userSelect: 'none',
