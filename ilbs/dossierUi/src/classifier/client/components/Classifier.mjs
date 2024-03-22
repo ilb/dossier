@@ -491,6 +491,7 @@ const Classifier = forwardRef(
           {view === 'grid' && (
             <>
               <DndContext
+                modifiers={[snapCenterToCursor]}
                 sensors={sensors}
                 onDragStart={onDragStart}
                 onDragEnd={onDragEnd}
