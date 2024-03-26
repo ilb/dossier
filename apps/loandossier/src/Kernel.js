@@ -27,7 +27,7 @@ export default class Kernel {
       prisma: asValue(prisma),
       documentsPath: asValue(process.env.DOCUMENTS_PATH),
       request: asValue(context.request),
-      classifierQuantity: asValue(8),
+      classifierQuantity: asValue(4),
       signatureDetectorVerification: asClass(SignatureDetectorVerification),
       dataMatrixCheckService: asClass(DataMatrixCheckService),
       dataMatrixVerification: asClass(DataMatrixVerification),
