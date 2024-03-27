@@ -108,7 +108,7 @@ const MenuTab = ({
                 display: 'flex',
                 alignItems: 'center',
               }}>
-              <div className="icons" style={{ display: 'flex' }}>
+              <div className="icons" style={{ display: 'flex', minWidth: '44px' }}>
                 {!!validationErrorMessage ? (
                   <Popup content={validationErrorMessage} trigger={<Alert />} />
                 ) : (
@@ -134,6 +134,7 @@ const MenuTab = ({
                   width: '100%',
                   marginLeft: '5px',
                   wordBreak: 'break-word',
+                  textAlign: 'left',
                 }}>
                 <span>
                   {document.name} {countPages ? '(' + countPages + ')' : ''}
