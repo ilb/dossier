@@ -355,5 +355,13 @@ export default {
         editable: '*',
       },
     },
+    {
+      name: 'Счет на оплату Cтрахования жизни',
+      type: 'lifeInsurance',
+      access: {
+        show: '*',
+        editable: '*',
+      },
+    },
   ],
 };
