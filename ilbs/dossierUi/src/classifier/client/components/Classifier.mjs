@@ -539,6 +539,7 @@ const Classifier = forwardRef(
                       onRemove={handlePageDelete}
                       active={activeDraggable}
                       disabled={disabled}
+                      documents={documents}
                     />
                   </Dimmable>
                 </div>
