@@ -24,7 +24,16 @@ const initState = {
   previewOpen: false,
 };
 
-const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled }) => {
+const SortableGallery = ({
+  srcSet,
+  active,
+  onRemove,
+  tab,
+  pageErrors,
+  disabled,
+  selectedIds,
+  handleSelect,
+}) => {
   const [state, setState] = useState(initState);
 
   useEffect(() => {
@@ -135,6 +144,8 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled }
                         currentPage: getPageNumFromImageId(src.id),
                       });
                     }}
+                    onSelect={(e) => handleSelect(src.id)}
+                    selected={selectedIds.includes(src.id)}
                   />
                 </div>
               ))}
