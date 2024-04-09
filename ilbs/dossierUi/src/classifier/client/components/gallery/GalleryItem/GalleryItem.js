@@ -19,6 +19,8 @@ const GalleryItem = React.memo(
         attributes,
         listeners,
         errors,
+        onSelect,
+        selected,
       },
       ref,
     ) => {
@@ -35,8 +37,18 @@ const GalleryItem = React.memo(
         <div ref={ref} style={style}>
           <div
             className="segment"
-            style={{ margin: 3, cursor: `${dragOverlay ? 'grabbing' : 'grab'}` }}>
-            <div style={{ padding: 4 }}>
+            style={{
+              margin: 4,
+              cursor: `${dragOverlay ? 'grabbing' : 'grab'}`,
+            }}>
+            <div
+              style={{
+                // padding: 4,
+                border: 'solid',
+                borderWidth: 4,
+                borderRadius: '0.28571429rem',
+                borderColor: selected ? '#1677ff' : 'transparent',
+              }}>
               {/* todo проверка подписей, сделать без semantic-ui */}
               {/*{errors?.count && (*/}
               {/*  <Popup*/}
@@ -64,11 +76,12 @@ const GalleryItem = React.memo(
                   <Image
                     unoptimized
                     src={src.path}
-                    alt="alt"
+                    alt=""
                     width={260}
                     height={350}
                     // onClick={onClick}
-                    className="img-ofit"
+                    onClick={onSelect}
+                    // className="img-ofit"
                     style={{
                       userSelect: 'none',
                       MozUserSelect: 'none',
