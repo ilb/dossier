@@ -14,14 +14,22 @@ import libreOfficeImpress from '../../../../../public/images/libreOfficeImpress.
 import libreOfficeDraw from '../../../../../public/images/libreOfficeDraw.png';
 import libreOfficeMath from '../../../../../public/images/libreOfficeMath.png';
 
-const getPageNumFromImageId = (id) => {
-  const match = id.match(/number\/(\d+)/);
+// const getPageNumFromImageId = (id) => {
+//   console.log('getPage id: ', id);
 
-  if (match && match[1]) {
-    return parseInt(match[1], 10);
-  }
+//   const match = id.match(/number\/(\d+)/);
 
-  return null;
+//   if (match && match[1]) {
+//     return parseInt(match[1], 10);
+//   }
+
+//   return null;
+// };
+
+const getPageNum = (id, pages) => {
+  const pageNum = pages.findIndex((page) => page.id === id) + 1;
+
+  return pageNum === -1 ? null : pageNum;
 };
 
 const initState = {
@@ -43,7 +51,8 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
     setState(initState);
   }, [tab?.name]);
 
-  const pageCount = srcSet.length;
+  const pagesWithPreview = srcSet.filter((item) => item?.type.includes('image/'));
+  const pageCount = pagesWithPreview.length;
 
   const navigatePage = (direction) => {
     if (direction === 'prev' && state.currentPage > 1) {
@@ -51,14 +60,14 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
         ...state,
         rotation: 0,
         currentPage: state.currentPage - 1,
-        src: srcSet[state.currentPage - 2].id,
+        src: pagesWithPreview[state.currentPage - 2].id,
       });
     } else if (direction === 'next' && state.currentPage < pageCount) {
       setState({
         ...state,
         rotation: 0,
         currentPage: state.currentPage + 1,
-        src: srcSet[state.currentPage].id,
+        src: pagesWithPreview[state.currentPage].id,
       });
     }
   };
@@ -114,16 +123,16 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
     };
 
     const documentType = Object.keys(documents).find((key) =>
-      documents[key].pages.find((page) => page.id === active.id),
+      documents[key].pages.find((page) => page?.id === active?.id),
     );
 
-    const page = documents[documentType].pages.find((page) => page.id === active.id);
+    const page = documents[documentType]?.pages.find((page) => page?.id === active?.id);
 
-    if (page.type.includes('image/')) {
+    if (page?.type.includes('image/')) {
       return { path: active.id };
     }
 
-    return previews[page.type];
+    return previews[page?.type];
   };
 
   return (
@@ -158,6 +167,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
               {srcSet.map((src) => (
                 <div key={src.id} className="column">
                   <SortableGalleryItem
+                    documents={documents}
                     src={src}
                     errors={pageErrors[src.uuid]}
                     disabled={disabled || tab.readonly}
@@ -167,7 +177,8 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
                         ...state,
                         previewOpen: true,
                         src: src.id,
-                        currentPage: getPageNumFromImageId(src.id),
+                        // currentPage: getPageNumFromImageId(src.id),
+                        currentPage: getPageNum(src.id, pagesWithPreview),
                       });
                     }}
                   />
@@ -191,11 +202,11 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
       <DragOverlay>
         {active ? (
           <GalleryItem
-            src={getOverlayPreview(active)}
-            width={3}
-            height={4}
+            // src={getOverlayPreview(active)}
+            src={active}
             style={{ backgroundColor: '#ffffff', opacity: 0.2 }}
-            dragOverlay
+            dragOverlay={true}
+            documents={documents}
           />
         ) : null}
       </DragOverlay>
