@@ -6,22 +6,22 @@ import SegmentItem from './GalleryItem/SegmentItem';
 import React, { useEffect, useState } from 'react';
 import ControlsMenu from './GalleryItem/ControlsMenu';
 
-import excel from '../../../../../public/images/excel.png';
-import word from '../../../../../public/images/word.png';
-import libreOfficeWriter from '../../../../../public/images/libreOfficeWriter.png';
-import libreOfficeCalc from '../../../../../public/images/libreOfficeCalc.png';
-import libreOfficeImpress from '../../../../../public/images/libreOfficeImpress.png';
-import libreOfficeDraw from '../../../../../public/images/libreOfficeDraw.png';
-import libreOfficeMath from '../../../../../public/images/libreOfficeMath.png';
+// const getPageNumFromImageId = (id) => {
+//   console.log('getPage id: ', id);
 
-const getPageNumFromImageId = (id) => {
-  const match = id.match(/number\/(\d+)/);
+//   const match = id.match(/number\/(\d+)/);
 
-  if (match && match[1]) {
-    return parseInt(match[1], 10);
-  }
+//   if (match && match[1]) {
+//     return parseInt(match[1], 10);
+//   }
 
-  return null;
+//   return null;
+// };
+
+const getPageNum = (id, pages) => {
+  const pageNum = pages.findIndex((page) => page.id === id) + 1;
+
+  return pageNum === -1 ? null : pageNum;
 };
 
 const initState = {
@@ -43,7 +43,8 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
     setState(initState);
   }, [tab?.name]);
 
-  const pageCount = srcSet.length;
+  const pagesWithPreview = srcSet.filter((item) => item?.type.includes('image/'));
+  const pageCount = pagesWithPreview.length;
 
   const navigatePage = (direction) => {
     if (direction === 'prev' && state.currentPage > 1) {
@@ -51,14 +52,14 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
         ...state,
         rotation: 0,
         currentPage: state.currentPage - 1,
-        src: srcSet[state.currentPage - 2].id,
+        src: pagesWithPreview[state.currentPage - 2].id,
       });
     } else if (direction === 'next' && state.currentPage < pageCount) {
       setState({
         ...state,
         rotation: 0,
         currentPage: state.currentPage + 1,
-        src: srcSet[state.currentPage].id,
+        src: pagesWithPreview[state.currentPage].id,
       });
     }
   };
@@ -99,33 +100,6 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
     setState({ ...state, scale: value, width: newWidth, height: newHeight });
   };
 
-  const getOverlayPreview = (active) => {
-    const previews = {
-      'application/vnd.ms-excel': excel,
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': excel,
-      'application/docx': word,
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': word,
-      'application/msword': word,
-      'application/vnd.oasis.opendocument.text': libreOfficeWriter,
-      'application/vnd.oasis.opendocument.spreadsheet': libreOfficeCalc,
-      'application/vnd.oasis.opendocument.presentation': libreOfficeImpress,
-      'application/vnd.oasis.opendocument.graphics': libreOfficeDraw,
-      'application/vnd.oasis.opendocument.formula': libreOfficeMath,
-    };
-
-    const documentType = Object.keys(documents).find((key) =>
-      documents[key].pages.find((page) => page.id === active.id),
-    );
-
-    const page = documents[documentType].pages.find((page) => page.id === active.id);
-
-    if (page.type.includes('image/')) {
-      return { path: active.id };
-    }
-
-    return previews[page.type];
-  };
-
   return (
     <>
       <SortableContext items={srcSet} strategy={rectSortingStrategy}>
@@ -158,6 +132,7 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
               {srcSet.map((src) => (
                 <div key={src.id} className="column">
                   <SortableGalleryItem
+                    documents={documents}
                     src={src}
                     errors={pageErrors[src.uuid]}
                     disabled={disabled || tab.readonly}
@@ -167,7 +142,8 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
                         ...state,
                         previewOpen: true,
                         src: src.id,
-                        currentPage: getPageNumFromImageId(src.id),
+                        // currentPage: getPageNumFromImageId(src.id),
+                        currentPage: getPageNum(src.id, pagesWithPreview),
                       });
                     }}
                   />
@@ -191,11 +167,11 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
       <DragOverlay>
         {active ? (
           <GalleryItem
-            src={getOverlayPreview(active)}
-            width={3}
-            height={4}
+            // src={getOverlayPreview(active)}
+            src={active}
             style={{ backgroundColor: '#ffffff', opacity: 0.2 }}
-            dragOverlay
+            dragOverlay={true}
+            documents={documents}
           />
         ) : null}
       </DragOverlay>
