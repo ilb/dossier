@@ -62,20 +62,20 @@ const MenuTab = ({
   context,
 }) => {
   let className = '';
-  let isNotImage = false;
+  // let isNotImage = false;
   let isRequired = !document.readonly && document.required;
   const { documents } = useDocuments(uuid, dossierUrl, context);
   const tabDocuments = documents[document.type]?.pages;
   const countPages = tabDocuments?.length;
 
-  if (countPages && !tabDocuments[0].type.includes('image/')) {
-    isNotImage = true;
-  }
+  // if (countPages && !tabDocuments[0].type.includes('image/')) {
+  //   isNotImage = true;
+  // }
 
   const { setNodeRef, isOver } = useDroppable({
     id: document.type,
     data: { tab: true },
-    disabled: document.readonly || disabled || isNotImage,
+    disabled: document.readonly || disabled,
   });
 
   if (error) className += ' error';

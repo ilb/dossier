@@ -6,14 +6,6 @@ import SegmentItem from './GalleryItem/SegmentItem';
 import React, { useEffect, useState } from 'react';
 import ControlsMenu from './GalleryItem/ControlsMenu';
 
-import excel from '../../../../../public/images/excel.png';
-import word from '../../../../../public/images/word.png';
-import libreOfficeWriter from '../../../../../public/images/libreOfficeWriter.png';
-import libreOfficeCalc from '../../../../../public/images/libreOfficeCalc.png';
-import libreOfficeImpress from '../../../../../public/images/libreOfficeImpress.png';
-import libreOfficeDraw from '../../../../../public/images/libreOfficeDraw.png';
-import libreOfficeMath from '../../../../../public/images/libreOfficeMath.png';
-
 // const getPageNumFromImageId = (id) => {
 //   console.log('getPage id: ', id);
 
@@ -106,33 +98,6 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
     const newWidth = 460 * value;
     const newHeight = 600 * value;
     setState({ ...state, scale: value, width: newWidth, height: newHeight });
-  };
-
-  const getOverlayPreview = (active) => {
-    const previews = {
-      'application/vnd.ms-excel': excel,
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': excel,
-      'application/docx': word,
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': word,
-      'application/msword': word,
-      'application/vnd.oasis.opendocument.text': libreOfficeWriter,
-      'application/vnd.oasis.opendocument.spreadsheet': libreOfficeCalc,
-      'application/vnd.oasis.opendocument.presentation': libreOfficeImpress,
-      'application/vnd.oasis.opendocument.graphics': libreOfficeDraw,
-      'application/vnd.oasis.opendocument.formula': libreOfficeMath,
-    };
-
-    const documentType = Object.keys(documents).find((key) =>
-      documents[key].pages.find((page) => page?.id === active?.id),
-    );
-
-    const page = documents[documentType]?.pages.find((page) => page?.id === active?.id);
-
-    if (page?.type.includes('image/')) {
-      return { path: active.id };
-    }
-
-    return previews[page?.type];
   };
 
   return (
