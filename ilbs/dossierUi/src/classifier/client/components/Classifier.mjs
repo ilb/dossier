@@ -332,10 +332,14 @@ const Classifier = forwardRef(
           lastModified: documents[activeContainer]?.lastModified,
         },
       };
+
       mutateDocuments(newDocumentsList, false);
-      deletePage(pageSrc).then(async () => {
-        onRemove && onRemove(selectedTab, newDocumentsList);
-      });
+
+      await deletePage(pageSrc);
+
+      onRemove && onRemove(selectedTab, newDocumentsList);
+
+      revalidateDocuments();
     };
 
     const onDragStart = ({ active }) => {
