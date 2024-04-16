@@ -10,6 +10,7 @@ import LoandossierDocumentGateway from './gateway/LoandossierDocumentGateway.js'
 import DocumentHandlers from './handlers/DocumentHandlers.js';
 import LoandossierPagesService from './page/services/LoandossierPagesService.js';
 import LoandossierClassifyService from './classifier/services/LoandossierClassifyService.js';
+import mockSchema from 'src/schemas/mockSchema.js';
 export default class Kernel {
   constructor() {
     this.container = createContainer();
@@ -28,6 +29,7 @@ export default class Kernel {
       documentsPath: asValue(process.env.DOCUMENTS_PATH),
       request: asValue(context.request),
       classifierQuantity: asValue(4),
+      dossierSchema: asValue(mockSchema),
       signatureDetectorVerification: asClass(SignatureDetectorVerification),
       dataMatrixCheckService: asClass(DataMatrixCheckService),
       dataMatrixVerification: asClass(DataMatrixVerification),
