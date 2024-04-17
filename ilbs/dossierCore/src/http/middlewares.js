@@ -220,6 +220,11 @@ export const checkEmptyList = async (req, res, next) => {
     req.files = await req.files?.reduce(async (accumulator, file) => {
       // Задаем параметры для вывода в avr
       const files = await accumulator;
+
+      if (!file.mimetype.includes('image/')) {
+        return [...files, file];
+      }
+
       const colorSpace = 'sRGB';
       const size = '100x100';
       const format = '%[pixel:u]';
