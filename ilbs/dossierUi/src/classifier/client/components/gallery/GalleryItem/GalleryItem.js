@@ -5,13 +5,13 @@ import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
 import DownloadButton from '../../DownloadButton';
 
-import excel from '../../../../../../public/images/excel.png';
-import word from '../../../../../../public/images/word.png';
-import libreOfficeWriter from '../../../../../../public/images/libreOfficeWriter.png';
-import libreOfficeCalc from '../../../../../../public/images/libreOfficeCalc.png';
-import libreOfficeImpress from '../../../../../../public/images/libreOfficeImpress.png';
-import libreOfficeDraw from '../../../../../../public/images/libreOfficeDraw.png';
-import libreOfficeMath from '../../../../../../public/images/libreOfficeMath.png';
+import excel from '../../../images/excel.png';
+import word from '../../../images/word.png';
+import libreOfficeWriter from '../../../images/libreOfficeWriter.png';
+import libreOfficeCalc from '../../../images/libreOfficeCalc.png';
+import libreOfficeImpress from '../../../images/libreOfficeImpress.png';
+import libreOfficeDraw from '../../../images/libreOfficeDraw.png';
+import libreOfficeMath from '../../../images/libreOfficeMath.png';
 
 const getImgFromSrc = (src, documents) => {
   const previews = {
