@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
+import DownloadButton from '../../DownloadButton';
 
 import excel from '../../../../../../public/images/excel.png';
 import word from '../../../../../../public/images/word.png';
@@ -95,6 +96,7 @@ const GalleryItem = React.memo(
               {/*  </Popup>*/}
               {/*)}*/}
               {/* {!disabled && <Handle dragOverlay={dragOverlay} {...listeners} />} */}
+              {!disabled && img?.hasNoPreview && <DownloadButton src={src} />}
               {!disabled && img && !img?.hasNoPreview && <Handle onClick={onClick} />}
               {!disabled && <Remove onClick={handleClick} />}
               <div {...attributes} {...listeners}>
