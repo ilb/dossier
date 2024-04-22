@@ -483,3 +483,25 @@
   min-height: 700px;
   width: 73.75%
 }
+
+.classifier .item-count {
+  position: absolute;
+  top: -25px;  
+  right: -25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  content: '';
+  
+  min-width: 30px;
+  min-height: 30px;
+
+  color: #fff;
+  font-weight: bold;
+
+  background-color: #1677ff;
+
+  border-radius: 50%;
+}

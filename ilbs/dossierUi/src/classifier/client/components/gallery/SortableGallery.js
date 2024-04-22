@@ -36,6 +36,8 @@ const SortableGallery = ({
 }) => {
   const [state, setState] = useState(initState);
 
+  const itemCount = selectedIds.length;
+
   useEffect(() => {
     setState({ ...state, previewOpen: false });
   }, [tab?.type]);
@@ -164,7 +166,9 @@ const SortableGallery = ({
         </div>
       </SortableContext>
 
-      <DragOverlay>
+      <DragOverlay style={{ position: 'relative' }}>
+        {itemCount > 1 && <div className="item-count">{itemCount}</div>}
+
         {active ? (
           <GalleryItem
             src={{ path: active.id }}
