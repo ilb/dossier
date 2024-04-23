@@ -8,13 +8,13 @@ function DownloadButton({ src }) {
       const blob = await response.blob();
 
       // Из заголовка contentDisposition получаем имя файлы с расширением
-      const contentDisposition = response.headers.get('Content-Disposition');
-      const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-      const matches = filenameRegex.exec(contentDisposition);
-      let fileName = 'file';
-      if (matches != null && matches[1]) {
-        fileName = matches[1].replace(/['"]/g, '');
-      }
+      // const contentDisposition = response.headers.get('Content-Disposition');
+      // const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+      // const matches = filenameRegex.exec(contentDisposition);
+      let fileName = src.originalName;
+      // if (matches != null && matches[1]) {
+      //   fileName = matches[1].replace(/['"]/g, '');
+      // }
 
       // Создаем ссылку для скачивания файла
       const url = window.URL.createObjectURL(new Blob([blob]));
