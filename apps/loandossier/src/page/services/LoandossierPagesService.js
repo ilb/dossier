@@ -19,35 +19,41 @@ export default class LoandossierPagesService extends PagesService {
 
   async correct({ uuid, documents, ...context }) {
     const dossier = await this.scope.dossierBuilder.build(uuid, context);
-    await Promise.all(
-      Object.values(documents).map(async (correction) => {
-        const { from, to } = correction;
 
-        if ((from.class === to.class && from.page === to.page) || !to.page) {
-          return;
+    let moveIndex = 0;
+
+    for (const document of documents) {
+      const { from, to } = document;
+
+      if ((from.class === to.class && from.page === to.page) || !to.page) {
+        return;
+      }
+
+      if (from.class === to.class) {
+        const document = dossier.getDocument(from.class);
+        await this.scope.documentGateway.movePage(document, from.page, to.page);
+      } else {
+        const fromDocument = await dossier.getDocument(from.class);
+        const toDocument = await dossier.getDocument(to.class);
+
+        await this.scope.dossierService.movePage(
+          fromDocument,
+          from.page - moveIndex,
+          toDocument,
+          to.page,
+        );
+
+        const resultValidationFrom = await this.scope.documentHandlers.validationRun(fromDocument);
+        if (resultValidationFrom.success) {
+          await this.scope.documentHandlers.verificationsRun(fromDocument);
         }
-
-        if (from.class === to.class) {
-          const document = dossier.getDocument(from.class);
-          await this.scope.documentGateway.movePage(document, from.page, to.page);
-        } else {
-          const fromDocument = await dossier.getDocument(from.class);
-          const toDocument = await dossier.getDocument(to.class);
-          await this.scope.dossierService.movePage(fromDocument, from.page, toDocument, to.page);
-
-          const resultValidationFrom = await this.scope.documentHandlers.validationRun(
-            fromDocument,
-          );
-          if (resultValidationFrom.success) {
-            await this.scope.documentHandlers.verificationsRun(fromDocument);
-          }
-          const resultValidationTo = await this.scope.documentHandlers.validationRun(toDocument);
-          if (resultValidationTo.success) {
-            await this.scope.documentHandlers.verificationsRun(toDocument);
-          }
+        const resultValidationTo = await this.scope.documentHandlers.validationRun(toDocument);
+        if (resultValidationTo.success) {
+          await this.scope.documentHandlers.verificationsRun(toDocument);
         }
-      }),
-    );
+        moveIndex++;
+      }
+    }
   }
 
   async delete(request) {
