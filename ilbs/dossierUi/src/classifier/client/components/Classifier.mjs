@@ -392,6 +392,8 @@ const Classifier = forwardRef(
         }
 
         if (activeIndex !== overIndex) {
+          // console.log('activeIndex !== overIndex condition triggered');
+
           mutateDocuments(
             {
               ...documents,
@@ -450,17 +452,16 @@ const Classifier = forwardRef(
                 ]
               : selectedIds.map((selected, idx) => ({
                   // Перемещаем два и более выделенных документа
-
-                  // TO FIX проблема с присваиваемыми страницам индексами
                   from: {
                     class: draggableOrigin.type,
-                    page: draggableOrigin.index + idx,
+                    page: idx + 1,
                   },
                   to: { class: overContainerTo, page: overIndex + idx },
                 }));
 
           console.log('newDocs: ', newDocs);
 
+          // TO FIX проблема с присваиваемыми страницам индексами
           await correctDocuments(newDocs);
         } else {
           const newDocsElse =
