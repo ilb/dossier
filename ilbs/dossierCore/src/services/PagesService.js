@@ -66,6 +66,7 @@ export default class PagesService extends Service {
       filename: page.name,
       info: page,
       mimeType: mime.lookup(page.extension) || 'application/pdf',
+      originalName: page.originalName,
     };
   }
 }

@@ -24,6 +24,7 @@ export default class DocumentsService extends Service {
         path: `${url}/${documentType}/version/${version}/number/${page.pageNumber}${buildQuery}`,
         uuid: page.uuid,
         type: mime.lookup(page.extension),
+        originalName: page.originalName || page.name,
       };
     });
   }
