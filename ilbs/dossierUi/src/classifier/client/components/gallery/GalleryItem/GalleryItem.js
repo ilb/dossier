@@ -117,6 +117,25 @@ const GalleryItem = React.memo(
                     }}
                   />
                 )}
+                {!disabled && img?.hasNoPreview && (
+                  <div
+                    style={{
+                      width: '100%',
+                      marginTop: '-22px',
+                      overflow: 'hidden',
+                    }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '100%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                      }}>
+                      {src.originalName}
+                    </span>
+                  </div>
+                )}
 
                 {!img && (
                   <div style={{ backgroundImage: 'none' }}>
