@@ -1,6 +1,6 @@
 import nc from 'next-connect';
 import DocumentsUsecases from '@ilbru/dossier-core/src/usecases/DocumentsUsecases.js';
-import FileResponse from '@ilbru/core/src/responses/FileReponse.js';
+import FileResponse from '../../../../../../src/core/responses/FileResponse.js';
 import bodyParser from 'body-parser';
 import { handle, middlewareHandle } from '../../../../../../src/index.js';
 import {

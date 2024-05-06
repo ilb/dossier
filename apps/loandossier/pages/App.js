@@ -71,7 +71,6 @@ export default function App() {
           defaultTab="passport"
           selectionMode={true}
           context={context}
-          disabled={false}
         />
       </div>
     </>

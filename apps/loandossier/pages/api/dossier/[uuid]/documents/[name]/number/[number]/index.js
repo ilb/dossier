@@ -1,5 +1,5 @@
 import nc from 'next-connect';
-import FileResponse from '@ilbru/core/src/responses/FileReponse.js';
+import FileResponse from '../../../../../../../../src/core/responses/FileResponse.js';
 import DocumentsUsecases from '@ilbru/dossier-core/src/usecases/DocumentsUsecases.js';
 import { handle } from '../../../../../../../../src/index.js';
 import corsMiddleware from '../../../../../../middleware/cors.js';

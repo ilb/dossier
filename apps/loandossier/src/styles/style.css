@@ -100,10 +100,6 @@
   border: 1px solid rgba(34,36,38,.15);
 }
 
-.classifier .segment [role*=button] > span {
-  display: block !important;
-} 
-
 .classifier .grid {
   display: flex;
   flex-direction: row;
@@ -137,7 +133,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background: 0 0;  
+  background: 0 0;
   padding: 15px 10px;
   text-transform: none;
   font-weight: 500;
@@ -190,7 +186,7 @@
 
 .classifier .menuAutomatBtnSelected,
 .classifier .menuItemTargeted {
-  color: #fff;  
+  color: #fff;
   background-color: #1677ff;
 }
 
@@ -249,49 +245,49 @@
   content: "\f078";
 }
 
-.classifier .iconPlus:before { 
+.classifier .iconPlus:before {
   color: #767676;
   font-weight: bold;
 
   content: "\f067";
 }
 
-.classifier .iconMinus:before {  
+.classifier .iconMinus:before {
   color: #767676;
   font-weight: bold;
 
   content: "\f068";
 }
 
-.classifier .iconLeft:before {  
+.classifier .iconLeft:before {
   color: #767676;
   font-weight: bold;
 
-  content: "\f060";  
+  content: "\f060";
 }
 
-.classifier .iconRight:before {  
+.classifier .iconRight:before {
   color: #767676;
   font-weight: bold;
 
   content: "\f061";
 }
 
-.classifier .iconUndo:before {  
+.classifier .iconUndo:before {
   color: #767676;
   font-weight: bold;
 
   content: "\f0e2";
 }
 
-.classifier .iconRedo:before {  
+.classifier .iconRedo:before {
   color: #767676;
   font-weight: bold;
 
   content: "\f01e";
 }
 
-.classifier .iconClose:before {  
+.classifier .iconClose:before {
   color: #767676;
   font-weight: bold;
 
@@ -311,7 +307,7 @@
 }
 
 .classifier button.navBtn:disabled .icon::before {
-  color: #c5c0c0;  
+  color: #c5c0c0;
 }
 
 .classifier .divider {
@@ -408,7 +404,7 @@
 
 .target {
   width: auto;
-  height: 20px;  
+  height: 20px;
 }
 
 .target:not(:first-child) {
@@ -452,7 +448,7 @@
 
   color: #d9d6d6;
   font-weight: bold;
-  
+
   background-color: #1b1c1d;
 }
 

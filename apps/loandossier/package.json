@@ -1,6 +1,6 @@
 {
   "name": "@ilbru/loandossier",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "loandossier",
   "dependencies": {
@@ -9,9 +9,11 @@
     "@ilbru/dossier-core": "*",
     "@ilbru/dossier-ui": "*",
     "@prisma/client": "^5.3.1",
+    "@ilb/mailer": "^1.1.0",
     "awilix": "^7.0.3",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
+    "debug": "^4.3.4",
     "express": "^4.18.2",
     "glob": "^8.0.3",
     "isomorphic-fetch": "^3.0.0",
@@ -32,9 +34,10 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",
+    "@ilb/eslint-config": "^1.0.2",
     "babel-jest": "^27.4.5",
     "dotenv": "^10.0.0",
-    "eslint": "^8.4.1",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.3.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
@@ -50,8 +53,10 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start -p 3001",
+    "start": "next start",
     "test": "jest",
+    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint -c eslint.config.mjs .",
+    "lint:fix": "ESLINT_USE_FLAT_CONFIG=true eslint -c eslint.config.mjs --fix .",
     "ilb-build": "prisma generate && next build",
     "ilb-deploy": "prisma migrate deploy",
     "db:generate": "npx prisma generate",

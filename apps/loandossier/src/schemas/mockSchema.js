@@ -195,6 +195,14 @@ export default {
         editable: '*',
       },
     },
+    {
+      name: 'Счет на оплату Cтрахования жизни',
+      type: 'lifeInsurance',
+      access: {
+        show: '*',
+        editable: '*',
+      },
+    },
     /** ДОКУМЕНТЫ ПО ЗАЛОГУ **/
     {
       name: 'ПТС',
@@ -350,14 +358,6 @@ export default {
     {
       name: 'Согласие',
       type: 'borrowerConsent',
-      access: {
-        show: '*',
-        editable: '*',
-      },
-    },
-    {
-      name: 'Счет на оплату Cтрахования жизни',
-      type: 'lifeInsurance',
       access: {
         show: '*',
         editable: '*',

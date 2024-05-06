@@ -1,5 +1,5 @@
 import Kernel from './Kernel.js';
-import JsonResponse from '@ilbru/core/src/responses/JsonResponse.js';
+import JsonResponse from './core/responses/JsonResponse.js';
 import JsonContext from '@ilbru/core/src/contexts/JsonContext.js';
 // import nc from 'next-connect';
 
