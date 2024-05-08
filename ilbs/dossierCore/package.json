@@ -1,5 +1,5 @@
 {
-  "name": "@ilbru/dossier-core",
+  "name": "@ilb/dossier-core",
   "version": "2.3.5",
   "description": "dossier-core",
   "type": "module",
@@ -13,8 +13,5 @@
   },
   "main": "index.js",
   "author": "barakok",
-  "license": "ISC",
-  "publishConfig": {
-    "@ilbru:registry": "https://gitlab.com/api/v4/projects/51115193/packages/npm/"
-  }
+  "license": "ISC"
 }
