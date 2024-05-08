@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "keywords": [],
-  "author": "ssortia",
+  "author": "barakok",
   "license": "ISC",
   "files": [
     "src"
@@ -40,5 +40,14 @@
     "react-select-search": "^4.1.6",
     "swr": "^1.3.0",
     "uuid": "^8.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilb/dossier",
+    "directory": "ilbs/dossierCore"
+  },
+  "publishConfig": {
+    "@barakok:registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }

@@ -9,5 +9,8 @@
   },
   "main": "index.js",
   "author": "barakok",
-  "license": "ISC"
+  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  }
 }
