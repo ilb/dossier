@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import CropService from './CropService';
 import FlipService from './FlipService';
 import { loadImage } from 'canvas';

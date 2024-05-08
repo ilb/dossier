@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import { createCanvas, ImageData } from 'canvas';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';

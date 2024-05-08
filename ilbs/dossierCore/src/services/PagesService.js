@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import Page from '../document/Page.js';
 import mime from 'mime-types';
 

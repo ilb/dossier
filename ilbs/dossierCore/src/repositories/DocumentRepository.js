@@ -1,4 +1,4 @@
-import Repository from '@ilbru/core/src/base/Repository.js';
+import Repository from '@ilb/core/src/base/Repository.js';
 
 export default class DocumentRepository extends Repository {
   constructor({ prisma }) {

@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import DataMatrixCheckService from './DataMatrixCheckService.js';
 
 export default class DataMatrixVerificationMock extends Service {

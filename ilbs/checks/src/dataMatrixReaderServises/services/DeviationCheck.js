@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import { Image } from 'image-js';
 
 export default class DeviationCheck extends Service {

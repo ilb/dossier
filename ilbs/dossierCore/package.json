@@ -1,11 +1,11 @@
 {
   "name": "@ilb/dossier-core",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "dossier-core",
   "type": "module",
   "dependencies": {
     "@ilb/p-queue": "^7.1.0",
-    "@ilbru/core": "^1.1.1",
+    "@ilb/core": "^1.1.1",
     "debug": "^4.3.4",
     "imagemagick": "^0.1.3",
     "mime-types": "^2.1.35",

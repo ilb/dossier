@@ -1,4 +1,4 @@
-import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
+import Usecases from '@ilb/core/src/base/usecases/Usecases.js';
 import createDebug from 'debug';
 
 const debug = createDebug('dossier');
