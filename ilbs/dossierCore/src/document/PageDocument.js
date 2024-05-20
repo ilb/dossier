@@ -20,6 +20,7 @@ export default class PageDocument extends Document {
     this.documentMerger = new DocumentMerger(this.dossierPath);
     this.verificationsList = docData.verifications || [];
     this.validationRules = docData.validationRules || [];
+    this.name = docData.name;
     this.verificationsResult = [];
     this.currentVersion = null;
     this.versions = [];
