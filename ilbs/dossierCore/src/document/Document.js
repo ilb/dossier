@@ -35,6 +35,10 @@ export default class Document {
     this.#_uuid = uuid;
   }
 
+  set setData(data) {
+    this.#_data = data;
+  }
+
   set setId(id) {
     this.#_id = id;
   }

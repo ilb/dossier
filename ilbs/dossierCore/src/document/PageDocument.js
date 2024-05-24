@@ -38,6 +38,10 @@ export default class PageDocument extends Document {
     this.errors = [...this.errors, ...errors];
   }
 
+  initDocumentData(currentDocumentVersion) {
+    this.setData({ ...this.data, ...currentDocumentVersion.documentData });
+  }
+
   setDbData(document) {
     this.setUuid = document.uuid;
     this.setId = document.id;
@@ -45,6 +49,7 @@ export default class PageDocument extends Document {
     this.initCurrentDocumentVersion(document.currentDocumentVersion);
     this.state = document.currentDocumentVersion?.documentState?.code || '';
     this.initVersions(document.documentVersions);
+    this.initDocumentData(document.currentDocumentVersion);
     this.lastModified = document.updateAt || document.createAt;
     this.verificationsResult = document.currentDocumentVersion?.verifications || [];
   }
