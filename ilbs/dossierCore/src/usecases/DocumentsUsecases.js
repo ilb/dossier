@@ -132,4 +132,11 @@ export default class DocumentsUsecases extends Usecases {
     debug('changeDocumentState end', request.uuid);
     return result;
   }
+
+  async dataUpdate({ documentsService, request }) {
+    debug('changeDocumentState start', request.uuid);
+    const result = await documentsService.dataUpdate(request);
+    debug('changeDocumentState end', request.uuid);
+    return result;
+  }
 }
