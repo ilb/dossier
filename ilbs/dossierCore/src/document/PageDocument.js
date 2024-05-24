@@ -39,7 +39,7 @@ export default class PageDocument extends Document {
   }
 
   initDocumentData(currentDocumentVersion) {
-    this.setData({ ...this.data, ...currentDocumentVersion.documentData });
+    this.setData = { ...this.data, ...currentDocumentVersion.documentData };
   }
 
   setDbData(document) {
