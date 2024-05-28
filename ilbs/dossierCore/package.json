@@ -1,11 +1,11 @@
 {
-  "name": "@ilbru/dossier-core",
-  "version": "2.3.1",
+  "name": "@ilb/dossier-core",
+  "version": "2.3.11",
   "description": "dossier-core",
   "type": "module",
   "dependencies": {
     "@ilb/p-queue": "^7.1.0",
-    "@ilbru/core": "*",
+    "@ilb/core": "^1.1.1",
     "debug": "^4.3.4",
     "imagemagick": "^0.1.3",
     "mime-types": "^2.1.35",
@@ -14,7 +14,13 @@
   "main": "index.js",
   "author": "barakok",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilb/dossier",
+    "directory": "ilbs/dossierCore"
+  },
   "publishConfig": {
-    "@ilbru:registry": "https://gitlab.com/api/v4/projects/51115193/packages/npm/"
+    "@barakok:registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }

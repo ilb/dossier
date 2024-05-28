@@ -1,4 +1,4 @@
-import Usecases from '@ilbru/core/src/base/usecases/Usecases.js';
+import Usecases from '@ilb/core/src/base/usecases/Usecases.js';
 import createDebug from 'debug';
 
 const debug = createDebug('dossier');
@@ -129,6 +129,13 @@ export default class DocumentsUsecases extends Usecases {
   async changeState({ documentsService, request }) {
     debug('changeDocumentState start', request.uuid);
     const result = await documentsService.changeDocumentState(request);
+    debug('changeDocumentState end', request.uuid);
+    return result;
+  }
+
+  async dataUpdate({ documentsService, request }) {
+    debug('changeDocumentState start', request.uuid);
+    const result = await documentsService.dataUpdate(request);
     debug('changeDocumentState end', request.uuid);
     return result;
   }

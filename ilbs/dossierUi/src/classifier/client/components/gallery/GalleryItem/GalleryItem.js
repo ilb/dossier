@@ -1,8 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
+import DownloadButton from '../../DownloadButton';
+
+import excel from '../../../images/excel.png';
+import word from '../../../images/word.png';
+import libreOfficeWriter from '../../../images/libreOfficeWriter.png';
+import libreOfficeCalc from '../../../images/libreOfficeCalc.png';
+import libreOfficeImpress from '../../../images/libreOfficeImpress.png';
+import libreOfficeDraw from '../../../images/libreOfficeDraw.png';
+import libreOfficeMath from '../../../images/libreOfficeMath.png';
+
+const getImgFromSrc = (src, documents) => {
+  const previews = {
+    'application/vnd.ms-excel': excel,
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': excel,
+    'application/docx': word,
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': word,
+    'application/msword': word,
+    'application/vnd.oasis.opendocument.text': libreOfficeWriter,
+    'application/vnd.oasis.opendocument.spreadsheet': libreOfficeCalc,
+    'application/vnd.oasis.opendocument.presentation': libreOfficeImpress,
+    'application/vnd.oasis.opendocument.graphics': libreOfficeDraw,
+    'application/vnd.oasis.opendocument.formula': libreOfficeMath,
+  };
+
+  const documentType = Object.keys(documents).find((key) =>
+    documents[key].pages.find((page) => page?.id === src?.id),
+  );
+
+  const page = documents[documentType]?.pages.find((page) => page?.id === src?.id);
+
+  if (page?.type.includes('image/')) {
+    return { path: src.id, hasNoPreview: false };
+  }
+
+  if (previews[page?.type]) {
+    return { path: previews[page?.type], hasNoPreview: true };
+  }
+
+  return;
+};
 
 const GalleryItem = React.memo(
   React.forwardRef(
@@ -21,16 +61,15 @@ const GalleryItem = React.memo(
         errors,
         onSelect,
         selected,
+        documents,
       },
       ref,
     ) => {
+      const img = getImgFromSrc(src, documents);
+
       const handleClick = (event) => {
         event.preventDefault();
         onRemove(src);
-      };
-
-      const isImage = () => {
-        return src.type ? src.type.includes('image/') : true;
       };
 
       return (
@@ -69,19 +108,21 @@ const GalleryItem = React.memo(
               {/*  </Popup>*/}
               {/*)}*/}
               {/* {!disabled && <Handle dragOverlay={dragOverlay} {...listeners} />} */}
-              {!disabled && <Handle onClick={onClick} />}
+              {!disabled && img?.hasNoPreview && <DownloadButton src={src} />}
+              {!disabled && img && !img?.hasNoPreview && <Handle onClick={onClick} />}
               {!disabled && <Remove onClick={handleClick} />}
               <div {...attributes} {...listeners}>
-                {isImage() && (
+                {img && (
                   <Image
                     unoptimized
-                    src={src.path}
+                    src={img?.path || img}
                     alt=""
                     width={260}
                     height={350}
                     // onClick={onClick}
                     onClick={onSelect}
                     // className="img-ofit"
+                    objectFit={`${img?.hasNoPreview ? 'contain' : undefined}`}
                     style={{
                       userSelect: 'none',
                       MozUserSelect: 'none',
@@ -90,10 +131,30 @@ const GalleryItem = React.memo(
                     }}
                   />
                 )}
-                {!isImage() && (
+                {!disabled && img?.hasNoPreview && (
+                  <div
+                    style={{
+                      width: '100%',
+                      marginTop: '-22px',
+                      overflow: 'hidden',
+                    }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '100%',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                      }}>
+                      {src.originalName}
+                    </span>
+                  </div>
+                )}
+
+                {!img && (
                   <div style={{ backgroundImage: 'none' }}>
                     <div style={{ paddingTop: '51.5%', paddingBottom: '51.5%' }}>
-                      Невозможно отобразить или переместить. Документ не является картинкой.
+                      Невозможно отобразить или переместить. Документ не является изображением.
                     </div>
                   </div>
                 )}

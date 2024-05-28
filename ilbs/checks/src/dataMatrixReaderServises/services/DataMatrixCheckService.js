@@ -1,6 +1,6 @@
-import Service from '@ilbru/core/src/base/Service.js';
-import CropService from './CropService';
-import FlipService from './FlipService';
+import Service from '@ilb/core/src/base/Service.js';
+import CropService from './CropService.js';
+import FlipService from './FlipService.js';
 import { loadImage } from 'canvas';
 import {
   MultiFormatReader,

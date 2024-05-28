@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import Page from '../document/Page.js';
 import mime from 'mime-types';
 
@@ -66,6 +66,7 @@ export default class PagesService extends Service {
       filename: page.name,
       info: page,
       mimeType: mime.lookup(page.extension) || 'application/pdf',
+      originalName: page.originalName,
     };
   }
 }

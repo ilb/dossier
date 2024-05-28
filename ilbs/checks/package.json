@@ -1,10 +1,10 @@
 {
-  "name": "@ilbru/checks",
-  "version": "1.1.4",
+  "name": "@ilb/checks",
+  "version": "1.1.6",
   "description": "dossier checks",
   "type": "module",
   "dependencies": {
-    "@ilbru/core": "*",
+    "@ilb/core": "^1.1.1",
     "@zxing/library": "^0.19.2",
     "canvas": "^2.11.0",
     "form-data": "^4.0.0",
@@ -14,7 +14,13 @@
   "main": "src/index.js",
   "author": "barakok",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilb/dossier",
+    "directory": "ilbs/checks"
+  },
   "publishConfig": {
-    "@ilbru:registry": "https://gitlab.com/api/v4/projects/51115193/packages/npm/"
+    "@barakok:registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }

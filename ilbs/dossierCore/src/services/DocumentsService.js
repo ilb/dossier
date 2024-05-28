@@ -1,4 +1,4 @@
-import Service from '@ilbru/core/src/base/Service.js';
+import Service from '@ilb/core/src/base/Service.js';
 import mime from 'mime-types';
 
 export default class DocumentsService extends Service {
@@ -24,6 +24,7 @@ export default class DocumentsService extends Service {
         path: `${url}/${documentType}/version/${version}/number/${page.pageNumber}${buildQuery}`,
         uuid: page.uuid,
         type: mime.lookup(page.extension),
+        originalName: page.originalName || page.name,
       };
     });
   }

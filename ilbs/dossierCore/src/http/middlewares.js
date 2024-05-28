@@ -25,6 +25,7 @@ export const uploadMiddleware = multer({
       return cb(null, destination);
     },
     filename: (req, file, cb) => {
+      file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
       return cb(null, uuidv4() + '.' + file.originalname.split('.').pop());
     },
   }),
@@ -220,6 +221,11 @@ export const checkEmptyList = async (req, res, next) => {
     req.files = await req.files?.reduce(async (accumulator, file) => {
       // Задаем параметры для вывода в avr
       const files = await accumulator;
+
+      if (!file.mimetype.includes('image/')) {
+        return [...files, file];
+      }
+
       const colorSpace = 'sRGB';
       const size = '100x100';
       const format = '%[pixel:u]';
