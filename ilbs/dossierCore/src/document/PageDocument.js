@@ -224,6 +224,12 @@ export default class PageDocument extends Document {
     return this.getPages().splice(number - 1, 1)[0];
   }
 
+  extractPages(numbers) {
+    const pages = this.getPages();
+    this.pages = pages.filter((obj) => !numbers.includes(obj.pageNumber));
+    return pages.filter((obj) => numbers.includes(obj.pageNumber));
+  }
+
   /**
    * Удаление всех страниц документа
    */

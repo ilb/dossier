@@ -383,15 +383,25 @@ const Classifier = forwardRef(
 
         let overIndex = documents[overContainer]?.pages.map((item) => item.path).indexOf(overId);
 
+        console.log('over', over);
+        console.log('overId', overId);
+        console.log('overContainer', overContainer);
+        console.log('documents[overContainer]', documents[overContainer]);
+        console.log('1overIndex', overIndex);
+
         if (activeIndex === -1) {
           return;
         }
 
         if (overIndex === -1) {
-          overIndex = documents[overContainer]?.pages.length - 1;
+          overIndex = 1;
         }
 
+        console.log('2overIndex', overIndex);
+
         if (activeIndex !== overIndex) {
+          console.log('3overIndex', overIndex);
+
           // console.log('activeIndex !== overIndex condition triggered');
 
           mutateDocuments(
@@ -450,14 +460,22 @@ const Classifier = forwardRef(
                     to: { class: overContainerTo, page: overIndex + 1 },
                   },
                 ]
-              : selectedIds.map((selected, idx) => ({
-                  // Перемещаем два и более выделенных документа
-                  from: {
-                    class: draggableOrigin.type,
-                    page: idx + 1,
-                  },
-                  to: { class: overContainerTo, page: overIndex + idx },
-                }));
+              : selectedIds.map((selected, idx) => {
+                  const urlData = selected.split('?')[0].split('/');
+                  const pageNumber = urlData[urlData.length - 1];
+
+                  console.log('pageNumber', pageNumber);
+                  console.log('idx', idx);
+
+                  return {
+                    // Перемещаем два и более выделенных документа
+                    from: {
+                      class: draggableOrigin.type,
+                      page: Number(pageNumber),
+                    },
+                    to: { class: overContainerTo, page: overIndex + idx },
+                  };
+                });
 
           console.log('newDocs: ', newDocs);
 
@@ -693,6 +711,7 @@ const Classifier = forwardRef(
                       disabled={disabled}
                       selectedIds={selectedIds}
                       handleSelect={handleSelect}
+                      documents={documents}
                     />
                   </Dimmable>
                 </div>
