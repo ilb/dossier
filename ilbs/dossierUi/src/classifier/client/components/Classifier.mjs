@@ -348,8 +348,6 @@ const Classifier = forwardRef(
       setActiveDraggable(active);
       const container = findContainer(active.id);
 
-      // console.log('active.data.current.sortable.index: ', active.data.current.sortable.index);
-
       setDraggableOrigin({
         container: container,
         type: selectedTab.documentName,
@@ -382,12 +380,6 @@ const Classifier = forwardRef(
 
         let overIndex = documents[overContainer]?.pages.map((item) => item.path).indexOf(overId);
 
-        // console.log('over', over);
-        // console.log('overId', overId);
-        // console.log('overContainer', overContainer);
-        // console.log('documents[overContainer]', documents[overContainer]);
-        // console.log('1overIndex', overIndex);
-
         if (activeIndex === -1) {
           return;
         }
@@ -396,11 +388,7 @@ const Classifier = forwardRef(
           overIndex = 1;
         }
 
-        // console.log('2overIndex', overIndex);
-
         if (activeIndex !== overIndex) {
-          // console.log('3overIndex', overIndex);
-
           mutateDocuments(
             {
               ...documents,
@@ -417,10 +405,6 @@ const Classifier = forwardRef(
 
         // MULTI-SELECT LOGIC:
         if (draggableOrigin.container !== overContainer) {
-          // console.log('draggableOrigin: ', draggableOrigin);
-          // console.log('selectedIds: ', selectedIds);
-          // console.log('overIndex: ', overIndex);
-
           const newDocs =
             selectedIds.length < 2 // Перемещаем один документ с его выделением или без (т.е. без клика на документ)
               ? [
@@ -436,9 +420,6 @@ const Classifier = forwardRef(
                   const urlData = selected.split('?')[0].split('/');
                   const pageNumber = urlData[urlData.length - 1];
 
-                  console.log('pageNumber', pageNumber);
-                  console.log('idx', idx);
-
                   return {
                     // Перемещаем два и более выделенных документа
                     from: {
@@ -448,9 +429,6 @@ const Classifier = forwardRef(
                     to: { class: overContainerTo, page: overIndex + idx },
                   };
                 });
-
-          // console.log('newDocs: ', newDocs);
-
           await correctDocuments(newDocs);
         } else {
           const newDocsElse =
@@ -471,8 +449,6 @@ const Classifier = forwardRef(
                   },
                   to: { class: overContainerTo, page: overIndex + idx },
                 }));
-
-          // console.log('newDocsElse: ', newDocsElse);
 
           await correctDocuments(newDocsElse);
         }
@@ -537,9 +513,6 @@ const Classifier = forwardRef(
           ? [active.id, ...selectedIds.filter((id) => id !== active.id)]
           : [active.id];
 
-        // console.log('onDragOver ids: ', ids);
-        // console.log('onDragOver newIndex: ', newIndex);
-
         const newDocuments = {
           ...documents,
 
@@ -562,8 +535,6 @@ const Classifier = forwardRef(
             ],
           },
         };
-
-        // console.log('onDragOver newDocuments: ', JSON.stringify(newDocuments, null, 2));
 
         mutateDocuments(newDocuments, false);
       }
@@ -588,11 +559,6 @@ const Classifier = forwardRef(
 
       selectTab(tab);
     };
-
-    // LOGS
-    // console.log('selectedDocument (srcSet): ', selectedDocument);
-    // console.log('activeDraggable (active): ', activeDraggable);
-    // console.log('selectedIds: ', selectedIds);
 
     return (
       <div className="dossier classifier">
