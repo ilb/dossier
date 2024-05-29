@@ -55,7 +55,6 @@ export const deletePage = async (pageSrc, buildQuery) => {
     pageSrc.path.slice(0, pageSrc.path.indexOf('?')) +
     `${buildQuery}` +
     `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
-  console.log('url', url);
   const result = await fetch(url, {
     method: 'DELETE',
   });

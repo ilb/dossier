@@ -26,8 +26,6 @@ export default class DossierService {
   async movePages(documents, documentFrom, documentTo) {
     const pageNumbers = documents.map((item) => item.from.page);
     const pages = documentFrom.extractPages(pageNumbers);
-    console.log('documents', documents);
-    console.log('pages', pages);
 
     let pageNumberTo = documents[0].to.page;
     const documentFromVersionId = documentFrom.currentVersion.id;

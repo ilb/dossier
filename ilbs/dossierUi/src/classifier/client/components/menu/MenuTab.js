@@ -133,16 +133,15 @@ const MenuTab = ({
                 style={{
                   width: '100%',
                   marginLeft: '5px',
-                  wordBreak: 'break-word',
                   textAlign: 'left',
                 }}>
-                <span>
+                <span lang="ru" style={{ hyphens: 'auto' }}>
                   {document.name} {countPages ? '(' + countPages + ')' : ''}
                 </span>
               </div>
               {isRequired && (
-                <div>
-                  <span style={{ color: 'red' }}>*</span>{' '}
+                <div style={{ alignSelf: 'flex-start' }}>
+                  <span style={{ color: 'red' }}>*</span>
                 </div>
               )}
             </div>

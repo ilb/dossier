@@ -32,9 +32,10 @@ const Popup = ({ content, trigger }) => {
         style={
           tooltipPosition
             ? {
+                zIndex: 10000,
                 top: tooltipPosition.top,
                 left: tooltipPosition.left,
-                visability: 'visible',
+                visibility: 'visible',
               }
             : { visibility: 'hidden' }
         }>
