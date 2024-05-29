@@ -80,7 +80,6 @@ const Classifier = forwardRef(
           return selectedIds.filter((value) => value !== id);
         }
 
-        // CHECK logic
         if (!selectedIds.length || findContainer(id) !== findContainer(selectedIds[0])) {
           return [id];
         }
@@ -349,7 +348,7 @@ const Classifier = forwardRef(
       setActiveDraggable(active);
       const container = findContainer(active.id);
 
-      console.log('active.data.current.sortable.index: ', active.data.current.sortable.index);
+      // console.log('active.data.current.sortable.index: ', active.data.current.sortable.index);
 
       setDraggableOrigin({
         container: container,
@@ -383,11 +382,11 @@ const Classifier = forwardRef(
 
         let overIndex = documents[overContainer]?.pages.map((item) => item.path).indexOf(overId);
 
-        console.log('over', over);
-        console.log('overId', overId);
-        console.log('overContainer', overContainer);
-        console.log('documents[overContainer]', documents[overContainer]);
-        console.log('1overIndex', overIndex);
+        // console.log('over', over);
+        // console.log('overId', overId);
+        // console.log('overContainer', overContainer);
+        // console.log('documents[overContainer]', documents[overContainer]);
+        // console.log('1overIndex', overIndex);
 
         if (activeIndex === -1) {
           return;
@@ -397,12 +396,10 @@ const Classifier = forwardRef(
           overIndex = 1;
         }
 
-        console.log('2overIndex', overIndex);
+        // console.log('2overIndex', overIndex);
 
         if (activeIndex !== overIndex) {
-          console.log('3overIndex', overIndex);
-
-          // console.log('activeIndex !== overIndex condition triggered');
+          // console.log('3overIndex', overIndex);
 
           mutateDocuments(
             {
@@ -418,36 +415,11 @@ const Classifier = forwardRef(
 
         const overContainerTo = overContainer.split('_')[0];
 
-        // ORIGINAL LOGIC:
-        // if (draggableOrigin.container !== overContainer) {
-        //   await correctDocuments([
-        //     {
-        //       from: {
-        //         class: draggableOrigin.type,
-        //         page: draggableOrigin.index + 1,
-        //       },
-        //       to: { class: overContainerTo, page: overIndex + 1 },
-        //     },
-        //   ]);
-        // } else {
-        //   await correctDocuments([
-        //     {
-        //       from: {
-        //         class: activeContainer.split('_')[0],
-        //         page: activeIndex + 1,
-        //       },
-        //       to: { class: overContainerTo, page: overIndex + 1 },
-        //     },
-        //   ]);
-        // }
-
-        // await revalidateDocuments();
-
         // MULTI-SELECT LOGIC:
         if (draggableOrigin.container !== overContainer) {
-          console.log('draggableOrigin: ', draggableOrigin);
-          console.log('selectedIds: ', selectedIds);
-          console.log('overIndex: ', overIndex);
+          // console.log('draggableOrigin: ', draggableOrigin);
+          // console.log('selectedIds: ', selectedIds);
+          // console.log('overIndex: ', overIndex);
 
           const newDocs =
             selectedIds.length < 2 // Перемещаем один документ с его выделением или без (т.е. без клика на документ)
@@ -477,9 +449,8 @@ const Classifier = forwardRef(
                   };
                 });
 
-          console.log('newDocs: ', newDocs);
+          // console.log('newDocs: ', newDocs);
 
-          // TO FIX проблема с присваиваемыми страницам индексами
           await correctDocuments(newDocs);
         } else {
           const newDocsElse =
@@ -494,7 +465,6 @@ const Classifier = forwardRef(
                   },
                 ]
               : selectedIds.map((selected, idx) => ({
-                  // TO FIX проблема с присваиваемыми страницам индексами
                   from: {
                     class: activeContainer.split('_')[0],
                     page: activeIndex + idx,
@@ -502,7 +472,7 @@ const Classifier = forwardRef(
                   to: { class: overContainerTo, page: overIndex + idx },
                 }));
 
-          console.log('newDocsElse: ', newDocsElse);
+          // console.log('newDocsElse: ', newDocsElse);
 
           await correctDocuments(newDocsElse);
         }
@@ -542,11 +512,6 @@ const Classifier = forwardRef(
 
       if (activeContainer !== overContainer) {
         const activeItems = documents[activeContainer]?.pages;
-
-        // ORIGINAL LOGIC:
-        // const overItems = documents[overContainer]?.pages;
-
-        // MULTI-SELECT LOGIC:
         const overItems = filterItems(documents[overContainer]?.pages, activeDraggable.id);
 
         const overIndex = overItems.map((item) => item.path).indexOf(overId);
@@ -567,35 +532,13 @@ const Classifier = forwardRef(
           newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
         }
 
-        // ORIGINAL LOGIC:
-        // const newDocuments = {
-        //   ...documents,
-        //   [activeContainer]: {
-        //     errors: documents[activeContainer].errors,
-        //     pages: documents[activeContainer]?.pages.filter((item) => item.path !== active.id),
-        //   },
-        //   [overContainer]: {
-        //     errors: documents[overContainer].errors,
-        //     pages: [
-        //       ...documents[overContainer]?.pages.slice(0, newIndex),
-        //       documents[activeContainer]?.pages[activeIndex],
-        //       ...documents[overContainer]?.pages.slice(
-        //         newIndex,
-        //         documents[overContainer]?.pages.length,
-        //       ),
-        //     ],
-        //   },
-        // };
-
-        // console.log('onDragOver active.id: ', active.id);
-
         // MULTI-SELECT LOGIC:
         const ids = selectedIds.length
           ? [active.id, ...selectedIds.filter((id) => id !== active.id)]
           : [active.id];
 
-        console.log('onDragOver ids: ', ids);
-        console.log('onDragOver newIndex: ', newIndex);
+        // console.log('onDragOver ids: ', ids);
+        // console.log('onDragOver newIndex: ', newIndex);
 
         const newDocuments = {
           ...documents,
@@ -620,7 +563,6 @@ const Classifier = forwardRef(
           },
         };
 
-        //LOGS
         // console.log('onDragOver newDocuments: ', JSON.stringify(newDocuments, null, 2));
 
         mutateDocuments(newDocuments, false);
@@ -648,7 +590,7 @@ const Classifier = forwardRef(
     };
 
     // LOGS
-    console.log('selectedDocument (srcSet): ', selectedDocument);
+    // console.log('selectedDocument (srcSet): ', selectedDocument);
     // console.log('activeDraggable (active): ', activeDraggable);
     // console.log('selectedIds: ', selectedIds);
 
@@ -702,8 +644,6 @@ const Classifier = forwardRef(
                     <SortableGallery
                       pageErrors={pageErrors}
                       tab={selectedTab}
-                      // ORIGINAL LOGIC:
-                      // srcSet={selectedDocument}
                       // MULTI-SELECT LOGIC:
                       srcSet={filterItems(selectedDocument, activeDraggable)}
                       onRemove={handlePageDelete}
