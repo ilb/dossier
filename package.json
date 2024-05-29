@@ -1,6 +1,10 @@
 {
   "name": "dossier",
   "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "ilbs/*"
+  ],
   "dependencies": {
     "canvas": "^2.11.2"
   }

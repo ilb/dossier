@@ -23,6 +23,54 @@ export default class DossierService {
     return dossier;
   }
 
+  async movePages(documents, documentFrom, documentTo) {
+    const pageNumbers = documents.map((item) => item.from.page);
+    const pages = documentFrom.extractPages(pageNumbers);
+
+    let pageNumberTo = documents[0].to.page;
+    const documentFromVersionId = documentFrom.currentVersion.id;
+    const documentToVersionId = documentTo.currentVersion.id;
+
+    const pagesToUpdateFrom = await this.pageRepository.findByFilter({
+      documentVersion: { id: documentFromVersionId },
+      pageNumber: { gt: Math.min(...pageNumbers) },
+    });
+
+    const updatesFrom = pagesToUpdateFrom.map((page) => {
+      const decrement = pageNumbers.filter((num) => num < page.pageNumber).length;
+      return {
+        uuid: page.uuid,
+        pageNumber: page.pageNumber - decrement,
+      };
+    });
+
+    await Promise.all(updatesFrom.map((update) => this.pageRepository.update(update)));
+    await documentTo.addPages(pages, pageNumberTo);
+
+    //найти страницы документа, которые больше чем страница, которую переносим, чтобы увеличить номера страниц
+    const pagesToUpdateTo = await this.pageRepository.findByFilter({
+      documentVersion: {
+        id: documentToVersionId,
+      },
+      pageNumber: {
+        gte: pageNumberTo,
+      },
+    });
+
+    const updatesTo = pagesToUpdateTo.map((page) => ({
+      uuid: page.uuid,
+      pageNumber: page.pageNumber + pageNumbers.length,
+    }));
+
+    await Promise.all(updatesTo.map((update) => this.pageRepository.update(update)));
+
+    for (const page of pages) {
+      //Смена id документа
+      await this.documentGateway.changeDocumentOnPage(page.uuid, documentToVersionId, pageNumberTo);
+      pageNumberTo++;
+    }
+  }
+
   async movePage(documentFrom, pageNumberFrom, documentTo, pageNumberTo = 1) {
     const page = documentFrom.extractPage(pageNumberFrom);
 

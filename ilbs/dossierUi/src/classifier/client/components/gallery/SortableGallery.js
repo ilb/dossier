@@ -32,8 +32,20 @@ const initState = {
   previewOpen: false,
 };
 
-const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, documents }) => {
+const SortableGallery = ({
+  srcSet,
+  active,
+  onRemove,
+  tab,
+  pageErrors,
+  disabled,
+  selectedIds,
+  handleSelect,
+  documents,
+}) => {
   const [state, setState] = useState(initState);
+
+  const itemCount = selectedIds.length;
 
   useEffect(() => {
     setState({ ...state, previewOpen: false });
@@ -146,6 +158,8 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
                         currentPage: getPageNum(src.id, pagesWithPreview),
                       });
                     }}
+                    onSelect={(e) => handleSelect(src.id)}
+                    selected={selectedIds.includes(src.id)}
                   />
                 </div>
               ))}
@@ -164,7 +178,9 @@ const SortableGallery = ({ srcSet, active, onRemove, tab, pageErrors, disabled, 
         </div>
       </SortableContext>
 
-      <DragOverlay>
+      <DragOverlay style={{ position: 'relative' }}>
+        {itemCount > 1 && <div className="item-count">{itemCount}</div>}
+
         {active ? (
           <GalleryItem
             // src={getOverlayPreview(active)}

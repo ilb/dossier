@@ -59,6 +59,7 @@ const Classifier = forwardRef(
       deletePage,
       uploadPages,
     } = useDocuments(uuid, dossierUrl, context);
+
     const [documentsTabs, setDocumentsTabs] = useState(schema.tabs);
     const [selectedTab, selectTab] = useState(null);
     const [clonedItems, setClonedItems] = useState(null);
@@ -70,6 +71,31 @@ const Classifier = forwardRef(
     const [pageErrors, setPageErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [view, setView] = useState(defaultViewType);
+
+    const [selectedIds, setSelectedIds] = useState([]);
+
+    const handleSelect = (id) => {
+      setSelectedIds((selectedIds) => {
+        if (selectedIds.includes(id)) {
+          return selectedIds.filter((value) => value !== id);
+        }
+
+        if (!selectedIds.length || findContainer(id) !== findContainer(selectedIds[0])) {
+          return [id];
+        }
+
+        return selectedIds.concat(id);
+      });
+    };
+
+    const filterItems = (items, activeId) => {
+      // activeDraggable.id
+      if (!activeId) {
+        return items;
+      }
+
+      return items.filter((id) => id === activeId || !selectedIds.includes(id));
+    };
 
     const selectedDocument =
       (selectedTab?.type !== 'classifier' && documents[selectedTab?.type]?.pages) || [];
@@ -129,8 +155,14 @@ const Classifier = forwardRef(
     }));
 
     const sensors = useSensors(
-      useSensor(PointerSensor),
+      useSensor(PointerSensor, {
+        activationConstraint: {
+          distance: 5,
+        },
+      }),
       useSensor(KeyboardSensor, {
+        // CHECK
+        // line 264 Presets/Sortable/MultipleContainers.tsx https://github.com/clauderic/dnd-kit/pull/588/files
         coordinateGetter: sortableKeyboardCoordinates,
       }),
     );
@@ -213,6 +245,8 @@ const Classifier = forwardRef(
       setActiveDraggable(null);
       setClonedItems(null);
       setDraggableOrigin(null);
+
+      setSelectedIds([]);
     };
 
     const handleDocumentsDrop = async (acceptedFiles) => {
@@ -308,9 +342,12 @@ const Classifier = forwardRef(
     };
 
     const onDragStart = ({ active }) => {
+      setSelectedIds((selected) => (selected.includes(active.id) ? selected : []));
+
       setDrugFrom(selectedTab);
       setActiveDraggable(active);
       const container = findContainer(active.id);
+
       setDraggableOrigin({
         container: container,
         type: selectedTab.documentName,
@@ -330,6 +367,7 @@ const Classifier = forwardRef(
 
       if (!overId) {
         setActiveDraggable(null);
+        setSelectedIds([]);
         return;
       }
 
@@ -347,7 +385,7 @@ const Classifier = forwardRef(
         }
 
         if (overIndex === -1) {
-          overIndex = documents[overContainer]?.pages.length - 1;
+          overIndex = 1;
         }
 
         if (activeIndex !== overIndex) {
@@ -365,26 +403,54 @@ const Classifier = forwardRef(
 
         const overContainerTo = overContainer.split('_')[0];
 
+        // MULTI-SELECT LOGIC:
         if (draggableOrigin.container !== overContainer) {
-          await correctDocuments([
-            {
-              from: {
-                class: draggableOrigin.type,
-                page: draggableOrigin.index + 1,
-              },
-              to: { class: overContainerTo, page: overIndex + 1 },
-            },
-          ]);
+          const newDocs =
+            selectedIds.length < 2 // Перемещаем один документ с его выделением или без (т.е. без клика на документ)
+              ? [
+                  {
+                    from: {
+                      class: draggableOrigin.type,
+                      page: draggableOrigin.index + 1,
+                    },
+                    to: { class: overContainerTo, page: overIndex + 1 },
+                  },
+                ]
+              : selectedIds.map((selected, idx) => {
+                  const urlData = selected.split('?')[0].split('/');
+                  const pageNumber = urlData[urlData.length - 1];
+
+                  return {
+                    // Перемещаем два и более выделенных документа
+                    from: {
+                      class: draggableOrigin.type,
+                      page: Number(pageNumber),
+                    },
+                    to: { class: overContainerTo, page: overIndex + idx },
+                  };
+                });
+          await correctDocuments(newDocs);
         } else {
-          await correctDocuments([
-            {
-              from: {
-                class: activeContainer.split('_')[0],
-                page: activeIndex + 1,
-              },
-              to: { class: overContainerTo, page: overIndex + 1 },
-            },
-          ]);
+          const newDocsElse =
+            selectedIds.length < 2
+              ? [
+                  {
+                    from: {
+                      class: activeContainer.split('_')[0],
+                      page: activeIndex + 1,
+                    },
+                    to: { class: overContainerTo, page: overIndex + 1 },
+                  },
+                ]
+              : selectedIds.map((selected, idx) => ({
+                  from: {
+                    class: activeContainer.split('_')[0],
+                    page: activeIndex + idx,
+                  },
+                  to: { class: overContainerTo, page: overIndex + idx },
+                }));
+
+          await correctDocuments(newDocsElse);
         }
 
         await revalidateDocuments();
@@ -392,6 +458,8 @@ const Classifier = forwardRef(
 
       setActiveDraggable(null);
       setDraggableOrigin(null);
+      setSelectedIds([]);
+
       onDrag &&
         onDrag(
           documentsTabs.find((tab) => tab.type === dragFrom.type),
@@ -413,13 +481,15 @@ const Classifier = forwardRef(
 
       const overContainer = findContainer(overId);
       const activeContainer = findContainer(active.id);
+
       if (!overContainer || !activeContainer) {
         return;
       }
 
       if (activeContainer !== overContainer) {
         const activeItems = documents[activeContainer]?.pages;
-        const overItems = documents[overContainer]?.pages;
+        const overItems = filterItems(documents[overContainer]?.pages, activeDraggable.id);
+
         const overIndex = overItems.map((item) => item.path).indexOf(overId);
         const activeIndex = activeItems.map((item) => item.path).indexOf(active.id);
 
@@ -438,17 +508,26 @@ const Classifier = forwardRef(
           newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
         }
 
+        // MULTI-SELECT LOGIC:
+        const ids = selectedIds.length
+          ? [active.id, ...selectedIds.filter((id) => id !== active.id)]
+          : [active.id];
+
         const newDocuments = {
           ...documents,
+
           [activeContainer]: {
             errors: documents[activeContainer].errors,
-            pages: documents[activeContainer]?.pages.filter((item) => item.path !== active.id),
+            pages: documents[activeContainer]?.pages.filter((item) => !ids.includes(item.path)),
           },
+
           [overContainer]: {
             errors: documents[overContainer].errors,
             pages: [
               ...documents[overContainer]?.pages.slice(0, newIndex),
-              documents[activeContainer]?.pages[activeIndex],
+
+              ...documents[activeContainer]?.pages.filter((item) => ids.includes(item.path)),
+
               ...documents[overContainer]?.pages.slice(
                 newIndex,
                 documents[overContainer]?.pages.length,
@@ -461,17 +540,9 @@ const Classifier = forwardRef(
       }
     };
 
-    // const changeTab = (_, { name }) => {
-    //   let tab;
-    //   if (name === 'classifier') {
-    //     tab = { type: 'classifier', name: 'Автоматически' };
-    //   } else {
-    //     tab = documentsTabs.find((tab) => tab.type === name);
-    //   }
-    //   selectTab(tab);
-    // };
-
     const changeTab = (_, { name }) => {
+      setSelectedIds([]);
+
       let tab;
 
       if (name === 'classifier') {
@@ -539,10 +610,13 @@ const Classifier = forwardRef(
                     <SortableGallery
                       pageErrors={pageErrors}
                       tab={selectedTab}
-                      srcSet={selectedDocument}
+                      // MULTI-SELECT LOGIC:
+                      srcSet={filterItems(selectedDocument, activeDraggable)}
                       onRemove={handlePageDelete}
                       active={activeDraggable}
                       disabled={disabled}
+                      selectedIds={selectedIds}
+                      handleSelect={handleSelect}
                       documents={documents}
                     />
                   </Dimmable>
