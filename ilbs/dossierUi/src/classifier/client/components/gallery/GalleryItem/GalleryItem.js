@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 import { Handle } from '../SortableGalleryItem/Handle';
 import { Remove } from '../SortableGalleryItem/Remove';
+import { ItemSelectionIndicator } from '../SortableGalleryItem/ItemSelectionIndicator';
 import DownloadButton from '../../DownloadButton';
 
 import excel from '../../../images/excel.png';
@@ -111,6 +112,7 @@ const GalleryItem = React.memo(
               {!disabled && img?.hasNoPreview && <DownloadButton src={src} />}
               {!disabled && img && !img?.hasNoPreview && <Handle onClick={onClick} />}
               {!disabled && <Remove onClick={handleClick} />}
+              {!disabled && <ItemSelectionIndicator selected={selected} />}
               <div {...attributes} {...listeners}>
                 {img && (
                   <Image
