@@ -86,7 +86,7 @@ const MenuTab = ({
   const statusToShow = getStatusToShow(currentStatus, errors);
 
   const documentNameWords = document?.name?.split(' ');
-  const documentNameFirstWord = documentNameWords[0]?.toLowerCase();
+  const documentNameFirstWord = documentNameWords[0];
   const documentNameRestWords =
     documentNameWords?.length > 0 ? documentNameWords?.slice(1)?.join(' ') : '';
 
