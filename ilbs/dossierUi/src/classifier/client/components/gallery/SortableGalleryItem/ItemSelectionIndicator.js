@@ -15,8 +15,8 @@ export function ItemSelectionIndicator(props) {
         borderRadius: '50%',
         backgroundColor: `${props.selected ? '#1677ff' : 'transparent'}`,
 
-        border: '2px solid transparent',
-        borderColor: `${props.selected ? 'transparent' : '#EFEFEF'}`,
+        border: '3px solid transparent',
+        borderColor: `${props.selected ? 'transparent' : '#1677ff'}`,
         zIndex: 200,
       }}>
       {props.selected && (

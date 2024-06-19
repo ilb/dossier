@@ -85,6 +85,11 @@ const MenuTab = ({
   const currentStatus = documents[document.type]?.state;
   const statusToShow = getStatusToShow(currentStatus, errors);
 
+  const documentNameWords = document?.name?.split(' ');
+  const documentNameFirstWord = documentNameWords[0]?.toLowerCase();
+  const documentNameRestWords =
+    documentNameWords?.length > 0 ? documentNameWords?.slice(1)?.join(' ') : '';
+
   return (
     <div id={document.type}>
       {!hidden && (
@@ -136,7 +141,9 @@ const MenuTab = ({
                   textAlign: 'left',
                 }}>
                 <span lang="ru" style={{ hyphens: 'auto' }}>
-                  {document.name} {countPages ? '(' + countPages + ')' : ''}
+                  <span style={{ textTransform: 'capitalize' }}>{documentNameFirstWord}</span>{' '}
+                  <span>{documentNameRestWords}</span>
+                  {countPages ? '(' + countPages + ')' : ''}
                 </span>
               </div>
               {isRequired && (
