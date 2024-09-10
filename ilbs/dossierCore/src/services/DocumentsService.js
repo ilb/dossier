@@ -10,12 +10,10 @@ export default class DocumentsService extends Service {
 
   buildLinks(pages, documentType, version, uuid, context) {
     const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
-    const queryObj = { ...context };
+    const queryArray = Object.entries(context);
 
-    const buildQuery = queryObj
-      ? `?${Object.entries(queryObj)
-          .map(([key, value]) => `${key}=${value}`)
-          .join("&")}`
+    const buildQuery = queryArray.length
+      ? `?${queryArray.map(([key, value]) => `${key}=${value}`).join("&")}`
       : "";
 
     return pages.map((page) => {
