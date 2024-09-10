@@ -1,5 +1,5 @@
-import Service from '@ilb/core/src/base/Service.js';
-import mime from 'mime-types';
+import Service from "@ilb/core/src/base/Service.js";
+import mime from "mime-types";
 
 export default class DocumentsService extends Service {
   constructor(scope) {
@@ -10,13 +10,13 @@ export default class DocumentsService extends Service {
 
   buildLinks(pages, documentType, version, uuid, context) {
     const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
-    const queryObj = { ...context, _nocache: new Date().toLocaleString() };
+    const queryObj = { ...context };
 
     const buildQuery = queryObj
       ? `?${Object.entries(queryObj)
           .map(([key, value]) => `${key}=${value}`)
-          .join('&')}`
-      : '';
+          .join("&")}`
+      : "";
 
     return pages.map((page) => {
       return {
@@ -56,7 +56,7 @@ export default class DocumentsService extends Service {
     return {
       file: await document.getDocument(),
       mimeType: document.getMimeType(),
-      filename: document.getDocumentName() + '.' + document.getExtension(),
+      filename: document.getDocumentName() + "." + document.getExtension(),
     };
   }
 
@@ -83,7 +83,7 @@ export default class DocumentsService extends Service {
         const versions = {};
 
         document.versions.map((versionObj, i) => {
-          versions[document.type + '_' + versionObj.version] = {
+          versions[document.type + "_" + versionObj.version] = {
             pages: this.buildLinks(
               versionObj.pages,
               document.type,
