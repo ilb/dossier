@@ -1,21 +1,21 @@
-import fs from 'fs';
-import multer from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import { Poppler } from 'node-poppler';
-import im from 'imagemagick';
-import { promisify } from 'util';
-import mime from 'mime-types';
-import Errors from '../util/Errors.js';
+import fs from "fs";
+import multer from "multer";
+import { v4 as uuidv4 } from "uuid";
+import { Poppler } from "node-poppler";
+import im from "imagemagick";
+import { promisify } from "util";
+import mime from "mime-types";
+import Errors from "../util/Errors.js";
 
 export const uploadMiddleware = multer({
   limits: {
-    fileSize: process.env['apps.classifier.filesize']
-      ? process.env['apps.classifier.filesize'] * 1024 * 1024
+    fileSize: process.env["apps.classifier.filesize"]
+      ? process.env["apps.classifier.filesize"] * 1024 * 1024
       : 30 * 1024 * 1024,
   },
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const date = req?.query?.createdDate?.split('.').reverse().join('/');
+      const date = req?.query?.createdDate?.split(".").reverse().join("/");
       const destination = `documents/dossier/${date}/${req.query.uuid}/${req.query.name}`;
 
       if (!fs.existsSync(destination)) {
@@ -25,8 +25,8 @@ export const uploadMiddleware = multer({
       return cb(null, destination);
     },
     filename: (req, file, cb) => {
-      file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
-      return cb(null, uuidv4() + '.' + file.originalname.split('.').pop());
+      file.originalname = Buffer.from(file.originalname, "latin1").toString("utf8");
+      return cb(null, uuidv4() + "." + file.originalname.split(".").pop());
     },
   }),
 });
@@ -40,14 +40,14 @@ export const jfifToJpeg = async (req, res, next) => {
   req.files = await req.files?.reduce(async (accumulator, file) => {
     const files = await accumulator;
     if (/\.jfif$/.test(file.originalname)) {
-      const jpegOutput = `${file.destination}/${file.filename.split('.')[0]}.jpg`;
+      const jpegOutput = `${file.destination}/${file.filename.split(".")[0]}.jpg`;
       fs.renameSync(file.path, jpegOutput);
       return [
         ...files,
         {
           ...file,
-          originalname: file.originalname.replace('.jfif', '.jpg'),
-          filename: file.filename.replace('.jfif', '.jpg'),
+          originalname: file.originalname.replace(".jfif", ".jpg"),
+          filename: file.filename.replace(".jfif", ".jpg"),
           path: jpegOutput,
         },
       ];
@@ -99,13 +99,13 @@ export const splitPdf = async (req, res, next) => {
   try {
     req.files = await req.files?.reduce(async (accumulator, file) => {
       const files = await accumulator;
-      if (file.mimetype === 'application/pdf') {
-        const poppler = new Poppler(process.env.POPPLER_BIN_PATH);
-        const splitOutputPath = `${file.destination}/${file.filename.split('.')[0]}`;
+      if (file.mimetype === "application/pdf") {
+        const poppler = new Poppler(process.env["apps.loandossier.poppler_bin_path"]);
+        const splitOutputPath = `${file.destination}/${file.filename.split(".")[0]}`;
         fs.mkdirSync(splitOutputPath);
         await poppler.pdfToCairo(
           file.path,
-          `${splitOutputPath}/${file.originalname.split('.')[0]}`,
+          `${splitOutputPath}/${file.originalname.split(".")[0]}`,
           {
             jpegFile: true,
           },
@@ -117,7 +117,7 @@ export const splitPdf = async (req, res, next) => {
           const path = `${file.destination}/${filename}`;
           fs.renameSync(`${splitOutputPath}/${page}`, path);
 
-          return { path, filename, mimetype: 'image/jpeg' };
+          return { path, filename, mimetype: "image/jpeg" };
         });
 
         fs.unlinkSync(file.path);
@@ -130,7 +130,7 @@ export const splitPdf = async (req, res, next) => {
     }, []);
     next();
   } catch (e) {
-    throw new Error('Ошибка разбиения pdf');
+    throw new Error("Ошибка разбиения pdf");
   }
 };
 
@@ -222,36 +222,36 @@ export const checkEmptyList = async (req, res, next) => {
       // Задаем параметры для вывода в avr
       const files = await accumulator;
 
-      if (!file.mimetype.includes('image/')) {
+      if (!file.mimetype.includes("image/")) {
         return [...files, file];
       }
 
-      const colorSpace = 'sRGB';
-      const size = '100x100';
-      const format = '%[pixel:u]';
-      const outputFormat = 'txt';
+      const colorSpace = "sRGB";
+      const size = "100x100";
+      const format = "%[pixel:u]";
+      const outputFormat = "txt";
 
       const options = [
         file.path,
-        '-colorspace',
+        "-colorspace",
         colorSpace,
-        '-scale',
+        "-scale",
         size,
-        '-depth',
-        '8',
-        '-format',
+        "-depth",
+        "8",
+        "-format",
         format,
-        outputFormat + ':-',
+        outputFormat + ":-",
       ];
 
       const result = await convert(options);
 
-      const lines = result.trim().split('\n').slice(1);
+      const lines = result.trim().split("\n").slice(1);
       //разбить текст на объект для удобной работы с ним
       const objectsAvg = lines.map((line) => {
-        const [xy, color] = line.split(': ');
-        const [x, y] = xy.split(',');
-        const [rgb, hex, name] = color.split('  ');
+        const [xy, color] = line.split(": ");
+        const [x, y] = xy.split(",");
+        const [rgb, hex, name] = color.split("  ");
 
         return {
           x: parseInt(x),
@@ -289,7 +289,7 @@ export const checkEmptyList = async (req, res, next) => {
     }, []);
     next();
   } catch (e) {
-    console.log('e', e);
-    throw new Error('Ошибка проверки на белый лист');
+    console.log("e", e);
+    throw new Error("Ошибка проверки на белый лист");
   }
 };

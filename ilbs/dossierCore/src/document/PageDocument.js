@@ -1,12 +1,12 @@
-import fs from 'fs';
-import path from 'path';
-import mime from 'mime-types';
+import fs from "fs";
+import path from "path";
+import mime from "mime-types";
 
-import Page from './Page.js';
-import Document from './Document.js';
-import DocumentMerger from '../dossier/DocumentMerger.js';
-import PageDocumentVersion from './PageDocumentVersion.js';
-import DocumentError from './DocumentError.js';
+import Page from "./Page.js";
+import Document from "./Document.js";
+import DocumentMerger from "../dossier/DocumentMerger.js";
+import PageDocumentVersion from "./PageDocumentVersion.js";
+import DocumentError from "./DocumentError.js";
 
 export default class PageDocument extends Document {
   /**
@@ -15,8 +15,8 @@ export default class PageDocument extends Document {
    */
   constructor(dossier, docData) {
     super(dossier, docData);
-    this.documentsPath = process.env.DOSSIER_DOCUMENT_PATH;
-    this.dossierPath = this.documentsPath + '/dossier';
+    this.documentsPath = process.env["apps.loandossier.dossier_document_path"];
+    this.dossierPath = this.documentsPath + "/dossier";
     this.documentMerger = new DocumentMerger(this.dossierPath);
     this.verificationsList = docData.verifications || [];
     this.validationRules = docData.validationRules || [];
@@ -47,7 +47,7 @@ export default class PageDocument extends Document {
     this.setId = document.id;
     this.errors = this.initErrors(document.currentDocumentVersion?.errors);
     this.initCurrentDocumentVersion(document.currentDocumentVersion);
-    this.state = document.currentDocumentVersion?.documentState?.code || '';
+    this.state = document.currentDocumentVersion?.documentState?.code || "";
     this.initVersions(document.documentVersions);
     this.initDocumentData(document.currentDocumentVersion);
     this.lastModified = document.updateAt || document.createAt;
@@ -93,7 +93,7 @@ export default class PageDocument extends Document {
     const files = [];
 
     for (const page of this.getPages()) {
-      const filePath = path.resolve('.', page.uri);
+      const filePath = path.resolve(".", page.uri);
       let file = fs.createReadStream(filePath);
       files.push(file);
     }
@@ -131,7 +131,7 @@ export default class PageDocument extends Document {
    * @returns {string}
    */
   getDocumentName() {
-    return this.type + '-' + this.dossier.uuid;
+    return this.type + "-" + this.dossier.uuid;
   }
 
   /**
@@ -146,8 +146,8 @@ export default class PageDocument extends Document {
     }
 
     const firstPageMimeType = mime.lookup(this.getPages()[0].extension);
-    if (firstPageMimeType?.includes('image/')) {
-      return 'application/pdf';
+    if (firstPageMimeType?.includes("image/")) {
+      return "application/pdf";
     }
 
     return firstPageMimeType;
@@ -166,7 +166,7 @@ export default class PageDocument extends Document {
    * Вернет true если документ представляет собой картинку/набор картинок и false в ином случае.
    */
   isImages() {
-    return ['application/pdf', null].includes(this.getMimeType());
+    return ["application/pdf", null].includes(this.getMimeType());
   }
 
   /**
@@ -267,8 +267,8 @@ export default class PageDocument extends Document {
   getDefaultPage() {
     return new Page({
       path: `${this.documentsPath}/default.jpg`,
-      filename: 'default.jpg',
-      mimetype: 'image/jpeg',
+      filename: "default.jpg",
+      mimetype: "image/jpeg",
     });
   }
 
