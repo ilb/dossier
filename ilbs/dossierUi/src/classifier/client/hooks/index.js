@@ -1,7 +1,7 @@
-import useSWR, { useSWRConfig } from 'swr';
-import { fetcher } from '../utils/fetcher';
+import useSWR, { useSWRConfig } from "swr";
+import { fetcher } from "../utils/fetcher";
 
-const basePath = process.env.API_PATH || '/api';
+const basePath = process.env.API_PATH || "/api";
 
 export const classifyDocument = async (uuid, files, availableClasses, dossierUrl, buildQuery) => {
   const formData = new FormData();
@@ -12,9 +12,9 @@ export const classifyDocument = async (uuid, files, availableClasses, dossierUrl
   availableClasses.map((availableClass) => formData.append(`availableClasses`, availableClass));
 
   const result = await fetch(`${dossierUrl}/api/classifier/${uuid}${buildQuery}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      accept: '*/*',
+      accept: "*/*",
     },
     body: formData,
   });
@@ -35,9 +35,9 @@ export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery)
   const result = await fetch(
     `${dossierUrl}/api/dossier/${uuid}/documents/${document}${buildQuery}`,
     {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        accept: '*/*',
+        accept: "*/*",
       },
       body: formData,
     },
@@ -52,11 +52,11 @@ export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery)
 
 export const deletePage = async (pageSrc, buildQuery) => {
   const url =
-    pageSrc.path.slice(0, pageSrc.path.indexOf('?')) +
+    pageSrc.path +
     `${buildQuery}` +
     `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
   const result = await fetch(url, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
   if (result.ok) {
@@ -68,18 +68,18 @@ export const deletePage = async (pageSrc, buildQuery) => {
 
 export const correctDocuments = async (uuid, documents, dossierUrl, buildQuery) => {
   const res = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/correction${buildQuery}`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    redirect: 'follow',
+    redirect: "follow",
     body: JSON.stringify({ documents }),
   });
 
   if (res.ok) {
     return { ok: true };
   } else {
-    const error = new Error('An error occured while correcting the documents');
+    const error = new Error("An error occured while correcting the documents");
     error.info = res.text();
     error.status = res.status;
     throw error;
@@ -88,7 +88,7 @@ export const correctDocuments = async (uuid, documents, dossierUrl, buildQuery) 
 
 export const getSchema = async (project, dossierUrl) => {
   const res = fetch(`${dossierUrl}/api/schema/${project}`, {
-    method: 'GET',
+    method: "GET",
   });
 
   if (res.ok) {
@@ -121,8 +121,8 @@ export const useDocuments = (uuid, dossierUrl, context) => {
   const buildQuery = context
     ? `?${Object.entries(context)
         .map(([key, value]) => `${key}=${value}`)
-        .join('&')}`
-    : '';
+        .join("&")}`
+    : "";
 
   const { mutate: mutateGlobal } = useSWRConfig();
   const { data: documents, mutate } = useSWR(
