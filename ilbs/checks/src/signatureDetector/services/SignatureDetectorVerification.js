@@ -1,13 +1,13 @@
-import Service from '@ilb/core/src/base/Service.js';
-import fs from 'fs';
-import FormData from 'form-data';
-import fetch from 'isomorphic-fetch';
-import { timeoutPromise } from '../../../libs/utils.js';
+import Service from "@ilb/core/src/base/Service.js";
+import fs from "fs";
+import FormData from "form-data";
+import fetch from "isomorphic-fetch";
+import { timeoutPromise } from "../../../libs/utils.js";
 
 export default class SignatureDetectorVerification extends Service {
   constructor({ documentErrorService }) {
     super();
-    this.nameVerification = 'signatureDetectorVerification';
+    this.nameVerification = "signatureDetectorVerification";
     this.documentErrorService = documentErrorService;
     this.errors = [];
     this.classifierTimeout = 30;
@@ -17,22 +17,22 @@ export default class SignatureDetectorVerification extends Service {
     // Взять последнюю страницу документа, т.к. именно она является проверяемой
     const page = document?.pages[document?.pages?.length - 1];
     const formData = new FormData();
-    formData.append('file', fs.createReadStream(page.uri));
-    formData.append('documentType', params[0]?.documentType);
+    formData.append("file", fs.createReadStream(page.uri));
+    formData.append("documentType", params[0]?.documentType);
     // Добавить координаты подписи, если они указаны в параметрах
     if (params[0]?.pagesInfo) {
-      formData.append('pagesInfo', JSON.stringify(params[0]?.pagesInfo));
+      formData.append("pagesInfo", JSON.stringify(params[0]?.pagesInfo));
     }
 
     const res = await timeoutPromise(
-      fetch(process.env['apps.loandossier.stub.signatureDetectorUrl'], {
-        method: 'POST',
+      fetch(process.env["apps.documentsignaturedetectorjs.ws"], {
+        method: "POST",
         headers: {
           ...formData.getHeaders(),
         },
         body: formData,
       }),
-      new Error('Signature Detector Timed Out! Page: ' + JSON.stringify(page)),
+      new Error("Signature Detector Timed Out! Page: " + JSON.stringify(page)),
       this.classifierTimeout,
     );
 
@@ -42,9 +42,9 @@ export default class SignatureDetectorVerification extends Service {
 
       if (numberDetectedSignatures < signatures.length) {
         const error = {
-          description: 'Подписи не найдены',
-          errorState: 'ACTIVE',
-          errorType: 'VERIFICATION',
+          description: "Подписи не найдены",
+          errorState: "ACTIVE",
+          errorType: "VERIFICATION",
         };
 
         await this.documentErrorService.addError(document, error);
