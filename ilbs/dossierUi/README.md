@@ -17,7 +17,7 @@ npm run dev
 
 ## Использование:
 
-Задать переменную `apps.loandossier.dossier_document_path` в .env
+Задать переменную `apps.loandossier.dossierDocumentPath` в .env
 
 ### Клиент:
 

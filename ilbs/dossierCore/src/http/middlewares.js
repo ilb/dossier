@@ -100,7 +100,7 @@ export const splitPdf = async (req, res, next) => {
     req.files = await req.files?.reduce(async (accumulator, file) => {
       const files = await accumulator;
       if (file.mimetype === "application/pdf") {
-        const poppler = new Poppler(process.env["apps.loandossier.poppler_bin_path"]);
+        const poppler = new Poppler(process.env["apps.loandossier.popplerBinPath"]);
         const splitOutputPath = `${file.destination}/${file.filename.split(".")[0]}`;
         fs.mkdirSync(splitOutputPath);
         await poppler.pdfToCairo(
