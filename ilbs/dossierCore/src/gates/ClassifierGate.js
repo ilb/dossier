@@ -1,7 +1,9 @@
+/* eslint-disable n/no-extraneous-import -- Отключение правила для extraneous import */
 import FormData from "form-data";
 import fs from "fs";
 import fetch from "isomorphic-fetch";
 
+/* eslint-enable n/no-extraneous-import -- Отключение правила extraneous import */
 import { timeoutPromise } from "../../libs/utils.js";
 
 export default class ClassifierGate {
@@ -10,7 +12,7 @@ export default class ClassifierGate {
    */
   constructor() {
     this.classifierUrl = process.env["apps.docclassifierrs.ws"];
-    this.classifierTimeout = parseInt(process.env["apps.loandossier.classifiertimeout"]) || 50;
+    this.classifierTimeout = parseInt(process.env["apps.loandossier.classifiertimeout"], 10) || 50;
   }
 
   /**

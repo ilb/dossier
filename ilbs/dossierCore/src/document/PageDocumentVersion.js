@@ -3,6 +3,7 @@ import fs from "fs";
 import Document from "./Document.js";
 import Page from "./Page.js";
 
+/* eslint-disable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
 export default class PageDocumentVersion extends Document {
   /**
    * @param {Object} data Данные для инициализации версии документа.
@@ -36,6 +37,8 @@ export default class PageDocumentVersion extends Document {
       )
       : [];
   }
+
+  /* eslint-enable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
 
   /**
    * Возвращает страницу по умолчанию.

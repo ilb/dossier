@@ -89,7 +89,7 @@ export default class DocumentsService extends Service {
     return {
       file: await document.getDocument(),
       mimeType: document.getMimeType(),
-      filename: document.getDocumentName() + "." + document.getExtension(),
+      filename: `${document.getDocumentName()}.${document.getExtension()}`,
     };
   }
 
@@ -125,6 +125,8 @@ export default class DocumentsService extends Service {
     await this.documentStateService.changeState(document, stateCode);
   }
 
+  /* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
+  /* eslint-disable array-callback-return -- Отключение правила array-callback-return */
   /**
    * Получает страницы всех версий документов.
    * @param {Object} root0 Объект с параметрами.
@@ -141,7 +143,7 @@ export default class DocumentsService extends Service {
         const versions = {};
 
         document.versions.map((versionObj, i) => {
-          versions[document.type + "_" + versionObj.version] = {
+          versions[`${document.type}_${versionObj.version}`] = {
             pages: this.buildLinks(
               versionObj.pages,
               document.type,
@@ -175,4 +177,6 @@ export default class DocumentsService extends Service {
 
     return res;
   }
+  /* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
+  /* eslint-enable array-callback-return -- Отключение правила array-callback-return */
 }

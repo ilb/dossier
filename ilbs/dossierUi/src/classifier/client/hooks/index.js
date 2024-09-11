@@ -1,7 +1,12 @@
 import useSWR, { useSWRConfig } from "swr";
-import { fetcher } from "../utils/fetcher";
 
+/* eslint-disable n/no-missing-import -- Отключение правила n/no-missing-import */
+import { fetcher } from "../utils/fetcher";
+/* eslint-enable n/no-missing-import -- Отключение правила n/no-missing-import */
+
+/* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
 const basePath = process.env.API_PATH || "/api";
+/* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
 
 // const basePath = process.env.API_PATH || "/api"; //forStas delete?
 
@@ -82,8 +87,8 @@ export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery)
  */
 export const deletePage = async (pageSrc, buildQuery) => {
   const url =
-    pageSrc.path +
-    `${buildQuery}` +
+    `${pageSrc.path
+    }${buildQuery}` +
     `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
   const result = await fetch(url, {
     method: "DELETE",
@@ -118,6 +123,7 @@ export const correctDocuments = async (uuid, documents, dossierUrl, buildQuery) 
     return { ok: true };
   } else {
     const error = new Error("An error occured while correcting the documents");
+
     error.info = res.text();
     error.status = res.status;
     throw error;
@@ -190,8 +196,8 @@ export const usePages = (uuid, documentName, dossierUrl) => {
 export const useDocuments = (uuid, dossierUrl, context) => {
   const buildQuery = context
     ? `?${Object.entries(context)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("&")}`
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&")}`
     : "";
 
   const { mutate: mutateGlobal } = useSWRConfig();
