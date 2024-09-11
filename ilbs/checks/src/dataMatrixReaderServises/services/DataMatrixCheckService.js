@@ -114,7 +114,7 @@ export default class DataMatrixCheckService extends Service {
    * @returns {Promise<string|null>} - Возвращает декодированный результат или null.
    */
   async decodeFile(file, params) {
-    const image = await loadImage(file.uri); // Загружаем изображение из файла //forStas 116:25  error  'loadImage' is not defined  no-undef
+    const image = await loadImage(file.uri); // Загружаем изображение из файла
     let decode = await this.decodeImage(image, params, file.name);
 
     if (!decode) {

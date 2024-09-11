@@ -59,10 +59,10 @@ export default class DeviationCheck extends Service {
    */
   static async alignScanFromPath(imagePath) {
     // Загрузка изображения
-    const image = await load(imagePath); // forStas 'load' is not defined no-undef
+    const image = await load(imagePath);
 
     // Выравнивание скана
-    const aligned = await ScannerAlignment.alignScan(image); // forStas 'ScannerAlignment' is not defined  no-undef
+    const aligned = await ScannerAlignment.alignScan(image);
 
     // Возвращаем выравненное изображение
     return aligned;
