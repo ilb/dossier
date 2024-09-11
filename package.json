@@ -4,5 +4,12 @@
   "workspaces": [
     "apps/*",
     "ilbs/*"
-  ]
+  ],
+  "devDependencies": {
+    "@ilb/eslint-config": "^1.0.2"
+  },
+  "scripts": {
+    "lint": "ESLINT_USE_FLAT_CONFIG=true eslint -c eslint.config.mjs .",
+    "lint:fix": "eslint -c eslint.config.mjs --fix ."
+  }
 }

@@ -1,22 +1,28 @@
+/**
+ * Индикатор выбранного элемента
+ * @param {Object} props Свойства компонента
+ * @param {boolean} props.selected Указывает, выбран ли элемент
+ * @returns {JSX.Element} Компонент индикатора выбора
+ */
 export function ItemSelectionIndicator(props) {
   return (
     <div
       style={{
-        position: 'absolute',
-        bottom: '10px',
-        right: '11px',
+        position: "absolute",
+        bottom: "10px",
+        right: "11px",
 
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
 
-        width: '18px',
-        height: '18px',
-        borderRadius: '50%',
-        backgroundColor: `${props.selected ? '#1677ff' : 'transparent'}`,
+        width: "18px",
+        height: "18px",
+        borderRadius: "50%",
+        backgroundColor: `${props.selected ? "#1677ff" : "transparent"}`,
 
-        border: '3px solid transparent',
-        borderColor: `${props.selected ? 'transparent' : '#1677ff'}`,
+        border: "3px solid transparent",
+        borderColor: `${props.selected ? "transparent" : "#1677ff"}`,
         zIndex: 200,
       }}>
       {props.selected && (

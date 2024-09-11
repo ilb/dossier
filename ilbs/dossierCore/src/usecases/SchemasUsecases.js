@@ -1,48 +1,60 @@
-import Usecases from '@ilb/core/src/base/usecases/Usecases.js';
-import createDebug from 'debug';
+import Usecases from "@ilb/core/src/base/usecases/Usecases.js";
+import createDebug from "debug";
 
-const debug = createDebug('dossier');
+const debug = createDebug("dossier");
 
 export default class SchemasUsecases extends Usecases {
   /**
-   * @param {DocumentsService} documentsService
-   * @param {object} request
-   * @returns {}
+   * Получает список документов.
+   * @returns {Object} - Возвращает объект с текстом "list".
    */
   async list() {
-    return { text: 'list' };
+    return { text: "list" };
   }
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Создает новый документ.
+   * @returns {Promise<{text: string}>} - Возвращает объект с текстом "create".
    */
   async create() {
-    return { text: 'create' };
+    return { text: "create" };
   }
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Читает схему досье.
+   * @param {Object} root0 Объект с параметрами.
+   * @param {Object} root0.dossierSchema Схема досье.
+   * @returns {Promise<Object>} - Возвращает схему досье.
    */
   async read({ dossierSchema }) {
-    debug('read dossierSchema start');
+    debug("read dossierSchema start");
     const schema = dossierSchema;
-    debug('read dossierSchema end');
+
+    debug("read dossierSchema end");
     return schema;
   }
 
-  async update() {}
-
   /**
-   * @returns {Promise<{text: string}>}
+   * Обновляет документ.
+   * @returns {Promise<void>} - Возвращает промис без значения.
    */
-  async delete() {
-    return { text: 'delete' };
+  async update() {
+    // Реализация метода
   }
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Удаляет документ.
+   * @returns {Promise<{text: string}>} - Возвращает объект с текстом "delete".
+   */
+  async delete() {
+    return { text: "delete" };
+  }
+
+  /**
+   * Корректирует документ.
+   * @returns {Promise<{text: string}>} - Возвращает объект с текстом "correct".
    */
   async correct() {
-    return { text: 'correct' };
+    return { text: "correct" };
   }
 }

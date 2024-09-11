@@ -1,43 +1,64 @@
-import useSWR, { useSWRConfig } from 'swr';
-import { fetcher } from '../utils/fetcher';
+import useSWR, { useSWRConfig } from "swr";
 
-const basePath = process.env.API_PATH || '/api';
+import { fetcher } from "../utils/fetcher.js";
 
+// const basePath = process.env.API_PATH || "/api"; //forStas delete?
+
+/**
+ * Классификация документа
+ * @param {string} uuid UUID документа
+ * @param {File[]} files Массив файлов
+ * @param {string[]} availableClasses Доступные классы для классификации
+ * @param {string} dossierUrl URL для запросов
+ * @param {string} buildQuery Строка запроса
+ * @returns {Promise<{ok: boolean}>} - Результат классификации
+ */
 export const classifyDocument = async (uuid, files, availableClasses, dossierUrl, buildQuery) => {
   const formData = new FormData();
-  files.forEach((f) => {
-    formData.append(`documents`, f);
+
+  files.forEach(f => {
+    formData.append("documents", f);
   });
 
-  availableClasses.map((availableClass) => formData.append(`availableClasses`, availableClass));
+  availableClasses.map(availableClass => formData.append("availableClasses", availableClass));
 
   const result = await fetch(`${dossierUrl}/api/classifier/${uuid}${buildQuery}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      accept: '*/*',
+      accept: "*/*",
     },
     body: formData,
   });
 
   if (result.ok) {
     return { ok: true };
-  } else {
-    return { ok: false };
   }
+  return { ok: false };
+
 };
 
+/**
+ * Загрузка страниц документа
+ * @param {string} uuid UUID документа
+ * @param {string} document Имя документа
+ * @param {File[]} files Массив файлов
+ * @param {string} dossierUrl URL для запросов
+ * @param {string} buildQuery Строка запроса
+ * @returns {Promise<{ok: boolean}>} - Результат загрузки
+ */
 export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery) => {
   const formData = new FormData();
-  files.forEach((f) => {
-    formData.append(`documents`, f);
+
+  files.forEach(f => {
+    formData.append("documents", f);
   });
 
   const result = await fetch(
     `${dossierUrl}/api/dossier/${uuid}/documents/${document}${buildQuery}`,
     {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        accept: '*/*',
+        accept: "*/*",
       },
       body: formData,
     },
@@ -45,59 +66,90 @@ export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery)
 
   if (result.ok) {
     return { ok: true };
-  } else {
-    return { ok: false, ...(await result.json()) };
   }
+  return { ok: false, ...(await result.json()) };
+
 };
 
+/**
+ * Удаление страницы
+ * @param {Object} pageSrc Источник страницы
+ * @param {string} pageSrc.path Путь страницы
+ * @param {string} pageSrc.uuid UUID страницы
+ * @param {string} buildQuery Строка запроса
+ * @returns {Promise<{ok: boolean}>} - Результат удаления
+ */
 export const deletePage = async (pageSrc, buildQuery) => {
   const url =
-    pageSrc.path.slice(0, pageSrc.path.indexOf('?')) +
-    `${buildQuery}` +
+    `${pageSrc.path.slice(0, pageSrc.path.indexOf("?"))
+    }${buildQuery}` +
     `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
   const result = await fetch(url, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
   if (result.ok) {
     return { ok: true };
-  } else {
-    return { ok: false };
   }
+  return { ok: false };
+
 };
 
+/**
+ * Коррекция документов
+ * @param {string} uuid UUID документа
+ * @param {Object[]} documents Массив документов
+ * @param {string} dossierUrl URL для запросов
+ * @param {string} buildQuery Строка запроса
+ * @returns {Promise<{ok: boolean}>} - Результат коррекции
+ */
 export const correctDocuments = async (uuid, documents, dossierUrl, buildQuery) => {
   const res = await fetch(`${dossierUrl}/api/dossier/${uuid}/documents/correction${buildQuery}`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    redirect: 'follow',
+    redirect: "follow",
     body: JSON.stringify({ documents }),
   });
 
   if (res.ok) {
     return { ok: true };
-  } else {
-    const error = new Error('An error occured while correcting the documents');
-    error.info = res.text();
-    error.status = res.status;
-    throw error;
   }
+  const error = new Error("An error occured while correcting the documents");
+
+  error.info = res.text();
+  error.status = res.status;
+  throw error;
+
 };
 
+/**
+ * Получение схемы
+ * @param {string} project Имя проекта
+ * @param {string} dossierUrl URL для запросов
+ * @returns {Promise<Object>} - Схема
+ */
 export const getSchema = async (project, dossierUrl) => {
   const res = fetch(`${dossierUrl}/api/schema/${project}`, {
-    method: 'GET',
+    method: "GET",
   });
 
   if (res.ok) {
     return await res.json();
-  } else {
-    throw Error(`Не удалось получить схему`);
   }
+  throw Error("Не удалось получить схему");
+
 };
 
+/* eslint-disable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
+/**
+ * Хук для получения страниц
+ * @param {string} uuid UUID документа
+ * @param {string} documentName Имя документа
+ * @param {string} dossierUrl URL для запросов
+ * @returns {Object} - Страницы и функции для обновления
+ */
 export const usePages = (uuid, documentName, dossierUrl) => {
   const { mutate: mutateGlobal } = useSWRConfig();
   const { data: pages, mutate } = useSWR(
@@ -107,22 +159,34 @@ export const usePages = (uuid, documentName, dossierUrl) => {
       fallbackData: [],
     },
   );
+
   return {
     pages,
     mutatePages: mutate,
+    /**
+     * Переобновление документов
+     * @returns {Promise<void>}
+     */
     revalidatePages: () =>
       mutateGlobal(
         documentName ? `${dossierUrl}/api/dossier/${uuid}/documents/${documentName}` : null,
       ),
   };
 };
-
+/* eslint-disable no-shadow -- Отключение правила no-shadow */
+/**
+ * Хук для получения документов
+ * @param {string} uuid UUID документа
+ * @param {string} dossierUrl URL для запросов
+ * @param {Object} context Дополнительные параметры
+ * @returns {Object} - Документы и функции для обновления
+ */
 export const useDocuments = (uuid, dossierUrl, context) => {
   const buildQuery = context
     ? `?${Object.entries(context)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&')}`
-    : '';
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&")}`
+    : "";
 
   const { mutate: mutateGlobal } = useSWRConfig();
   const { data: documents, mutate } = useSWR(
@@ -132,24 +196,61 @@ export const useDocuments = (uuid, dossierUrl, context) => {
       fallbackData: {},
     },
   );
+
   return {
     documents,
     mutateDocuments: mutate,
-    correctDocuments: (documents) => correctDocuments(uuid, documents, dossierUrl, buildQuery),
+    /**
+     * Коррекция документов
+     * @param {Object[]} documents Массив документов
+     * @returns {Promise<{ok: boolean}>}
+     */
+    correctDocuments: documents => correctDocuments(uuid, documents, dossierUrl, buildQuery),
+    /**
+     * Переобновление документов
+     * @returns {Promise<void>}
+     */
     revalidateDocuments: () =>
       mutateGlobal(`${dossierUrl}/api/dossier/${uuid}/documents${buildQuery}`),
+    /**
+     * Классификация документа
+     * @param {string} uuid UUID документа
+     * @param {File[]} files Массив файлов
+     * @param {string[]} availableClasses Доступные классы
+     * @returns {Promise<{ok: boolean}>}
+     */
     classifyDocument: (uuid, files, availableClasses) =>
       classifyDocument(uuid, files, availableClasses, dossierUrl, buildQuery),
+    /**
+     * Загрузка страниц
+     * @param {string} uuid UUID документа
+     * @param {string} document Имя документа
+     * @param {File[]} files Массив файлов
+     * @returns {Promise<{ok: boolean}>} - Результат загрузки страниц
+     */
     uploadPages: (uuid, document, files) =>
       uploadPages(uuid, document, files, dossierUrl, buildQuery),
-    deletePage: (pageSrc) => deletePage(pageSrc, buildQuery),
+    /**
+     * Удаление страницы
+     * @param {Object} pageSrc Источник страницы
+     * @returns {Promise<{ok: boolean}>}
+     */
+    deletePage: pageSrc => deletePage(pageSrc, buildQuery),
   };
 };
-
+/* eslint-enable no-shadow -- Отключение правила no-shadow */
+/**
+ * Хук для получения задач
+ * @param {string} uuid UUID документа
+ * @param {string} dossierUrl URL для запросов
+ * @returns {Object} - Задачи
+ */
 export const useTasks = (uuid, dossierUrl) => {
   const { data: tasks } = useSWR(`${dossierUrl}/api/classifier/${uuid}`, fetcher, {
     fallbackData: [],
     refreshInterval: 5000,
   });
+
   return { tasks };
 };
+/* eslint-enable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */

@@ -1,5 +1,6 @@
-import CrudUsecases from './CrudUsecases.js';
+import CrudUsecases from "./CrudUsecases.js";
 
+/* eslint-disable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
 export default class DictionaryUsecases extends CrudUsecases {
   /**
    * @returns {Promise<*>}
@@ -11,15 +12,14 @@ export default class DictionaryUsecases extends CrudUsecases {
   }
 
   /**
-   * @return {Promise<void>}
+   * @returns {Promise<void>}
    */
   async show() {
 
   }
 
   /**
-   *
-   * @return {Promise<*>}
+   * @returns {Promise<*>}
    */
   async list() {
     return this.repository.getAll();
@@ -33,6 +33,7 @@ export default class DictionaryUsecases extends CrudUsecases {
     return this.repository.create(request);
   }
 
+  /* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
   /**
    * @param {Request} request
    * @returns {Promise<*>}
@@ -40,6 +41,7 @@ export default class DictionaryUsecases extends CrudUsecases {
   async read({ request }) {
 
   }
+  /* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
 
   /**
    * @param {Request} request
@@ -57,3 +59,4 @@ export default class DictionaryUsecases extends CrudUsecases {
     return this.repository.delete(request.id);
   }
 }
+/* eslint-enable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */

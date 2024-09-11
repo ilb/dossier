@@ -1,42 +1,30 @@
-import { v4 as uuidv4 } from 'uuid';
-import fs from 'fs';
-import im from 'imagemagick';
-import { promisify } from 'util';
+/* eslint-disable no-param-reassign -- Отключение правила no-param-reassign */
+
+import fs from "fs";
+import im from "imagemagick";
+import { promisify } from "util";
+import { v4 as uuidv4 } from "uuid";
 
 const convert = promisify(im.convert);
 
 export default class DocumentMerger {
   /**
-   * @param {string} dossierPath
+   * @param {string} dossierPath Путь к досье.
    */
   constructor(dossierPath) {
     this.dossierPath = dossierPath;
   }
 
   /**
-   * files может быть массовом путей к файлам, которые нужно смерджить,
-   * либо строкой вида /path/to/folder/*.{jpg,jpeg,png}
-   *
-   * mergePath должен передаваться только в том случае если смердженный файл должен остаться в файловой системе.
-   * Если mergePath не передан, смердженный файл будет удален.
-   *
-   * Функция должна возвращать буффер смердженного файла
-   *
-   * @param files {string|array}
-   * @param mergePath {string|null}
-   * @returns {Buffer}
-   */
-  /**
-   * Конвертирование одной или нескольких картинок в один pdf файл
-   *
-   * @param files {string|array[string]} - путь к файлу (или массив путей)
-   * @param mergePath {string|null} - куда будет сохранен pdf
-   * @returns {Buffer}
+   * Конвертирование одной или нескольких картинок в один PDF файл.
+   * @param {string|string[]} files Путь к файлу (или массив путей).
+   * @param {string|null} mergePath Путь для сохранения PDF. Если null, файл будет удален после слияния.
+   * @returns {Promise<Buffer>} - Возвращает буфер смердженного файла.
    */
   async merge(files, mergePath = null) {
-    let tempPath = mergePath || this.generateTempPath();
+    const tempPath = mergePath || this.generateTempPath();
 
-    if (typeof files === 'string') {
+    if (typeof files === "string") {
       files = [files];
     }
 
@@ -50,17 +38,28 @@ export default class DocumentMerger {
     return mergedFile;
   }
 
+  /**
+   * Генерирует временный путь для хранения PDF файла.
+   * @returns {string} - Возвращает путь к временному PDF файлу.
+   */
   generateTempPath() {
-    const tempDir = this.dossierPath + '/temp/';
+    const tempDir = `${this.dossierPath}/temp/`;
 
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
     }
 
-    return tempDir + uuidv4() + '.pdf';
+    return `${tempDir + uuidv4()}.pdf`;
   }
 
+  /**
+   * Удаляет файл по указанному пути.
+   * @param {string} path Путь к удаляемому файлу.
+   * @returns {void}
+   */
   removeResultFile(path) {
     fs.unlinkSync(path);
   }
 }
+
+/* eslint-enable no-param-reassign -- Включение правила no-param-reassign */

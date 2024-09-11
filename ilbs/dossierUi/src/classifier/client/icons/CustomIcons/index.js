@@ -1,3 +1,7 @@
+/**
+ * Иконка предупреждения
+ * @returns {JSX.Element} - SVG иконка.
+ */
 export const Alert = () => (
   <svg
     width='20px'
@@ -45,6 +49,10 @@ export const Alert = () => (
   </svg>
 );
 
+/**
+ * Иконка успешной проверки
+ * @returns {JSX.Element} - SVG иконка.
+ */
 export const CheckSuccess = () => (
   <svg
     width='20px'
@@ -68,6 +76,10 @@ export const CheckSuccess = () => (
   </svg>
 );
 
+/**
+ * Иконка вопроса
+ * @returns {JSX.Element} - SVG иконка.
+ */
 export const Question = () => (
   <svg
     width='20px'
@@ -99,6 +111,10 @@ export const Question = () => (
   </svg>
 );
 
+/**
+ * Иконка песочных часов
+ * @returns {JSX.Element} - SVG иконка.
+ */
 export const Hourglass = () => (
   <svg
     width='20'

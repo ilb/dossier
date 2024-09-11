@@ -1,19 +1,24 @@
+/**
+ * Компонент кнопки удаления
+ * @param {Object} props Свойства компонента
+ * @returns {JSX.Element} Кнопка удаления
+ */
 export function Remove(props) {
   return (
     <button
       title='Удалить'
       {...props}
       style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
+        position: "absolute",
+        top: "10px",
+        right: "10px",
         zIndex: 200,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        '--fill': 'rgba(255, 70, 70, 0.95)',
-        '--background': 'rgba(255, 70, 70, 0.1)',
-        cursor: 'pointer',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        "--fill": "rgba(255, 70, 70, 0.95)",
+        "--background": "rgba(255, 70, 70, 0.1)",
+        cursor: "pointer",
       }}
     >
       <svg
