@@ -1,22 +1,22 @@
 import fs from "fs";
-import path from "path";
 import mime from "mime-types";
+import path from "path";
 
-import Page from "./Page.js";
-import Document from "./Document.js";
 import DocumentMerger from "../dossier/DocumentMerger.js";
-import PageDocumentVersion from "./PageDocumentVersion.js";
+import Document from "./Document.js";
 import DocumentError from "./DocumentError.js";
+import Page from "./Page.js";
+import PageDocumentVersion from "./PageDocumentVersion.js";
 
 export default class PageDocument extends Document {
   /**
    * @param {Dossier} dossier
-   * @param {object} docData
+   * @param {Object} docData
    */
   constructor(dossier, docData) {
     super(dossier, docData);
     this.documentsPath = process.env["apps.loandossier.dossierDocumentPath"];
-    this.dossierPath = this.documentsPath + "/dossier";
+    this.dossierPath = `${this.documentsPath}/dossier`;
     this.documentMerger = new DocumentMerger(this.dossierPath);
     this.verificationsList = docData.verifications || [];
     this.validationRules = docData.validationRules || [];
@@ -26,22 +26,49 @@ export default class PageDocument extends Document {
     this.versions = [];
   }
 
+  /**
+   * Инициализация ошибок
+   * @param {Array} errors Массив ошибок
+   * @returns {Array<DocumentError>}
+   */
   initErrors(errors = []) {
-    return errors.map((error) => new DocumentError(error));
+    return errors.map(error => new DocumentError(error));
   }
 
+  /**
+   * Установка состояния документа
+   * @param {string} state Состояние документа
+   * @returns {void}
+   */
   setState(state) {
     this.state = state;
   }
 
+  /**
+   * Добавление ошибок в документ
+   * @param {Array} errors Массив ошибок
+   * @returns {void}
+   */
   addErrors(errors) {
     this.errors = [...this.errors, ...errors];
   }
 
+  /* eslint-disable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
+  /**
+   * Инициализация данных документа
+   * @param {PageDocumentVersion} currentDocumentVersion Текущая версия документа
+   * @returns {void}
+   */
   initDocumentData(currentDocumentVersion) {
     this.setData = { ...this.data, ...currentDocumentVersion.documentData };
   }
+  /* eslint-enable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
 
+  /**
+   * Установка данных из базы данных
+   * @param {Object} document Документ из базы данных
+   * @returns {void}
+   */
   setDbData(document) {
     this.setUuid = document.uuid;
     this.setId = document.id;
@@ -54,13 +81,23 @@ export default class PageDocument extends Document {
     this.verificationsResult = document.currentDocumentVersion?.verifications || [];
   }
 
+  /**
+   * Инициализация текущей версии документа
+   * @param {Object} version Версия документа
+   * @returns {void}
+   */
   initCurrentDocumentVersion(version) {
     this.currentVersion = new PageDocumentVersion({ type: this.type, ...version });
   }
 
+  /**
+   * Инициализация версий документа
+   * @param {Array<Object>} versions Массив версий документа
+   * @returns {void}
+   */
   initVersions(versions) {
     this.versions = versions.map(
-      (version) =>
+      version =>
         new PageDocumentVersion({
           type: this.type,
           ...version,
@@ -68,25 +105,44 @@ export default class PageDocument extends Document {
     );
   }
 
+  /**
+   * Установка текущей версии документа
+   * @param {PageDocumentVersion} version Текущая версия документа
+   * @returns {void}
+   */
   setCurrentVersion(version) {
     this.currentVersion = version;
   }
 
+  /**
+   * Установка версий документа
+   * @param {Array<PageDocumentVersion>} versions Массив версий
+   * @returns {void}
+   */
   setVersions(versions) {
     this.versions = versions;
   }
 
+  /**
+   * Получение версии документа по номеру
+   * @param {number} versionNumber Номер версии
+   * @returns {PageDocumentVersion|null} - Версия документа или null
+   */
   getVersion(versionNumber) {
     return this.versions.find(({ version }) => version === versionNumber);
   }
 
+  /**
+   * Установка ошибок документа
+   * @param {Array} errors Массив ошибок
+   * @returns {void}
+   */
   setErrors(errors) {
     this.errors = errors;
   }
 
   /**
    * Чтение страниц документа в файловой системе
-   *
    * @returns {File[]}
    */
   getFiles() {
@@ -94,7 +150,8 @@ export default class PageDocument extends Document {
 
     for (const page of this.getPages()) {
       const filePath = path.resolve(".", page.uri);
-      let file = fs.createReadStream(filePath);
+      const file = fs.createReadStream(filePath);
+
       files.push(file);
     }
 
@@ -103,49 +160,45 @@ export default class PageDocument extends Document {
 
   /**
    * Чтение определенной страницы в файловой системе
-   *
-   * @param number
+   * @param {number} number Номер страницы
    * @returns {Buffer}
    */
   getFile(number) {
     const page = this.getPage(number);
+
     return fs.readFileSync(page.uri);
   }
 
   /**
    * Возвращает все страницы документа одним файлом
-   *
    * @returns {Promise<Buffer>}
    */
   async getDocument() {
     if (this.isImages()) {
-      return this.documentMerger.merge(this.getPages().map((page) => page.uri));
-    } else {
-      return fs.readFileSync(this.getPage(1).uri);
+      return this.documentMerger.merge(this.getPages().map(page => page.uri));
     }
+    return fs.readFileSync(this.getPage(1).uri);
   }
 
   /**
    * Возвращает название документа
-   *
    * @returns {string}
    */
   getDocumentName() {
-    return this.type + "-" + this.dossier.uuid;
+    return `${this.type}-${this.dossier.uuid}`;
   }
 
   /**
    * Получение mimeType документа.
-   *
    * @returns {string|null}
    */
-  // Проверить на ошибки
   getMimeType() {
     if (!this.getCountPages()) {
       return null;
     }
 
     const firstPageMimeType = mime.lookup(this.getPages()[0].extension);
+
     if (firstPageMimeType?.includes("image/")) {
       return "application/pdf";
     }
@@ -155,7 +208,6 @@ export default class PageDocument extends Document {
 
   /**
    * Получение расширения документа
-   *
    * @returns {string}
    */
   getExtension() {
@@ -163,7 +215,8 @@ export default class PageDocument extends Document {
   }
 
   /**
-   * Вернет true если документ представляет собой картинку/набор картинок и false в ином случае.
+   * Вернет true, если документ представляет собой картинку/набор картинок, и false в ином случае.
+   * @returns {boolean}
    */
   isImages() {
     return ["application/pdf", null].includes(this.getMimeType());
@@ -171,7 +224,6 @@ export default class PageDocument extends Document {
 
   /**
    * Проверка наличия страниц в документе
-   *
    * @returns {boolean}
    */
   exists() {
@@ -180,34 +232,29 @@ export default class PageDocument extends Document {
 
   /**
    * Добавление страницы в конец документа
-   *
-   * ! Можно передавать страницу другого документа, но не нужно, потому что собьется порядок страниц в том документе
-   *
-   * @param {Page} page
-   * @param {int|null} numberTo
+   * @param {Page} page Страница документа
+   * @param {number|null} numberTo Номер страницы, куда нужно вставить
+   * @returns {Promise<void>}
    */
   async addPage(page, numberTo = null) {
     await this.#processAddPage(page, numberTo);
   }
 
   /**
-   * Нескольких страниц в конец документа
-   *
-   * @param {Page[]} pages
+   * Добавление нескольких страниц в конец документа
+   * @param {Page[]} pages Массив страниц
    * @returns {Promise<void>}
    */
   async addPages(pages) {
-    for (let page of pages) {
+    for (const page of pages) {
       await this.#processAddPage(page);
     }
-    // await this.upload();
   }
 
   /**
    * Перемещение страницы внутри документа
-   *
-   * @param {int} numberFrom
-   * @param {int} numberTo
+   * @param {number} numberFrom Номер страницы, откуда перемещаем
+   * @param {number} numberTo Номер страницы, куда перемещаем
    * @returns {Promise<void>}
    */
   async movePage(numberFrom, numberTo) {
@@ -216,22 +263,28 @@ export default class PageDocument extends Document {
 
   /**
    * Извлечение страницы из документа
-   *
-   * @param {int} number
+   * @param {number} number Номер страницы
    * @returns {Page|null}
    */
   extractPage(number) {
     return this.getPages().splice(number - 1, 1)[0];
   }
 
+  /**
+   * Извлечение страниц из документа по номерам
+   * @param {number[]} numbers Массив номеров страниц
+   * @returns {Page[]}
+   */
   extractPages(numbers) {
     const pages = this.getPages();
-    this.pages = pages.filter((obj) => !numbers.includes(obj.pageNumber));
-    return pages.filter((obj) => numbers.includes(obj.pageNumber));
+
+    this.pages = pages.filter(obj => !numbers.includes(obj.pageNumber));
+    return pages.filter(obj => numbers.includes(obj.pageNumber));
   }
 
   /**
    * Удаление всех страниц документа
+   * @returns {Promise<void>}
    */
   async clear() {
     for (let i = this.getPages().length - 1; i >= 0; i--) {
@@ -240,9 +293,9 @@ export default class PageDocument extends Document {
   }
 
   /**
-   * Удаление страницы
-   *
-   * @param {string} pageUuid
+   * Удаление страницы документа
+   * @param {string} pageUuid UUID страницы
+   * @returns {Promise<Page>}
    */
   async deletePage(pageUuid) {
     return await this.#processDeletePage(pageUuid);
@@ -250,8 +303,8 @@ export default class PageDocument extends Document {
 
   /**
    * Получение страницы документа по номеру
-   *
-   * @param number
+   * @param {number} number Номер страницы
+   * @returns {Page}
    */
   getPage(number) {
     const page = this.getPages()[number - 1];
@@ -261,7 +314,6 @@ export default class PageDocument extends Document {
 
   /**
    * Пустая страница
-   *
    * @returns {Page}
    */
   getDefaultPage() {
@@ -274,57 +326,42 @@ export default class PageDocument extends Document {
 
   /**
    * Получение страниц документа
-   *
-   * @returns {[]|Page[]}
+   * @returns {Page[]}
    */
   getPages() {
     return this.pages || [];
   }
 
   /**
-   * Получение страницы документа по uuid
-   *
-   * @param {string} uuid
+   * Получение страницы документа по UUID
+   * @param {string} uuid UUID страницы
+   * @returns {Page}
    */
   getPageByUuid(uuid) {
-    return this.getPages().find((page) => page.uuid === uuid);
+    return this.getPages().find(page => page.uuid === uuid);
   }
 
   /**
-   * Получение массива страниц по массиву uuid
-   *
-   * @param uuids
-   * @return {*[]}
+   * Получение массива страниц по UUID
+   * @param {string[]} uuids Массив UUID
+   * @returns {Page[]}
    */
   getPagesByUuids(uuids) {
-    return this.getPages().filter((page) => uuids.includes(page.uuid));
+    return this.getPages().filter(page => uuids.includes(page.uuid));
   }
 
   /**
    * Получение количества страниц в документе
-   *
-   * @returns {int}
+   * @returns {number}
    */
   getCountPages() {
     return this.getPages().length;
   }
 
-  // async unlinkPage(pageUuid) {
-  //   const index = this.pages.findIndex((page) => page.uuid === pageUuid);
-
-  //   if (index !== -1) {
-  //     const page = this.pages.splice(index, 1)[0];
-  //     await scope.documentGateway.unlinkPage(this, page);
-  //   }
-
-  //   return;
-  // }
-
   /**
    * Добавление страницы
-   *
-   * @param {Page} page
-   * @param numberTo - если не задано - добавит в конец документа
+   * @param {Page} page Страница
+   * @param {number|null} numberTo Номер позиции
    * @returns {Promise<void>}
    */
   async #processAddPage(page, numberTo = null) {
@@ -336,10 +373,9 @@ export default class PageDocument extends Document {
   }
 
   /**
-   * Перемещение страиницы
-   *
-   * @param {int} numberFrom
-   * @param {int} numberTo
+   * Перемещение страницы
+   * @param {number} numberFrom Номер начальной страницы
+   * @param {number} numberTo Номер конечной страницы
    * @returns {Promise<void>}
    */
   async #processMovePage(numberFrom, numberTo) {
@@ -354,14 +390,13 @@ export default class PageDocument extends Document {
 
   /**
    * Удаление страницы
-   *
-   * @param {string} pageUuid
-   * @returns {Promise<void>}
+   * @param {string} pageUuid UUID страницы
+   * @returns {Promise<Page>}
    */
   async #processDeletePage(pageUuid) {
     const deletedPage = this.getPageByUuid(pageUuid);
-    // fs.unlinkSync(page.uri);
-    this.pages = this.getPages().filter((page) => page.uuid !== pageUuid);
+
+    this.pages = this.getPages().filter(page => page.uuid !== pageUuid);
     return deletedPage;
   }
 }

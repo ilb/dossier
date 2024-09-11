@@ -1,6 +1,12 @@
 export default class ErrorMessages {
-  static defaultError = 'Упс... Что-то пошло не так.';
+  static defaultError = "Упс... Что-то пошло не так.";
 
+  /**
+   * Возвращает корректную форму слова в зависимости от числа.
+   * @param {string} root Корень слова.
+   * @param {number} count Количество элементов.
+   * @returns {string} - Правильная форма слова.
+   */
   static getWordByCount(root, count) {
     switch (count) {
       case 0:
@@ -9,23 +15,29 @@ export default class ErrorMessages {
       case 7:
       case 8:
       case 9:
-        return root + 'ей';
+        return `${root}ей`;
       case 1:
-        return root + 'ь';
+        return `${root}ь`;
       case 2:
       case 3:
       case 4:
-        return root + 'и';
+        return `${root}и`;
+      default:
+        return `${root}ей`;
     }
-  };
+  }
 
   /**
-   * @param {{number:int, count:int}[]} pages
-   * @returns {string[]}
+   * Возвращает сообщения о проверке подписи для страниц.
+   * @param {{number: number, count: number}[]} pages Массив страниц с информацией о количестве подписей.
+   * @returns {string[]} - Массив строк с сообщениями о пропущенных подписях.
    */
   static signatureVerification(pages) {
-    return pages.map(page => {
-      return `На странице ${page.number} пропущен${page.count > 1 ? 'о' : 'а'} ${page.count} ${ErrorMessages.getWordByCount('подпис', page.count)}.`;
-    })
+    return pages.map(
+      page =>
+        `На странице ${page.number} пропущен${page.count > 1 ? "о" : "а"} ${
+          page.count
+        } ${ErrorMessages.getWordByCount("подпис", page.count)}.`,
+    );
   }
 }

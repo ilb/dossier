@@ -1,7 +1,8 @@
+/* eslint-disable iconicompany/avoid-naming -- Включение правила iconicompany/avoid-naming */
+
 export default class VerificationService {
   /**
-   *
-   * @param {VerificationRepository} verificationRepository
+   * @param {VerificationRepository} verificationRepository Репозиторий для работы с верификацией.
    */
   constructor({ verificationRepository }) {
     this.verificationRepository = verificationRepository;
@@ -9,16 +10,17 @@ export default class VerificationService {
 
   /**
    * Добавление таска
-   *
-   * @param type
-   * @param path
-   * @returns {Promise<*>}
+   * @param {string} type Тип верификации.
+   * @param {Object} context Контекст, содержащий путь и идентификатор версии документа.
+   * @param {string} context.path Путь к документу.
+   * @param {number} context.documentVersionId Идентификатор версии документа.
+   * @returns {Promise<*>} - Возвращает сохранённые данные верификации.
    */
   async add(type, context) {
     const { path, documentVersionId } = context;
 
     const verificationData = {
-      statusCode: 'IN_QUEUE',
+      statusCode: "IN_QUEUE",
       typeCode: type,
       data: { path },
       documentVersionId,
@@ -29,27 +31,25 @@ export default class VerificationService {
 
   /**
    * Старт таска
-   *
-   * @param verification
-   * @returns {Promise<*>}
+   * @param {Object} verification Объект верификации.
+   * @returns {Promise<*>} - Возвращает обновлённый объект верификации.
    */
   async start(verification) {
     verification.begDate = new Date();
-    verification.statusCode = 'STARTED';
+    verification.statusCode = "STARTED";
 
     return await this.verificationRepository.save(verification);
   }
 
   /**
    * Завершение таска
-   *
-   * @param verification
-   * @param data
-   * @returns {Promise<*>}
+   * @param {Object} verification Объект верификации.
+   * @param {Object} [data={}] Дополнительные данные для завершения таска.
+   * @returns {Promise<*>} - Возвращает обновлённый объект верификации.
    */
-  async finish(verification, data = []) {
+  async finish(verification, data = {}) {
     verification.endDate = new Date();
-    verification.statusCode = 'FINISHED';
+    verification.statusCode = "FINISHED";
     verification.data = {
       ...verification.data,
       ...data,
@@ -60,13 +60,12 @@ export default class VerificationService {
 
   /**
    * Отмена таска
-   *
-   * @param verification
-   * @param data
-   * @returns {Promise<*>}
+   * @param {Object} verification Объект верификации.
+   * @param {Object} [data={}] Дополнительные данные для отмены таска.
+   * @returns {Promise<*>} - Возвращает обновлённый объект верификации.
    */
-  async cancel(verification, data = []) {
-    verification.statusCode = 'CANCELLED';
+  async cancel(verification, data = {}) {
+    verification.statusCode = "CANCELLED";
     verification.data = {
       ...verification.data,
       ...data,
@@ -75,3 +74,4 @@ export default class VerificationService {
     return await this.verificationRepository.save(verification);
   }
 }
+/* eslint-enable iconicompany/avoid-naming -- Включение правила iconicompany/avoid-naming */

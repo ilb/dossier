@@ -1,12 +1,18 @@
-import { v4 } from 'uuid';
-import Page from '../document/Page.js';
+/* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
+/* eslint-disable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
+
+import { v4 } from "uuid";
+
+import Page from "../document/Page.js";
 
 export default class DocumentGateway {
   /**
-   * @param {DossierRepository} dossierRepository
-   * @param {DocumentRepository} documentRepository
-   * @param {PageRepository} pageRepository
-   * @param {DocumentVersionRepository} documentVersionRepository
+   * @param {Object} repositories Объект с репозиториями.
+   * @param {DossierRepository} repositories.dossierRepository Репозиторий досье.
+   * @param {DocumentRepository} repositories.documentRepository Репозиторий документов.
+   * @param {PageRepository} repositories.pageRepository Репозиторий страниц.
+   * @param {DocumentVersionRepository} repositories.documentVersionRepository Репозиторий версий документов.
+   * @param {ErrorRepository} repositories.errorRepository Репозиторий ошибок.
    */
   constructor({
     dossierRepository,
@@ -22,6 +28,12 @@ export default class DocumentGateway {
     this.errorRepository = errorRepository;
   }
 
+  /**
+   * Меняет состояние документа.
+   * @param {Object} document Документ, состояние которого нужно изменить.
+   * @param {string} stateCode Код состояния документа.
+   * @returns {Promise<void>}
+   */
   async changeDocumentState(document, stateCode) {
     await this.documentVersionRepository.update({
       id: document.currentVersion.id,
@@ -33,28 +45,58 @@ export default class DocumentGateway {
     });
   }
 
+  /**
+   * Добавляет страницы в документ.
+   * @param {Object} document Документ, к которому добавляются страницы.
+   * @param {Array<Object>} pages Массив страниц для добавления.
+   * @returns {Promise<void>}
+   */
   async addPages(document, pages) {
     await document.addPages(pages);
     await this.createPagesOnBase(document, pages);
   }
 
+  /**
+   * Перемещает страницу внутри документа.
+   * @param {Object} document Документ, в котором происходит перемещение.
+   * @param {number} numberFrom Номер страницы, с которой перемещаем.
+   * @param {number} numberTo Номер страницы, на которую перемещаем.
+   * @returns {Promise<void>}
+   */
   async movePage(document, numberFrom, numberTo) {
     await document.movePage(numberFrom, numberTo);
     await this.movePageFromBase(document, numberFrom, numberTo);
   }
 
+  /**
+   * Удаляет страницу из документа.
+   * @param {Object} document Документ, из которого нужно удалить страницу.
+   * @param {string} pageUuid UUID страницы для удаления.
+   * @returns {Promise<Object>} - Возвращает удалённую страницу.
+   */
   async deletePage(document, pageUuid) {
     const deletedPage = await document.deletePage(pageUuid);
+
     await this.deletePageInBase(pageUuid);
     return deletedPage;
   }
 
+  /**
+   * Изменяет порядок страниц.
+   * @param {Array<Object>} pages Массив страниц с обновлённым порядком.
+   * @returns {Promise<void>}
+   */
   async reorderPages(pages) {
     for (const page of pages) {
       await this.pageRepository.updatePageNumber(page.uuid, page.pageNumber);
     }
   }
 
+  /**
+   * Инициализирует досье.
+   * @param {Object} dossier Объект досье.
+   * @returns {Promise<void>}
+   */
   async initDossier(dossier) {
     let dossierFromDb = await this.dossierRepository.findByUuid(dossier.uuid);
 
@@ -69,6 +111,13 @@ export default class DocumentGateway {
     dossier.id = dossierFromDb.id;
   }
 
+  /**
+   * Инициализирует документ.
+   * @param {Object} document Объект документа.
+   * @param {Object} root0 Объект параметров.
+   * @param {string} root0.uuid UUID досье.
+   * @returns {Promise<void>}
+   */
   async initDocument(document, { uuid }) {
     let documentFromDb = (
       await this.documentRepository.findByFilter({
@@ -85,11 +134,12 @@ export default class DocumentGateway {
         code: document.type,
         dossier: {
           connect: {
-            uuid: uuid,
+            uuid,
           },
         },
       });
       const version = await this.createDocumentVersion(documentFromDb.uuid, 1);
+
       documentFromDb.currentDocumentVersion = version;
       documentFromDb.documentVersions = [version];
     }
@@ -98,16 +148,22 @@ export default class DocumentGateway {
     }
   }
 
+  /**
+   * Создаёт версию документа.
+   * @param {string} documentUuid UUID документа.
+   * @param {number} versionNumber Номер версии документа.
+   * @returns {Promise<Object>} - Возвращает созданную версию документа.
+   */
   async createDocumentVersion(documentUuid, versionNumber) {
-    //Метод вызывается на создание новой версии документа.
-    //Привязывает версию к currentDocumentVersion документа
-    //Привязывает версию к verifications документа
+    // Метод вызывается на создание новой версии документа.
+    // Привязывает версию к currentDocumentVersion документа
+    // Привязывает версию к verifications документа
 
     const newVersionCartage = {
       version: versionNumber,
       documentState: {
         connect: {
-          code: 'NOT_LOADED',
+          code: "NOT_LOADED",
         },
       },
       currentDocument: {
@@ -125,6 +181,11 @@ export default class DocumentGateway {
     return await this.documentVersionRepository.create(newVersionCartage);
   }
 
+  /**
+   * Инициализирует страницы документа.
+   * @param {Object} document Документ, страницы которого нужно инициализировать.
+   * @returns {Promise<void>}
+   */
   async initDocumentPages(document) {
     if (document.currentVersion?.id) {
       const pages = await this.pageRepository.findByFilter({
@@ -135,7 +196,7 @@ export default class DocumentGateway {
       });
 
       document.pages = pages.map(
-        (item) =>
+        item =>
           new Page({
             uuid: item.uuid,
             errors: item.errors,
@@ -149,10 +210,22 @@ export default class DocumentGateway {
     }
   }
 
+  /**
+   * Изменяет документ страницы.
+   * @param {string} uuid UUID страницы.
+   * @param {number} currentDocumentId ID текущего документа.
+   * @param {number} pageNumber Номер страницы.
+   * @returns {Promise<void>}
+   */
   async changeDocumentOnPage(uuid, currentDocumentId, pageNumber) {
     await this.pageRepository.update({ uuid, documentVersionId: currentDocumentId, pageNumber });
   }
 
+  /**
+   * Удаляет страницу из базы данных.
+   * @param {string} uuid UUID страницы для удаления.
+   * @returns {Promise<Object>} - Возвращает удалённую страницу.
+   */
   async deletePageInBase(uuid) {
     // Удаление страницы в базе роисходит путем простановки флага isDelete у страницы
     const deletePage = await this.pageRepository.update({
@@ -166,7 +239,7 @@ export default class DocumentGateway {
       pageNumber: deletePage.pageNumber,
     });
 
-    for (let page of pages) {
+    for (const page of pages) {
       await this.pageRepository.update({
         uuid: page.uuid,
         pageNumber: page.pageNumber - 1,
@@ -176,6 +249,12 @@ export default class DocumentGateway {
     return deletePage;
   }
 
+  /**
+   * Создаёт страницы в базе данных.
+   * @param {Object} document Документ, к которому добавляются страницы.
+   * @param {Array<Object>} pages Массив страниц для создания.
+   * @returns {Promise<void>}
+   */
   async createPagesOnBase(document, pages = []) {
     // Возьмем страницы документа из базы
     const pagesFromBase = await this.pageRepository.findByFilter({
@@ -187,7 +266,7 @@ export default class DocumentGateway {
     // Сохраним документы
     let i = 1;
 
-    for (let { uuid, errors, ...other } of pages) {
+    for (const { uuid, errors, ...other } of pages) {
       await this.pageRepository.create({
         uuid,
         pageNumber: i,
@@ -202,7 +281,7 @@ export default class DocumentGateway {
     }
 
     if (pagesFromBase.length) {
-      for (let page of pagesFromBase) {
+      for (const page of pagesFromBase) {
         await this.pageRepository.update({
           uuid: page.uuid,
           pageNumber: page.pageNumber + pages.length,
@@ -211,6 +290,13 @@ export default class DocumentGateway {
     }
   }
 
+  /**
+   * Перемещает страницу в базе данных.
+   * @param {Object} document Документ, содержащий перемещаемые страницы.
+   * @param {number} from Номер страницы, с которой перемещаем.
+   * @param {number} to Номер страницы, на которую перемещаем.
+   * @returns {Promise<void>}
+   */
   async movePageFromBase(document, from, to) {
     let pages;
 
@@ -232,7 +318,7 @@ export default class DocumentGateway {
       });
 
       // странице с номером from присваиваем to, а остальным минусуем на 1
-      for (let [index, value] of pages.entries()) {
+      for (const [index, value] of pages.entries()) {
         if (index === 0) {
           await this.pageRepository.update({ uuid: value.uuid, pageNumber: to });
         } else {
@@ -257,7 +343,7 @@ export default class DocumentGateway {
       });
 
       // странице с номером from присваиваем to, а остальным плюсуем на 1
-      for (let [index, value] of pages.entries()) {
+      for (const [index, value] of pages.entries()) {
         if (index === pages.length - 1) {
           await this.pageRepository.update({ uuid: value.uuid, pageNumber: to });
         } else {
@@ -267,8 +353,13 @@ export default class DocumentGateway {
     }
   }
 
-  // Возвращает номер версии документа
-  async changeDocumentVersion(document, state = 'NOT_LOADED') {
+  /**
+   * Меняет версию документа.
+   * @param {Object} document Документ, для которого создается новая версия.
+   * @param {string} [state="NOT_LOADED"] Состояние документа.
+   * @returns {Promise<number>} - Возвращает номер новой версии документа.
+   */
+  async changeDocumentVersion(document, state = "NOT_LOADED") {
     const versionCartage = {
       documentState: {
         connect: {
@@ -285,7 +376,7 @@ export default class DocumentGateway {
 
     const pages = [];
 
-    for (let page of document.pages) {
+    for (const page of document.pages) {
       const { uuid, pageNumber, errors, context, ...data } = page;
 
       const pageCartage = {
@@ -352,3 +443,5 @@ export default class DocumentGateway {
   //   }
   // }
 }
+/* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
+/* eslint-enable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */

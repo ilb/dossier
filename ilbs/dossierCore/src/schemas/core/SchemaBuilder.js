@@ -1,4 +1,7 @@
 export default class SchemaBuilder {
+  /**
+   * @param {Object} matching Объект, содержащий процессоры для обработки документов.
+   */
   constructor(matching) {
     this.processors = {};
     this.matching = matching;
@@ -6,8 +9,9 @@ export default class SchemaBuilder {
 
   /**
    * Инициализация схемы, контекста и процессоров
-   * @param schema
-   * @param context
+   * @param {Object} schema Схема для инициализации процессоров.
+   * @param {Object} context Контекст выполнения для процессоров.
+   * @returns {void}
    */
   init(schema, context) {
     this.schema = schema;
@@ -18,15 +22,15 @@ export default class SchemaBuilder {
     // console.log('this.processors.classifier', this.processors.classifier);
 
     this.processor = schema.processor;
+    // eslint-disable-next-line new-cap -- Включение правила new-cap
     this.classifierProcessor = new schema.classifier.processor(schema.classifier, context);
   }
 
   /**
    * Возвращает процессор для переданного документа
-   *
-   * @param documentSchema
-   * @param context
-   * @returns {*|TabProcessor}
+   * @param {Object} documentSchema Схема документа для обработки.
+   * @param {Object} context Контекст выполнения для процессора.
+   * @returns {any} - Возвращает процессор для переданного документа.
    */
   getProcessor(documentSchema, context) {
     return new this.matching[documentSchema.processor](documentSchema, context);
@@ -34,14 +38,13 @@ export default class SchemaBuilder {
 
   /**
    * Формирование схемы полей классификатора
-   * в соответсвии со статусом и описанием документов в index.js
+   * в соответствии со статусом и описанием документов в index.js
    *
    * context.stateCode - является обязательным полем
-   *
-   * @param types
-   * @param context
-   * @returns any
+   * @param {Array} types Типы документов для обработки.
+   * @param {Object} context Контекст выполнения.
+   * @returns {any} - Результат формирования схемы.
    */
-  // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars -- Включение правила no-unused-vars
   build(types, context) {}
 }

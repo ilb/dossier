@@ -1,6 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+/* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
+import PropTypes from "prop-types";
+import React from "react";
 
+/**
+ * Компонент управления меню изображений
+ * @param {Object} root0 Параметры компонента
+ * @param {number} root0.pageCount Количество страниц
+ * @param {number} root0.currentPage Текущая страница
+ * @param {Function} root0.navigatePage Функция для навигации между страницами
+ * @param {Function} root0.rotateImage Функция для вращения изображения
+ * @param {Function} root0.zoomImageIn Функция для увеличения изображения
+ * @param {Function} root0.zoomImageOut Функция для уменьшения изображения
+ * @param {Function} root0.closePreview Функция для закрытия предпросмотра
+ * @param {Function} root0.zoomImageWithDropdown Функция для масштабирования изображения через dropdown
+ * @param {number} root0.scale Текущий масштаб изображения
+ * @returns {JSX.Element} Элемент управления изображением
+ */
 function ControlsMenu({
   pageCount,
   currentPage,
@@ -18,7 +33,7 @@ function ControlsMenu({
         <div className="menuItem menuItemHorizontal minusItem">
           <button
             className="navBtn"
-            onClick={(e) => {
+            onClick={e => {
               zoomImageOut(e, { scaleNum: scale });
             }}>
             <i className="icon iconMinus" />
@@ -28,7 +43,7 @@ function ControlsMenu({
         <div className="menuItem menuItemHorizontal plusItem">
           <button
             className="navBtn"
-            onClick={(e) => {
+            onClick={e => {
               zoomImageIn(e, { scaleNum: scale });
             }}>
             <i className="icon iconPlus" />
@@ -39,7 +54,7 @@ function ControlsMenu({
           <div className="zoomCounter">{(scale * 100).toFixed()}%</div>
           <select
             className="zoomDropdown"
-            onChange={(e) => {
+            onChange={e => {
               zoomImageWithDropdown(e.target.value);
             }}>
             <option value="0.5">50%</option>
@@ -57,7 +72,7 @@ function ControlsMenu({
           <div className="menuItem menuItemHorizontal pageNavigation">
             <button
               className="navBtn"
-              onClick={() => navigatePage('prev')}
+              onClick={() => navigatePage("prev")}
               disabled={currentPage === 1}>
               <i className="icon iconLeft" />
             </button>
@@ -68,7 +83,7 @@ function ControlsMenu({
 
             <button
               className="navBtn"
-              onClick={() => navigatePage('next')}
+              onClick={() => navigatePage("next")}
               disabled={currentPage === pageCount}>
               <i className="icon iconRight" />
             </button>
@@ -77,13 +92,13 @@ function ControlsMenu({
 
         <div
           style={{
-            display: 'flex',
-            marginLeft: 'auto',
+            display: "flex",
+            marginLeft: "auto",
           }}>
           <div className="menuItem menuItemHorizontal undoItem">
             <button
               className="navBtn"
-              onClick={(e) => {
+              onClick={e => {
                 rotateImage(e, { angle: -90 });
               }}>
               <i className="icon iconUndo" />
@@ -93,7 +108,7 @@ function ControlsMenu({
           <div className="menuItem menuItemHorizontal redoItem">
             <button
               className="navBtn"
-              onClick={(e) => {
+              onClick={e => {
                 rotateImage(e, { angle: 90 });
               }}>
               <i className="icon iconRedo" />
@@ -110,7 +125,7 @@ function ControlsMenu({
     </>
   );
 }
-
+/* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
 ControlsMenu.propTypes = {
   src: PropTypes.string,
   scaleNum: PropTypes.number,

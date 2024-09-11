@@ -1,58 +1,74 @@
-import Usecases from '@ilb/core/src/base/usecases/Usecases.js';
-import createDebug from 'debug';
+import Usecases from "@ilb/core/src/base/usecases/Usecases.js";
+import createDebug from "debug";
 
-const debug = createDebug('dossier');
+const debug = createDebug("dossier");
 
 export default class ClassifierUsecases extends Usecases {
   /**
-   * @param {object} request
-   * @returns {}
+   * Получает список элементов.
+   * @returns {{text: string}} - Возвращает объект с текстовым значением.
    */
   async list() {
-    return { text: 'list' };
+    return { text: "list" };
   }
 
   /**
-   * @param {object} request
-   * @returns {}
+   * Классифицирует страницы.
+   * @param {Object} request Объект запроса.
+   * @param {Object} request.classifyService Сервис для классификации.
+   * @param {Object} request.request Параметры запроса для классификации.
+   * @returns {Promise<Object>} - Возвращает результат классификации.
    */
   async classifyPages({ classifyService, request }) {
-    debug('classifyPages start', request.uuid);
+    debug("classifyPages start", request.uuid);
     const result = await classifyService.classify(request);
-    debug('classifyPages end', request.uuid);
+
+    debug("classifyPages end", request.uuid);
     return result;
   }
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Создает новый объект.
+   * @returns {Promise<{text: string}>} - Возвращает объект с текстовым значением.
    */
   async create() {
-    return { text: 'create' };
+    return { text: "create" };
   }
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Читает данные классификации.
+   * @param {Object} root0 Объект параметров.
+   * @param {Object} root0.classifyService Сервис для проверки классификации.
+   * @param {Object} root0.request Параметры запроса для проверки классификации.
+   * @returns {Promise<Object>} - Возвращает результат проверки классификации.
    */
   async read({ classifyService, request }) {
-    debug('checkClassifications start', request.uuid);
+    debug("checkClassifications start", request.uuid);
     const result = await classifyService.checkClassifications(request);
-    debug('checkClassifications end', request.uuid);
+
+    debug("checkClassifications end", request.uuid);
     return result;
   }
 
+  /**
+   * Обновляет данные (пока пустая функция).
+   * @returns {void}
+   */
   async update() {}
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Удаляет объект.
+   * @returns {Promise<{text: string}>} - Возвращает объект с текстовым значением.
    */
   async delete() {
-    return { text: 'delete' };
+    return { text: "delete" };
   }
 
   /**
-   * @returns {Promise<{text: string}>}
+   * Корректирует данные.
+   * @returns {Promise<{text: string}>} - Возвращает объект с текстовым значением.
    */
   async correct() {
-    return { text: 'correct' };
+    return { text: "correct" };
   }
 }

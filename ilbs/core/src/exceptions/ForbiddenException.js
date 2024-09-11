@@ -1,9 +1,12 @@
-import Exception from './Exception.js';
+import Exception from "./Exception.js";
 
 export default class ForbiddenException extends Exception {
-  constructor(message = 'Доступ запрещен!') {
+  /**
+   * @param {string} message Сообщение ошибки.
+   */
+  constructor(message = "Доступ запрещен!") {
     super();
-    this.type = 'FORBIDDEN';
+    this.type = "FORBIDDEN";
     this.status = 403;
     this.message = message;
   }
