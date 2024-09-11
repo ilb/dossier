@@ -1,4 +1,4 @@
-/* eslint-disable n/no-missing-import -- Отключение правила n/no-missing-import */
+/* eslint-disable n/no-missing-import -- Отключение правила n/no-extraneous-import */
 import fs from "fs";
 import im from "imagemagick";
 import mime from "mime-types";
@@ -8,8 +8,7 @@ import { promisify } from "util";
 import { v4 as uuidv4 } from "uuid";
 
 import Errors from "../util/Errors.js";
-
-/* eslint-enable n/no-missing-import -- Отключение правила n/no-missing-import */
+/* eslint-enable n/no-missing-import -- Отключение правила n/no-extraneous-import */
 
 export const uploadMiddleware = multer({
   limits: {
@@ -86,7 +85,6 @@ export const jfifToJpeg = async (req, res, next) => {
     }
     /* eslint-enable require-unicode-regexp -- Включение правила require-unicode-regexp */
     return [...files, file];
-
   }, []);
   next();
 };
@@ -149,7 +147,7 @@ export const splitPdf = async (req, res, next) => {
       const files = await accumulator;
 
       if (file.mimetype === "application/pdf") {
-        const poppler = new Poppler(process.env["apps.loandossier.poppler_bin_path"]);
+        const poppler = new Poppler(process.env["apps.loandossier.popplerBinPath"]);
         const splitOutputPath = `${file.destination}/${file.filename.split(".")[0]}`;
 
         fs.mkdirSync(splitOutputPath);
@@ -177,7 +175,6 @@ export const splitPdf = async (req, res, next) => {
         return [...files, ...pages];
       }
       return [...files, file];
-
     }, []);
     next();
     /* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
@@ -349,7 +346,6 @@ export const checkEmptyList = async (req, res, next) => {
         return [...files];
       }
       return [...files, file];
-
     }, []);
     next();
   } catch (e) {

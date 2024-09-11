@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
 /* eslint-disable n/no-extraneous-import -- Отключение правила n/no-extraneous-import */
-import { asClass, asValue } from "awilix";
+import { asClass } from "awilix";
 
 import DocumentMerger from "./dossier/DocumentMerger.js";
 import DossierBuilder from "./dossier/DossierBuilder.js";
@@ -23,7 +22,6 @@ import FileService from "./services/FileService.js";
 import PagesService from "./services/PagesService.js";
 import VerificationService from "./services/VerificationService.js";
 /* eslint-enable n/no-extraneous-import -- Отключение правила n/no-extraneous-import */
-
 
 /**
  * Регистрирует классы пакета в контейнере.
@@ -56,4 +54,3 @@ const registerPackageClasses = container => {
 };
 
 export default registerPackageClasses;
-/* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */

@@ -22,7 +22,9 @@ export default class DocumentsService extends Service {
    */
   buildLinks(pages, documentType, version, uuid, context) {
     const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
-    const queryArray = Object.entries(context);
+
+    const queryObj = { ...context, _nocache: new Date().toLocaleString() };
+    const queryArray = Object.entries(queryObj);
 
     const buildQuery = queryArray.length
       ? `?${queryArray.map(([key, value]) => `${key}=${value}`).join("&")}`
@@ -49,7 +51,6 @@ export default class DocumentsService extends Service {
         return (acc += `\n${currentError.description}`);
       }
       return (acc += `${currentError.description}`);
-
     }, "");
   }
   /* eslint-enable no-param-reassign -- Включение правила no-param-reassign */

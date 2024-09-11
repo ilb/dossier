@@ -8,7 +8,7 @@ import lowerBound from "./lower-bound.js";
  */
 function shallowEqual(object1, object2) {
   const keys1 = Object.keys(object1);
-  // const keys2 = Object.keys(object2); //forStas 'keys2' is assigned a value but never used  no-unused-vars
+  // const keys2 = Object.keys(object2);
 
   // if (keys1.length !== keys2.length) {
   //   return false;

@@ -10,7 +10,7 @@ export default class PageDocumentVersion extends Document {
    */
   constructor(data) {
     super(null, data);
-    this.documentsPath = process.env["apps.loandossier.dossier_document_path"];
+    this.documentsPath = process.env["apps.loandossier.dossierDocumentPath"];
     this.dossierPath = `${this.documentsPath}/dossier`;
     this.version = data.version || 1;
     this.status = data.status || "new";
