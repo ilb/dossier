@@ -22,12 +22,10 @@ export default class DocumentsService extends Service {
    */
   buildLinks(pages, documentType, version, uuid, context) {
     const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
-    const queryObj = { ...context, _nocache: new Date().toLocaleString() };
+    const queryArray = Object.entries(context);
 
-    const buildQuery = queryObj
-      ? `?${Object.entries(queryObj)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("&")}`
+    const buildQuery = queryArray.length
+      ? `?${queryArray.map(([key, value]) => `${key}=${value}`).join("&")}`
       : "";
 
     return pages.map(page => ({
@@ -91,7 +89,7 @@ export default class DocumentsService extends Service {
     return {
       file: await document.getDocument(),
       mimeType: document.getMimeType(),
-      filename: `${document.getDocumentName()}.${document.getExtension()}`,
+      filename: document.getDocumentName() + "." + document.getExtension(),
     };
   }
 
@@ -142,8 +140,8 @@ export default class DocumentsService extends Service {
       if (document.versions.length > 1) {
         const versions = {};
 
-        document.versions.forEach(versionObj => {
-          versions[`${document.type}_${versionObj.version}`] = {
+        document.versions.map((versionObj, i) => {
+          versions[document.type + "_" + versionObj.version] = {
             pages: this.buildLinks(
               versionObj.pages,
               document.type,

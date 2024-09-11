@@ -15,7 +15,7 @@ export default class PageDocument extends Document {
    */
   constructor(dossier, docData) {
     super(dossier, docData);
-    this.documentsPath = process.env.DOSSIER_DOCUMENT_PATH;
+    this.documentsPath = process.env["apps.loandossier.dossier_document_path"];
     this.dossierPath = `${this.documentsPath}/dossier`;
     this.documentMerger = new DocumentMerger(this.dossierPath);
     this.verificationsList = docData.verifications || [];

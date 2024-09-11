@@ -1,6 +1,3 @@
-/* eslint-disable iconicompany/avoid-naming -- Отключение правила avoid-naming */
-
-
 import fs from "fs";
 
 import Document from "./Document.js";
@@ -12,7 +9,7 @@ export default class PageDocumentVersion extends Document {
    */
   constructor(data) {
     super(null, data);
-    this.documentsPath = process.env.DOSSIER_DOCUMENT_PATH;
+    this.documentsPath = process.env["apps.loandossier.dossier_document_path"];
     this.dossierPath = `${this.documentsPath}/dossier`;
     this.version = data.version || 1;
     this.status = data.status || "new";
@@ -91,5 +88,3 @@ export default class PageDocumentVersion extends Document {
     this.pages = pages;
   }
 }
-
-/* eslint-enable iconicompany/avoid-naming -- Включение правила avoid-naming */

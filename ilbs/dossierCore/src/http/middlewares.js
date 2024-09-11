@@ -1,13 +1,10 @@
-/* eslint-disable n/no-missing-import -- Отключение правила n/no-missing-import */
 import fs from "fs";
-import im from "imagemagick";
-import mime from "mime-types";
 import multer from "multer";
-import { Poppler } from "node-poppler";
-import { promisify } from "util";
 import { v4 as uuidv4 } from "uuid";
-
-/* eslint-enable n/no-missing-import -- Включение правила n/no-missing-import */
+import { Poppler } from "node-poppler";
+import im from "imagemagick";
+import { promisify } from "util";
+import mime from "mime-types";
 import Errors from "../util/Errors.js";
 
 export const uploadMiddleware = multer({
@@ -17,13 +14,7 @@ export const uploadMiddleware = multer({
       : 30 * 1024 * 1024,
   },
   storage: multer.diskStorage({
-    /**
-     * @param {Object} req Объект запроса.
-     * @param {Object} file Файл, переданный в запросе.
-     * @param {Function} cb Callback функция.
-     * @returns {void}
-     */
-    destination(req, file, cb) {
+    destination: (req, file, cb) => {
       const date = req?.query?.createdDate?.split(".").reverse().join("/");
       const destination = `documents/dossier/${date}/${req.query.uuid}/${req.query.name}`;
 
@@ -33,15 +24,9 @@ export const uploadMiddleware = multer({
 
       return cb(null, destination);
     },
-    /**
-     * @param {Object} req Объект запроса.
-     * @param {Object} file Файл, переданный в запросе.
-     * @param {Function} cb Callback функция.
-     * @returns {void}
-     */
-    filename(req, file, cb) {
+    filename: (req, file, cb) => {
       file.originalname = Buffer.from(file.originalname, "latin1").toString("utf8");
-      return cb(null, `${uuidv4()}.${file.originalname.split(".").pop()}`);
+      return cb(null, uuidv4() + "." + file.originalname.split(".").pop());
     },
   }),
 });
@@ -71,7 +56,6 @@ export const jfifToJpeg = async (req, res, next) => {
     /* eslint-disable require-unicode-regexp -- Отключение правила require-unicode-regexp */
     if (/\.jfif$/.test(file.originalname)) {
       const jpegOutput = `${file.destination}/${file.filename.split(".")[0]}.jpg`;
-
       fs.renameSync(file.path, jpegOutput);
       return [
         ...files,
@@ -146,11 +130,9 @@ export const splitPdf = async (req, res, next) => {
   try {
     req.files = await req.files?.reduce(async (accumulator, file) => {
       const files = await accumulator;
-
       if (file.mimetype === "application/pdf") {
-        const poppler = new Poppler(process.env.POPPLER_BIN_PATH);
+        const poppler = new Poppler(process.env["apps.loandossier.poppler_bin_path"]);
         const splitOutputPath = `${file.destination}/${file.filename.split(".")[0]}`;
-
         fs.mkdirSync(splitOutputPath);
         await poppler.pdfToCairo(
           file.path,
@@ -181,9 +163,7 @@ export const splitPdf = async (req, res, next) => {
     next();
   /* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
   } catch (e) {
-  /* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
     throw new Error("Ошибка разбиения pdf");
-
   }
 };
 /* eslint-enable n/callback-return -- Отключение правила n/callback-return */
@@ -303,14 +283,14 @@ export const checkEmptyList = async (req, res, next) => {
         "8",
         "-format",
         format,
-        `${outputFormat}:-`,
+        outputFormat + ":-",
       ];
 
       const result = await convert(options);
 
       const lines = result.trim().split("\n").slice(1);
-      // разбить текст на объект для удобной работы с ним
-      const objectsAvg = lines.map(line => {
+      //разбить текст на объект для удобной работы с ним
+      const objectsAvg = lines.map((line) => {
         const [xy, color] = line.split(": ");
         const [x, y] = xy.split(",");
         const [rgb, hex, name] = color.split("  ");
@@ -353,9 +333,7 @@ export const checkEmptyList = async (req, res, next) => {
     }, []);
     next();
   } catch (e) {
-    /* eslint-disable no-restricted-syntax -- Отключение правила no-restricted-syntax */
     console.log("e", e);
-    /* eslint-enable no-restricted-syntax -- Отключение правила no-restricted-syntax */
     throw new Error("Ошибка проверки на белый лист");
   }
 };

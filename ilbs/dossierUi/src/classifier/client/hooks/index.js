@@ -1,6 +1,7 @@
 import useSWR, { useSWRConfig } from "swr";
+import { fetcher } from "../utils/fetcher";
 
-import { fetcher } from "../utils/fetcher.js";
+const basePath = process.env.API_PATH || "/api";
 
 // const basePath = process.env.API_PATH || "/api"; //forStas delete?
 
@@ -81,8 +82,8 @@ export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery)
  */
 export const deletePage = async (pageSrc, buildQuery) => {
   const url =
-    `${pageSrc.path.slice(0, pageSrc.path.indexOf("?"))
-    }${buildQuery}` +
+    pageSrc.path +
+    `${buildQuery}` +
     `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
   const result = await fetch(url, {
     method: "DELETE",
@@ -115,6 +116,11 @@ export const correctDocuments = async (uuid, documents, dossierUrl, buildQuery) 
 
   if (res.ok) {
     return { ok: true };
+  } else {
+    const error = new Error("An error occured while correcting the documents");
+    error.info = res.text();
+    error.status = res.status;
+    throw error;
   }
   const error = new Error("An error occured while correcting the documents");
 
@@ -184,8 +190,8 @@ export const usePages = (uuid, documentName, dossierUrl) => {
 export const useDocuments = (uuid, dossierUrl, context) => {
   const buildQuery = context
     ? `?${Object.entries(context)
-      .map(([key, value]) => `${key}=${value}`)
-      .join("&")}`
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&")}`
     : "";
 
   const { mutate: mutateGlobal } = useSWRConfig();
