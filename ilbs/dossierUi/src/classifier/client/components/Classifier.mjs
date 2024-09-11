@@ -17,8 +17,8 @@ import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
 import { useDocuments, useTasks } from "../hooks/index.js";
-import { compress } from "../utils/compressor.js";
-import { registerTwain } from "../utils/twain.js";
+// import { compress } from "../utils/compressor.js";
+// import { registerTwain } from "../utils/twain.js";
 import Dimmable from "./elements/Dimmable.js";
 import Loader from "./elements/Loader.js";
 import ListGallery from "./gallery/ListGallery.js";
@@ -239,19 +239,20 @@ const Classifier = forwardRef(
       }
     }, [finishedTasks.length]);
 
-    useEffect(() => {
-      const interval = setInterval(() => setTwainHandler() && clearInterval(interval), 1000);
-    }, []);
+    // useEffect(() => {
+    //   const interval = setInterval(() => setTwainHandler() && clearInterval(interval), 1000);
+    // }, []);
 
-    useEffect(() => {
-      setTwainHandler();
-    }, [selectedTab]);
+    // useEffect(() => {
+    //   setTwainHandler();
+    // }, [selectedTab]);
 
-    /**
-     * Добавляет новый обработчик для загрузки документов через Twain.
-     * @returns {void}
-     */
-    const setTwainHandler = () => registerTwain(file => file && handleDocumentsDrop([file]), selectedTab?.type);
+    // /**
+    //  * Добавляет новый обработчик для загрузки документов через Twain.
+    //  * @returns {void}
+    //  */
+    // const setTwainHandler = () =>
+    //   registerTwain(file => file && handleDocumentsDrop([file]), selectedTab?.type);
 
     /* eslint-disable no-param-reassign -- Включение правила no-param-reassign */
     /**
@@ -269,7 +270,8 @@ const Classifier = forwardRef(
       }
 
       return Object.keys(documents).find(key =>
-        documents[key]?.pages?.find(item => item.path === id));
+        documents[key]?.pages?.find(item => item.path === id),
+      );
     };
     /* eslint-enable no-param-reassign -- Включение правила no-param-reassign */
 
@@ -291,7 +293,6 @@ const Classifier = forwardRef(
       setSelectedIds([]);
     };
 
-    // forStas return null?
     /* eslint-disable consistent-return -- Включение правила consistent-return */
     /**
      * Обрабатывает загрузку документов.
@@ -309,9 +310,7 @@ const Classifier = forwardRef(
 
       if (selectedTab.type === "classifier") {
         !countStartedTasks && setCountStartedTasks(-1);
-        const availableClasses = documentsTabs
-          .filter(tab => !tab.readonly)
-          .map(tab => tab.type);
+        const availableClasses = documentsTabs.filter(tab => !tab.readonly).map(tab => tab.type);
         const compressedFiles = acceptedFiles; // await compressFiles(acceptedFiles);
 
         classifyDocument(uuid, compressedFiles, availableClasses).then(revalidateDocuments);
@@ -332,20 +331,22 @@ const Classifier = forwardRef(
     };
     /* eslint-enable consistent-return -- Включение правила consistent-return */
 
-    /**
-     * Сжимает файлы изображений.
-     * @param {Array<File>} files Массив файлов для сжатия.
-     * @returns {Promise<Array<File>>} - Возвращает сжатые файлы.
-     */
-    const compressFiles = async files => Promise.all(
-      files.map(async (file, index) => {
-        if (file.type.includes("image/")) {
-          return compress(file, 500, Infinity, 1000, 0.9).then(blob => new File([blob], file.name, { type: file.type }));
-        }
-        return file;
-
-      }),
-    );
+    // /**
+    //  * Сжимает файлы изображений.
+    //  * @param {Array<File>} files Массив файлов для сжатия.
+    //  * @returns {Promise<Array<File>>} - Возвращает сжатые файлы.
+    //  */
+    // const compressFiles = async files =>
+    //   Promise.all(
+    //     files.map(async (file, index) => {
+    //       if (file.type.includes("image/")) {
+    //         return compress(file, 500, Infinity, 1000, 0.9).then(
+    //           blob => new File([blob], file.name, { type: file.type }),
+    //         );
+    //       }
+    //       return file;
+    //     }),
+    //   );
     /* eslint-disable no-restricted-syntax -- Включение правила no-restricted-syntax */
     /**
      * Обрабатывает ошибки при загрузке документов.
@@ -488,48 +489,48 @@ const Classifier = forwardRef(
           const newDocs =
             selectedIds.length < 2 // Перемещаем один документ с его выделением или без (т.е. без клика на документ)
               ? [
-                {
-                  from: {
-                    class: draggableOrigin.type,
-                    page: draggableOrigin.index + 1,
+                  {
+                    from: {
+                      class: draggableOrigin.type,
+                      page: draggableOrigin.index + 1,
+                    },
+                    to: { class: overContainerTo, page: overIndex + 1 },
                   },
-                  to: { class: overContainerTo, page: overIndex + 1 },
-                },
-              ]
+                ]
               : selectedIds.map((selected, idx) => {
-                const urlData = selected.split("?")[0].split("/");
-                const pageNumber = urlData[urlData.length - 1];
+                  const urlData = selected.split("?")[0].split("/");
+                  const pageNumber = urlData[urlData.length - 1];
 
-                return {
-                  // Перемещаем два и более выделенных документа
-                  from: {
-                    class: draggableOrigin.type,
-                    page: Number(pageNumber),
-                  },
-                  to: { class: overContainerTo, page: overIndex + idx },
-                };
-              });
+                  return {
+                    // Перемещаем два и более выделенных документа
+                    from: {
+                      class: draggableOrigin.type,
+                      page: Number(pageNumber),
+                    },
+                    to: { class: overContainerTo, page: overIndex + idx },
+                  };
+                });
 
           await correctDocuments(newDocs);
         } else {
           const newDocsElse =
             selectedIds.length < 2
               ? [
-                {
+                  {
+                    from: {
+                      class: activeContainer.split("_")[0],
+                      page: activeIndex + 1,
+                    },
+                    to: { class: overContainerTo, page: overIndex + 1 },
+                  },
+                ]
+              : selectedIds.map((selected, idx) => ({
                   from: {
                     class: activeContainer.split("_")[0],
-                    page: activeIndex + 1,
+                    page: activeIndex + idx,
                   },
-                  to: { class: overContainerTo, page: overIndex + 1 },
-                },
-              ]
-              : selectedIds.map((selected, idx) => ({
-                from: {
-                  class: activeContainer.split("_")[0],
-                  page: activeIndex + idx,
-                },
-                to: { class: overContainerTo, page: overIndex + idx },
-              }));
+                  to: { class: overContainerTo, page: overIndex + idx },
+                }));
 
           await correctDocuments(newDocsElse);
         }

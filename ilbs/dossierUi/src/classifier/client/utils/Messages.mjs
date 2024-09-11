@@ -1,8 +1,6 @@
 export default class ErrorMessages {
   static defaultError = "Упс... Что-то пошло не так.";
 
-
-  // forStas 11:5   error  Expected a default case default-case (добавил default, исправь если что)
   /**
    * Возвращает корректную форму слова в зависимости от числа.
    * @param {string} root Корень слова.
@@ -35,6 +33,11 @@ export default class ErrorMessages {
    * @returns {string[]} - Массив строк с сообщениями о пропущенных подписях.
    */
   static signatureVerification(pages) {
-    return pages.map(page => `На странице ${page.number} пропущен${page.count > 1 ? "о" : "а"} ${page.count} ${ErrorMessages.getWordByCount("подпис", page.count)}.`);
+    return pages.map(
+      page =>
+        `На странице ${page.number} пропущен${page.count > 1 ? "о" : "а"} ${
+          page.count
+        } ${ErrorMessages.getWordByCount("подпис", page.count)}.`,
+    );
   }
 }

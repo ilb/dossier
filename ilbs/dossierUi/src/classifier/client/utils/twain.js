@@ -44,9 +44,10 @@ const getImage = elements => {
  * @param {string} src URL изображения
  * @returns {Promise<File>} - Возвращает промис с объектом файла
  */
-const srcToFile = src => fetch(src)
-  .then(res => res.arrayBuffer())
-  .then(buf => new File([buf], "document.png", { type: "image/png" }));
+const srcToFile = src =>
+  fetch(src)
+    .then(res => res.arrayBuffer())
+    .then(buf => new File([buf], "document.png", { type: "image/png" }));
 
 /**
  * Очищает цепочку миниатюр.
