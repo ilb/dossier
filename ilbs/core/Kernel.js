@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-vars -- Отключение правила no-unused-vars */
 /* eslint-disable n/no-extraneous-import -- Отключение правила n/no-extraneous-import */
 
-import { asClass, asValue, createContainer, Lifetime } from "awilix";
+import { asClass, createContainer, Lifetime } from "awilix";
 import glob from "glob";
 import path from "path";
-
 
 /* eslint-enable n/no-extraneous-import -- Включение правила n/no-extraneous-import */
 
@@ -31,16 +29,14 @@ export default class Kernel {
 
   /**
    * Регистрирует значения в контейнере.
-   * @param {Object} context Контекст для регистрации значений.
    * @returns {Promise<void>} - Возвращает обещание завершения регистрации.
    */
-  async registerValues(context) {
+  async registerValues() {
     this.container.register({
       // prisma: asValue(prisma),
       // documentsPath: asValue(process.env.DOCUMENTS_PATH),
     });
   }
-  /* eslint-enable no-unused-vars -- Включение правила no-unused-vars */
   /**
    * Регистрирует классы в контейнере.
    * @returns {Promise<void>} - Возвращает обещание завершения регистрации.
