@@ -21,7 +21,7 @@ export default class DocumentsService extends Service {
    * @returns {Array<Object>} - Массив объектов, содержащих ссылки на страницы.
    */
   buildLinks(pages, documentType, version, uuid, context) {
-    const url = `${process.env.BASE_URL}/api/dossier/${uuid}/documents`;
+    const url = `${process.env.BASEPATH}/api/dossier/${uuid}/documents`;
 
     const queryObj = { ...context, _nocache: new Date().toLocaleString() };
     const queryArray = Object.entries(queryObj);
