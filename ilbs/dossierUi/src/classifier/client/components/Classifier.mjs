@@ -55,8 +55,9 @@ const Classifier = forwardRef(
     ref,
   ) => {
     const [classifier, setClassifier] = useState(schema.classifier);
-    const { tasks } = useTasks(uuid, dossierUrl);
+    // const { tasks } = useTasks(uuid, dossierUrl);
     const {
+      tasksCount,
       documents,
       mutateDocuments,
       correctDocuments,
@@ -71,7 +72,7 @@ const Classifier = forwardRef(
     const [clonedItems, setClonedItems] = useState(null);
     const [draggableOrigin, setDraggableOrigin] = useState(null);
     const [activeDraggable, setActiveDraggable] = useState(null);
-    const [countStartedTasks, setCountStartedTasks] = useState(0);
+    // const [countStartedTasks, setCountStartedTasks] = useState(0);
     const [dragFrom, setDrugFrom] = useState();
     const [prev, setPrev] = useState(null);
     const [pageErrors, setPageErrors] = useState({});
@@ -161,7 +162,7 @@ const Classifier = forwardRef(
       }
     }, [documents]);
 
-    const finishedTasks = tasks.filter(({ status }) => status.code === "FINISHED");
+    // const finishedTasks = tasks.filter(({ status }) => status.code === "FINISHED");
 
     useImperativeHandle(ref, () => ({
       /**
@@ -213,31 +214,31 @@ const Classifier = forwardRef(
       return tab || { type: null };
     }
 
-    useEffect(() => {
-      const processTasks = tasks.filter(
-        ({ status }) => status.code === "STARTED" || status.code === "IN_QUEUE",
-      );
+    // useEffect(() => {
+    //   const processTasks = tasks.filter(
+    //     ({ status }) => status.code === "STARTED" || status.code === "IN_QUEUE",
+    //   );
 
-      setCountStartedTasks(processTasks.length);
-    }, [tasks]);
+    //   setCountStartedTasks(processTasks.length);
+    // }, [tasks]);
 
-    useEffect(() => {
-      const documents = revalidateDocuments();
+    // useEffect(() => {
+    //   const documents = revalidateDocuments();
 
-      if (Object.entries(documents).length) {
-        if (prev && onUpdate) {
-          for (const type in documents) {
-            if (prev[type].length !== documents[type].pages.length) {
-              const tab = documentsTabs.find(tab => tab.type === type);
+    //   if (Object.entries(documents).length) {
+    //     if (prev && onUpdate) {
+    //       for (const type in documents) {
+    //         if (prev[type].length !== documents[type].pages.length) {
+    //           const tab = documentsTabs.find(tab => tab.type === type);
 
-              !["unknown", "classifier"].includes(tab.type) && onUpdate(tab, documents);
-            }
-          }
-        }
+    //           !["unknown", "classifier"].includes(tab.type) && onUpdate(tab, documents);
+    //         }
+    //       }
+    //     }
 
-        setPrev(documents);
-      }
-    }, [finishedTasks.length]);
+    //     setPrev(documents);
+    //   }
+    // }, [finishedTasks.length]);
 
     // useEffect(() => {
     //   const interval = setInterval(() => setTwainHandler() && clearInterval(interval), 1000);
@@ -270,8 +271,7 @@ const Classifier = forwardRef(
       }
 
       return Object.keys(documents).find(key =>
-        documents[key]?.pages?.find(item => item.path === id),
-      );
+        documents[key]?.pages?.find(item => item.path === id));
     };
     /* eslint-enable no-param-reassign -- Включение правила no-param-reassign */
 
@@ -309,7 +309,7 @@ const Classifier = forwardRef(
       }
 
       if (selectedTab.type === "classifier") {
-        !countStartedTasks && setCountStartedTasks(-1);
+        // !countStartedTasks && setCountStartedTasks(-1);
         const availableClasses = documentsTabs.filter(tab => !tab.readonly).map(tab => tab.type);
         const compressedFiles = acceptedFiles; // await compressFiles(acceptedFiles);
 
@@ -489,48 +489,48 @@ const Classifier = forwardRef(
           const newDocs =
             selectedIds.length < 2 // Перемещаем один документ с его выделением или без (т.е. без клика на документ)
               ? [
-                  {
-                    from: {
-                      class: draggableOrigin.type,
-                      page: draggableOrigin.index + 1,
-                    },
-                    to: { class: overContainerTo, page: overIndex + 1 },
+                {
+                  from: {
+                    class: draggableOrigin.type,
+                    page: draggableOrigin.index + 1,
                   },
-                ]
+                  to: { class: overContainerTo, page: overIndex + 1 },
+                },
+              ]
               : selectedIds.map((selected, idx) => {
-                  const urlData = selected.split("?")[0].split("/");
-                  const pageNumber = urlData[urlData.length - 1];
+                const urlData = selected.split("?")[0].split("/");
+                const pageNumber = urlData[urlData.length - 1];
 
-                  return {
-                    // Перемещаем два и более выделенных документа
-                    from: {
-                      class: draggableOrigin.type,
-                      page: Number(pageNumber),
-                    },
-                    to: { class: overContainerTo, page: overIndex + idx },
-                  };
-                });
+                return {
+                  // Перемещаем два и более выделенных документа
+                  from: {
+                    class: draggableOrigin.type,
+                    page: Number(pageNumber),
+                  },
+                  to: { class: overContainerTo, page: overIndex + idx },
+                };
+              });
 
           await correctDocuments(newDocs);
         } else {
           const newDocsElse =
             selectedIds.length < 2
               ? [
-                  {
-                    from: {
-                      class: activeContainer.split("_")[0],
-                      page: activeIndex + 1,
-                    },
-                    to: { class: overContainerTo, page: overIndex + 1 },
-                  },
-                ]
-              : selectedIds.map((selected, idx) => ({
+                {
                   from: {
                     class: activeContainer.split("_")[0],
-                    page: activeIndex + idx,
+                    page: activeIndex + 1,
                   },
-                  to: { class: overContainerTo, page: overIndex + idx },
-                }));
+                  to: { class: overContainerTo, page: overIndex + 1 },
+                },
+              ]
+              : selectedIds.map((selected, idx) => ({
+                from: {
+                  class: activeContainer.split("_")[0],
+                  page: activeIndex + idx,
+                },
+                to: { class: overContainerTo, page: overIndex + idx },
+              }));
 
           await correctDocuments(newDocsElse);
         }
@@ -705,9 +705,7 @@ const Classifier = forwardRef(
 
                   <Dimmable>
                     <Loader
-                      active={
-                        (!!countStartedTasks && selectedTab?.type === "classifier") || loading
-                      }
+                      active={(!!tasksCount && selectedTab?.type === "classifier") || loading}
                       loaderText="Загрузка..."
                     />
                     <SortableGallery

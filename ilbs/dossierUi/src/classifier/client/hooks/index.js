@@ -183,7 +183,7 @@ export const useDocuments = (uuid, dossierUrl, context) => {
     : "";
 
   const { mutate: mutateGlobal } = useSWRConfig();
-  const { data: documents, mutate } = useSWR(
+  const { data, mutate } = useSWR(
     `${dossierUrl}/api/dossier/${uuid}/documents${buildQuery}`,
     fetcher,
     {
@@ -192,7 +192,8 @@ export const useDocuments = (uuid, dossierUrl, context) => {
   );
 
   return {
-    documents,
+    tasksCount: data?.tasksCount || 0,
+    documents: data?.documents || {},
     mutateDocuments: mutate,
     /**
      * Коррекция документов
