@@ -9,6 +9,7 @@ export default class DocumentsService extends Service {
     super();
     this.dossierBuilder = scope.dossierBuilder;
     this.documentGateway = scope.documentGateway;
+    this.verificationRepository = scope.verificationRepository;
   }
 
   /**
@@ -176,7 +177,20 @@ export default class DocumentsService extends Service {
       return result;
     }, {});
 
-    return res;
+    return { documents: res, tasksCount: await this.getTasksCount({ uuid }) };
+  }
+
+  /**
+   * Проверяет все задачи классификации для указанного документа.
+   * @param {Object} root0 Объект параметров.
+   * @param {string} root0.uuid UUID документа.
+   * @returns {Promise<number>} - Кол-во выполняемых процессов.
+   */
+  async getTasksCount({ uuid }) {
+    const path = `${uuid}.classification`;
+    const tasks = await this.verificationRepository.findAllByPath(path);
+
+    return tasks.filter(task => ["STARTED"].includes(task.status.code)).length;
   }
   /* eslint-enable no-unused-vars -- Отключение правила no-unused-vars */
   /* eslint-enable array-callback-return -- Отключение правила array-callback-return */
