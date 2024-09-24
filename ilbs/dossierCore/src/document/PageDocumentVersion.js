@@ -66,9 +66,7 @@ export default class PageDocumentVersion extends Document {
    * @returns {Page} - Возвращает объект страницы или страницу по умолчанию.
    */
   getPage(number = 1) {
-    const foundPage = this.getPages().find(page => page.pageNumber === number);
-
-    return foundPage || this.getDefaultPage();
+    return this.getPages().find(page => page.pageNumber === number);
   }
 
   /**

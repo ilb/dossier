@@ -24,7 +24,11 @@ export default class DocumentsService extends Service {
   buildLinks(pages, documentType, version, uuid, context) {
     const url = `${process.env.BASEPATH}/api/dossier/${uuid}/documents`;
 
-    const queryObj = { ...context, _nocache: new Date().toLocaleString() };
+    let dateString = new Date().toLocaleString();
+
+    dateString = dateString.replace(/[.,:\s]/gu, "");
+
+    const queryObj = { ...context, _nocache: dateString };
     const queryArray = Object.entries(queryObj);
 
     const buildQuery = queryArray.length

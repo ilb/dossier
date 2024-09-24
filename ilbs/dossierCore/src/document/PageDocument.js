@@ -307,9 +307,7 @@ export default class PageDocument extends Document {
    * @returns {Page}
    */
   getPage(number) {
-    const page = this.getPages()[number - 1];
-
-    return page || this.getDefaultPage();
+    return this.getPages()[number - 1];
   }
 
   /**

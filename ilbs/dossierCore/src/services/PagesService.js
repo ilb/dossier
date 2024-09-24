@@ -103,6 +103,11 @@ export default class PagesService extends Service {
     const document = dossier.getDocument(name);
     const versionDocument = document.getVersion(Number(version));
     const page = versionDocument.pages.find(({ pageNumber }) => pageNumber === Number(number));
+
+    if (!page) {
+      throw new Error("Страница не найдена.");
+    }
+
     const imageBuffer = versionDocument.getFile(Number(number));
 
     return {
