@@ -71,16 +71,18 @@ export const uploadPages = async (uuid, document, files, dossierUrl, buildQuery)
 
 /**
  * Удаление страницы
+ * @param {string} dossierUrl URL для запросов
  * @param {Object} pageSrc Источник страницы
  * @param {string} pageSrc.path Путь страницы
  * @param {string} pageSrc.uuid UUID страницы
  * @param {string} buildQuery Строка запроса
  * @returns {Promise<{ok: boolean}>} - Результат удаления
  */
-export const deletePage = async (pageSrc, buildQuery) => {
-  const url =
+export const deletePage = async (dossierUrl, pageSrc, buildQuery) => {
+  const url = `${dossierUrl}` +
     `${pageSrc.path.slice(0, pageSrc.path.indexOf("?"))}${buildQuery}` +
     `${buildQuery ? `&pageUuid=${pageSrc.uuid}` : `?pageUuid=${pageSrc.uuid}`}`;
+
   const result = await fetch(url, {
     method: "DELETE",
   });
@@ -230,7 +232,7 @@ export const useDocuments = (uuid, dossierUrl, context) => {
      * @param {Object} pageSrc Источник страницы
      * @returns {Promise<{ok: boolean}>}
      */
-    deletePage: pageSrc => deletePage(pageSrc, buildQuery),
+    deletePage: pageSrc => deletePage(dossierUrl, pageSrc, buildQuery),
   };
 };
 /* eslint-enable no-shadow -- Отключение правила no-shadow */
