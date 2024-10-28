@@ -22,7 +22,7 @@ import { Remove } from "../SortableGalleryItem/Remove";
  * @param {Object} documents Документы
  * @returns {{path: string, hasNoPreview: boolean}|null} Объект с путем к изображению и флагом отсутствия предпросмотра
  */
-const getImgFromSrc = (src, documents) => {
+const getImgFromSrc = (src, documents, dossierUrl) => {
   const previews = {
     "application/vnd.ms-excel": excel,
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": excel,
@@ -74,7 +74,7 @@ const GalleryItem = React.memo(
       },
       ref,
     ) => {
-      const img = getImgFromSrc(src, documents);
+      const img = getImgFromSrc(src, documents, dossierUrl);
 
       /**
        * Обработчик удаления элемента
