@@ -22,7 +22,7 @@ export default class DocumentsService extends Service {
    * @returns {Array<Object>} - Массив объектов, содержащих ссылки на страницы.
    */
   buildLinks(pages, documentType, version, uuid, context) {
-    const url = `${process.env.BASEPATH}/api/dossier/${uuid}/documents`;
+    const url = `/api/dossier/${uuid}/documents`;
 
     let dateString = new Date().toLocaleString();
 
