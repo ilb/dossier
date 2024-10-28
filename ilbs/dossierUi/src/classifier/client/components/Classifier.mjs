@@ -719,6 +719,7 @@ const Classifier = forwardRef(
                       selectedIds={selectedIds}
                       handleSelect={handleSelect}
                       documents={documents}
+                      dossierUrl={dossierUrl}
                     />
                   </Dimmable>
                 </div>
@@ -744,7 +745,7 @@ const Classifier = forwardRef(
                   fileType={selectedTab.fileType}
                 />
               )}
-              <ListGallery srcSet={selectedDocument} />
+              <ListGallery srcSet={selectedDocument} dossierUrl={dossierUrl}/>
             </div>
           )}
         </div>

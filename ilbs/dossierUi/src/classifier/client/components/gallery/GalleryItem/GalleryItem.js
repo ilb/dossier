@@ -37,18 +37,18 @@ const getImgFromSrc = (src, documents) => {
   };
 
   const documentType = Object.keys(documents).find(key =>
-    documents[key].pages.find(pageItem => pageItem?.id === src?.id)); // Переименовано page -> pageItem
+    documents[key].pages.find(pageItem => pageItem?.id === src?.id));
 
-  const foundPage = documents[documentType]?.pages.find(pageItem => pageItem?.id === src?.id); // Переименовано page -> foundPage
+  const foundPage = documents[documentType]?.pages.find(pageItem => pageItem?.id === src?.id);
 
   if (foundPage?.type.includes("image/")) {
-    return { path: src.id, hasNoPreview: false };
+    return { path: `${dossierUrl}/${src.id}`, hasNoPreview: false };
   }
 
   if (previews[foundPage?.type]) {
     return { path: previews[foundPage?.type], hasNoPreview: true };
   }
-  return null; // Заменено undefined на null
+  return null;
 };
 
 /* eslint-disable no-undefined -- Включение правила no-undefined */
@@ -70,6 +70,7 @@ const GalleryItem = React.memo(
         onSelect,
         selected,
         documents,
+        dossierUrl
       },
       ref,
     ) => {

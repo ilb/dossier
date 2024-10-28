@@ -27,6 +27,7 @@ const SortableGalleryItem = ({
   onSelect,
   selected,
   documents,
+  dossierUrl
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: src.id,
@@ -55,6 +56,7 @@ const SortableGalleryItem = ({
       onSelect={onSelect}
       selected={selected}
       documents={documents}
+      dossierUrl={dossierUrl}
     />
   );
 };

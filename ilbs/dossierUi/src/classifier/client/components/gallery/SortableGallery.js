@@ -53,6 +53,7 @@ const SortableGallery = ({
   selectedIds,
   handleSelect,
   documents,
+  dossierUrl
 }) => {
   const [state, setState] = useState(initState);
 
@@ -186,6 +187,7 @@ const SortableGallery = ({
               {srcSet.map(src => (
                 <div key={src.id} className="column">
                   <SortableGalleryItem
+                    dossierUrl={dossierUrl}
                     documents={documents}
                     src={src}
                     errors={pageErrors[src.uuid]}
@@ -226,6 +228,7 @@ const SortableGallery = ({
         {active ? (
           <GalleryItem
             // src={getOverlayPreview(active)}
+            dossierUrl={dossierUrl}
             src={active}
             style={{ backgroundColor: "#ffffff", opacity: 0.2 }}
             dragOverlay={true}

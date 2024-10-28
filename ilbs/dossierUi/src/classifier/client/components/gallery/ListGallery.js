@@ -8,10 +8,10 @@ import ListItem from "./GalleryItem/ListItem.js";
  * @param {Object[]} root0.srcSet Массив изображений
  * @returns {JSX.Element} Галерея в виде списка
  */
-const ListGallery = ({ srcSet }) => (
+const ListGallery = ({ srcSet, dossierUrl }) => (
   <>
     <div className="classifier-list-gallery">
-      {srcSet.map(item => <ListItem key={item.id} src={item.path} rotation={0} scale={1} />)}
+      {srcSet.map(item => <ListItem key={item.id} src={`${dossierUrl}/${item.path}`} rotation={0} scale={1} />)}
     </div>
   </>
 );
