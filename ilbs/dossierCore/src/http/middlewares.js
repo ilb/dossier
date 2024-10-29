@@ -1,15 +1,13 @@
-/* eslint-disable n/no-missing-import -- Отключение правила n/no-extraneous-import */
 import fs from "fs";
 import im from "imagemagick";
 import mime from "mime-types";
 import multer from "multer";
 import { Poppler } from "node-poppler";
+import path from "path";
 import { promisify } from "util";
 import { v4 as uuidv4 } from "uuid";
 
 import Errors from "../util/Errors.js";
-/* eslint-enable n/no-missing-import -- Отключение правила n/no-extraneous-import */
-
 export const uploadMiddleware = multer({
   limits: {
     fileSize: process.env["apps.classifier.filesize"]
@@ -25,7 +23,14 @@ export const uploadMiddleware = multer({
      */
     destination(req, file, cb) {
       const date = req?.query?.createdDate?.split(".").reverse().join("/");
-      const destination = `documents/dossier/${date}/${req.query.uuid}/${req.query.name}`;
+
+      const destination = path.join(
+        process.env["apps.loandossier.dossierDocumentPath"],
+        "dossier",
+        date,
+        req.query.uuid,
+        req.query.name,
+      );
 
       if (!fs.existsSync(destination)) {
         fs.mkdirSync(destination, { recursive: true });
@@ -162,11 +167,11 @@ export const splitPdf = async (req, res, next) => {
 
         pages = pages.map(page => {
           const filename = `${uuidv4()}.jpg`;
-          const path = `${file.destination}/${filename}`;
+          const pagePath = `${file.destination}/${filename}`;
 
-          fs.renameSync(`${splitOutputPath}/${page}`, path);
+          fs.renameSync(`${splitOutputPath}/${page}`, pagePath);
 
-          return { path, filename, mimetype: "image/jpeg" };
+          return { path: pagePath, filename, mimetype: "image/jpeg" };
         });
 
         fs.unlinkSync(file.path);

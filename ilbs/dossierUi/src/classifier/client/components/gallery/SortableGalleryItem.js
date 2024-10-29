@@ -16,6 +16,7 @@ import GalleryItem from "./GalleryItem/GalleryItem.js";
  * @param {Function} root0.onSelect Функция для выбора элемента
  * @param {boolean} root0.selected Флаг выбора элемента
  * @param {Object[]} root0.documents Список документов, связанных с элементом
+ * @param {string} root0.dossierUrl
  * @returns {JSX.Element} Компонент сортируемого элемента галереи
  */
 const SortableGalleryItem = ({
@@ -27,7 +28,7 @@ const SortableGalleryItem = ({
   onSelect,
   selected,
   documents,
-  dossierUrl
+  dossierUrl,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: src.id,
