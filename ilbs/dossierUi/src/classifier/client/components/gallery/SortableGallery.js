@@ -8,7 +8,6 @@ import GalleryItem from "./GalleryItem/GalleryItem.js";
 import SegmentItem from "./GalleryItem/SegmentItem.js";
 import SortableGalleryItem from "./SortableGalleryItem.js";
 
-
 /**
  * Возвращает номер страницы
  * @param {string} id ID страницы
@@ -41,6 +40,7 @@ const initState = {
  * @param {string[]} root0.selectedIds Массив выбранных ID изображений
  * @param {Function} root0.handleSelect Функция для обработки выбора изображений
  * @param {Object[]} root0.documents Документы, связанные с изображениями
+ * @param {string} root0.dossierUrl
  * @returns {JSX.Element} Сортируемая галерея
  */
 const SortableGallery = ({
@@ -53,7 +53,7 @@ const SortableGallery = ({
   selectedIds,
   handleSelect,
   documents,
-  dossierUrl
+  dossierUrl,
 }) => {
   const [state, setState] = useState(initState);
 
@@ -121,7 +121,7 @@ const SortableGallery = ({
    * @returns {void}
    */
   const zoomImageIn = async (event, { scaleNum }) => {
-    const newScale = Math.min(10, Math.ceil((scaleNum * 1.1) * 10) / 10);
+    const newScale = Math.min(10, Math.ceil(scaleNum * 1.1 * 10) / 10);
     const newWidth = state.width * newScale;
     const newHeight = state.height * newScale;
 

@@ -20,6 +20,7 @@ import { Remove } from "../SortableGalleryItem/Remove";
  * Возвращает изображение для отображения на основе типа файла
  * @param {Object} src Источник документа
  * @param {Object} documents Документы
+ * @param {string} dossierUrl
  * @returns {{path: string, hasNoPreview: boolean}|null} Объект с путем к изображению и флагом отсутствия предпросмотра
  */
 const getImgFromSrc = (src, documents, dossierUrl) => {
@@ -70,7 +71,7 @@ const GalleryItem = React.memo(
         onSelect,
         selected,
         documents,
-        dossierUrl
+        dossierUrl,
       },
       ref,
     ) => {
@@ -151,8 +152,7 @@ const GalleryItem = React.memo(
                       width: "100%",
                       marginTop: "-22px",
                       overflow: "hidden",
-                    }}
-                  >
+                    }}>
                     <span
                       style={{
                         display: "inline-block",
@@ -160,8 +160,7 @@ const GalleryItem = React.memo(
                         textOverflow: "ellipsis",
                         overflow: "hidden",
                         whiteSpace: "nowrap",
-                      }}
-                    >
+                      }}>
                       {src.originalName}
                     </span>
                   </div>
