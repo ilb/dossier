@@ -26,7 +26,7 @@ const SegmentItem = ({ src }) => (
         alt="alt"
         src={src}
         width={1000}
-        height={1}
+        height={1000}
         style={{ maxWidth: "100%", height: "auto" }}
       />
     )}

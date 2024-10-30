@@ -212,7 +212,7 @@ const SortableGallery = ({
 
           {state.previewOpen && (
             <SegmentItem
-              src={state.src}
+              src={`${dossierUrl}${state.src}`}
               rotation={state.rotation}
               scale={state.scale}
               width={state.width}
