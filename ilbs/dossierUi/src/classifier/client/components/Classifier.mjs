@@ -399,7 +399,7 @@ const Classifier = forwardRef(
         },
       };
 
-      mutateDocuments(newDocumentsList, false);
+      mutateDocuments({ document: newDocumentsList, tasksCount }, false);
 
       await deletePage(pageSrc);
 
@@ -466,20 +466,22 @@ const Classifier = forwardRef(
         }
 
         if (overIndex === -1) {
-          overIndex = 1;
+          overIndex = 0;
         }
 
         if (activeIndex !== overIndex) {
-          mutateDocuments(
-            {
+          const data = {
+            documents: {
               ...documents,
               [overContainer]: {
                 ...documents[overContainer],
                 pages: arrayMove(documents[overContainer]?.pages, activeIndex, overIndex),
               },
             },
-            false,
-          );
+            tasksCount,
+          };
+
+          mutateDocuments(data, false);
         }
 
         const overContainerTo = overContainer.split("_")[0];
@@ -507,7 +509,7 @@ const Classifier = forwardRef(
                     class: draggableOrigin.type,
                     page: Number(pageNumber),
                   },
-                  to: { class: overContainerTo, page: overIndex + idx },
+                  to: { class: overContainerTo, page: overIndex + 1 + idx },
                 };
               });
 
@@ -524,13 +526,18 @@ const Classifier = forwardRef(
                   to: { class: overContainerTo, page: overIndex + 1 },
                 },
               ]
-              : selectedIds.map((selected, idx) => ({
-                from: {
-                  class: activeContainer.split("_")[0],
-                  page: activeIndex + idx,
-                },
-                to: { class: overContainerTo, page: overIndex + idx },
-              }));
+              : selectedIds.map((selected, idx) => {
+                const urlData = selected.split("?")[0].split("/");
+                const pageNumber = urlData[urlData.length - 1];
+
+                return {
+                  from: {
+                    class: activeContainer.split("_")[0],
+                    page: Number(pageNumber),
+                  },
+                  to: { class: overContainerTo, page: overIndex + idx + 1 },
+                };
+              });
 
           await correctDocuments(newDocsElse);
         }
@@ -628,7 +635,7 @@ const Classifier = forwardRef(
           },
         };
 
-        mutateDocuments(newDocuments, false);
+        mutateDocuments({ documents: newDocuments, tasksCount }, false);
       }
     };
     /* eslint-enable iconicompany/avoid-naming -- Включение правила iconicompany/avoid-naming */
