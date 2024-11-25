@@ -8,11 +8,13 @@ import { timeoutPromise } from "../../libs/utils.js";
 
 export default class ClassifierGate {
   /**
-   *
+   * @param {Object} root0 Объект с зависимостями.
+   * @param {Object} root0.classifierUrl ссылка на классификатор
+   * @param {Object} root0.classifierTimeout timeout классификатора
    */
-  constructor() {
-    this.classifierUrl = process.env["apps.docclassifierrs.ws"];
-    this.classifierTimeout = parseInt(process.env["apps.loandossier.classifiertimeout"], 10) || 50;
+  constructor({ classifierUrl, classifierTimeout }) {
+    this.classifierUrl = classifierUrl;
+    this.classifierTimeout = parseInt(classifierTimeout, 10) || 50;
   }
 
   /**
@@ -45,6 +47,5 @@ export default class ClassifierGate {
       return Object.values(classifications);
     }
     throw Error(`Error occured while classifying the page: ${await res.text()}`);
-
   }
 }

@@ -10,11 +10,13 @@ export default class SignatureDetectorVerification extends Service {
    * Конструктор класса SignatureDetectorVerification
    * @param {Object} root0 Объект с зависимостями.
    * @param {Object} root0.documentErrorService Сервис для работы с ошибками документа.
+   * @param {Object} root0.documentSignatureDetectorUrl Сервис для работы с ошибками документа.
    */
-  constructor({ documentErrorService }) {
+  constructor({ documentErrorService, documentSignatureDetectorUrl }) {
     super();
     this.nameVerification = "signatureDetectorVerification";
     this.documentErrorService = documentErrorService;
+    this.documentSignatureDetectorUrl = documentSignatureDetectorUrl;
     this.errors = [];
     this.classifierTimeout = 30;
   }
@@ -40,7 +42,7 @@ export default class SignatureDetectorVerification extends Service {
     }
 
     const res = await timeoutPromise(
-      fetch(process.env["apps.documentsignaturedetectorjs.ws"], {
+      fetch(this.documentSignatureDetectorUrl, {
         method: "POST",
         headers: {
           ...formData.getHeaders(),
@@ -72,6 +74,5 @@ export default class SignatureDetectorVerification extends Service {
       };
     }
     throw Error(`Error occured while detecting signature: ${await res.text()}`);
-
   }
 }
