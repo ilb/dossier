@@ -60,7 +60,7 @@ export default class PageDocument extends Document {
    * @returns {void}
    */
   initDocumentData(currentDocumentVersion) {
-    this.setData = { ...currentDocumentVersion.documentData, ...this.data };
+    this.setData = { ...this.data, ...currentDocumentVersion.documentData };
   }
   /* eslint-enable iconicompany/avoid-naming -- Отключение правила iconicompany/avoid-naming */
 

@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 
+import DocumentMerger from "../dossier/DocumentMerger.js";
 import Document from "./Document.js";
 import Page from "./Page.js";
 
@@ -13,6 +14,7 @@ export default class PageDocumentVersion extends Document {
     super(null, data);
     this.documentsPath = path.join(process.env["apps.loandossier.dossierDocumentPath"]);
     this.dossierPath = `${this.documentsPath}/dossier`;
+    this.documentMerger = new DocumentMerger(this.dossierPath);
     this.version = data.version || 1;
     this.status = data.status || "new";
     this.mainDocId = data.documentId || null;
@@ -79,6 +81,17 @@ export default class PageDocumentVersion extends Document {
     const page = this.getPage(number);
 
     return fs.readFileSync(page.uri);
+  }
+
+  /**
+   * Возвращает все страницы документа одним файлом
+   * @returns {Promise<Buffer>}
+   */
+  async getDocument() {
+    if (this.isImages()) {
+      return this.documentMerger.merge(this.getPages().map(page => page.uri));
+    }
+    return fs.readFileSync(this.getPage(1).uri);
   }
 
   /**
