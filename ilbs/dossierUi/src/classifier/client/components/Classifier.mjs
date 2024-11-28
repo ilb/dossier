@@ -51,6 +51,7 @@ const Classifier = forwardRef(
       defaultViewType = "grid",
       context = null,
       disabled = false,
+      isUpdateNeed = false,
     },
     ref,
   ) => {
@@ -322,7 +323,7 @@ const Classifier = forwardRef(
           .then(async result => {
             const documents = await revalidateDocuments();
 
-            onUpdate && onUpdate(selectedTab, documents);
+            onUpdate && isUpdateNeed && onUpdate(selectedTab, documents);
             setPrev(documents);
             result.error && processError(result.error, documents);
           })
@@ -752,7 +753,7 @@ const Classifier = forwardRef(
                   fileType={selectedTab.fileType}
                 />
               )}
-              <ListGallery srcSet={selectedDocument} dossierUrl={dossierUrl}/>
+              <ListGallery srcSet={selectedDocument} dossierUrl={dossierUrl} />
             </div>
           )}
         </div>
