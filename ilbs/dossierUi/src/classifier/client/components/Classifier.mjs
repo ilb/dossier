@@ -405,9 +405,9 @@ const Classifier = forwardRef(
 
       await deletePage(pageSrc);
 
-      onRemove && onRemove(selectedTab, newDocumentsList);
+      const newDocuments = await revalidateDocuments();
 
-      revalidateDocuments();
+      onRemove && onRemove(selectedTab, newDocuments);
     };
 
     /* eslint-disable iconicompany/avoid-naming -- Включение правила iconicompany/avoid-naming */
