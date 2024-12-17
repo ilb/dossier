@@ -397,6 +397,7 @@ const Classifier = forwardRef(
           pages: documents[activeContainer]?.pages.filter(item => item !== pageSrc),
           errors: documents[activeContainer]?.errors | [],
           lastModified: documents[activeContainer]?.lastModified,
+          state: documents[activeContainer]?.state,
         },
       };
 
@@ -617,11 +618,13 @@ const Classifier = forwardRef(
           ...documents,
 
           [activeContainer]: {
+            ...documents[activeContainer],
             errors: documents[activeContainer].errors,
             pages: documents[activeContainer]?.pages.filter(item => !ids.includes(item.path)),
           },
 
           [overContainer]: {
+            ...documents[overContainer],
             errors: documents[overContainer].errors,
             pages: [
               ...documents[overContainer]?.pages.slice(0, newIndex),
