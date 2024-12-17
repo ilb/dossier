@@ -389,20 +389,6 @@ const Classifier = forwardRef(
      * @returns {Promise<void>} - Выполняет удаление страницы.
      */
     const handlePageDelete = async pageSrc => {
-      const activeContainer = findContainer(pageSrc);
-
-      const newDocumentsList = {
-        ...documents,
-        [activeContainer]: {
-          pages: documents[activeContainer]?.pages.filter(item => item !== pageSrc),
-          errors: documents[activeContainer]?.errors | [],
-          lastModified: documents[activeContainer]?.lastModified,
-          state: documents[activeContainer]?.state,
-        },
-      };
-
-      mutateDocuments({ document: newDocumentsList, tasksCount }, false);
-
       await deletePage(pageSrc);
 
       const newDocuments = await revalidateDocuments();
