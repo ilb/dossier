@@ -95,7 +95,7 @@ const MenuTab = ({
   context,
 }) => {
   let className = "";
-  const isRequired = !document.readonly && document.required;
+  const isRequired = document.required;
   const { documents: docsData } = useDocuments(uuid, dossierUrl, context); // Избегаем конфликта с именем 'data'
   const tabDocuments = docsData[document.type]?.pages;
   const countPages = tabDocuments?.length;
