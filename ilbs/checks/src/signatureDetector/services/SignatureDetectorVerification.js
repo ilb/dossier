@@ -1,7 +1,8 @@
 import Service from "@ilb/core/src/base/Service.js";
+import fetch from "cross-fetch";
 import FormData from "form-data";
 import fs from "fs";
-import fetch from "isomorphic-fetch";
+import https from "https";
 
 import { timeoutPromise } from "../../../libs/utils.js";
 
@@ -47,6 +48,15 @@ export default class SignatureDetectorVerification extends Service {
         headers: {
           ...formData.getHeaders(),
         },
+        agent: new https.Agent(
+          https.globalAgent
+            ? {
+              cert: https.globalAgent.options.cert,
+              key: https.globalAgent.options.key,
+              passphrase: https.globalAgent.options.passphrase,
+            }
+            : {},
+        ),
         body: formData,
       }),
       new Error(`Signature Detector Timed Out! Page: ${JSON.stringify(page)}`),
