@@ -1,7 +1,8 @@
 /* eslint-disable n/no-extraneous-import -- Отключение правила для extraneous import */
+import fetch from "cross-fetch";
 import FormData from "form-data";
 import fs from "fs";
-import fetch from "isomorphic-fetch";
+import https from "https";
 
 /* eslint-enable n/no-extraneous-import -- Отключение правила extraneous import */
 import { timeoutPromise } from "../../libs/utils.js";
@@ -35,6 +36,15 @@ export default class ClassifierGate {
         headers: {
           ...formData.getHeaders(),
         },
+        agent: new https.Agent(
+          https.globalAgent
+            ? {
+              cert: https.globalAgent.options.cert,
+              key: https.globalAgent.options.key,
+              passphrase: https.globalAgent.options.passphrase,
+            }
+            : {},
+        ),
         body: formData,
       }),
       new Error(`Classifier Timed Out! Page: ${JSON.stringify(pages)}`),

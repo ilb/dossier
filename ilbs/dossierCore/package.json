@@ -1,11 +1,12 @@
 {
   "name": "@ilb/dossier-core",
-  "version": "2.3.25",
+  "version": "2.3.26",
   "description": "dossier-core",
   "type": "module",
   "dependencies": {
-    "@ilb/p-queue": "^7.1.0",
     "@ilb/core": "^1.1.1",
+    "@ilb/p-queue": "^7.1.0",
+    "cross-fetch": "^4.1.0",
     "debug": "^4.3.4",
     "imagemagick": "^0.1.3",
     "mime-types": "^2.1.35",

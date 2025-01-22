@@ -77,7 +77,8 @@ export default class PageDocument extends Document {
     this.state = document.currentDocumentVersion?.documentState?.code || "";
     this.initVersions(document.documentVersions);
     this.initDocumentData(document.currentDocumentVersion);
-    this.lastModified = document.updateAt || document.createAt;
+    this.lastModified =
+      document.currentDocumentVersion.updateAt || document.currentDocumentVersion.createAt;
     this.verificationsResult = document.currentDocumentVersion?.verifications || [];
   }
 
