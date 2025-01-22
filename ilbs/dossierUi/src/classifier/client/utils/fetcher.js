@@ -1,5 +1,7 @@
+import Resource from "@ilb/core/src/resources/Resource.js";
+
 /**
- * @param {...any} args
+ * @param {string} url
  * @returns {Promise<any>}
  */
-export const fetcher = (...args) => fetch(...args).then(res => res.json());
+export const fetcher = url => Resource.processRequest("get", url).then(res => res);

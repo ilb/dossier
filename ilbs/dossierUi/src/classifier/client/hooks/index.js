@@ -183,7 +183,6 @@ export const useDocuments = (uuid, dossierUrl, context) => {
       .map(([key, value]) => `${key}=${value}`)
       .join("&")}`
     : "";
-
   const { mutate: mutateGlobal } = useSWRConfig();
   const { data, mutate } = useSWR(
     `${dossierUrl}/api/dossier/${uuid}/documents${buildQuery}`,

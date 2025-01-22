@@ -26,6 +26,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@ilb/core": "^1.2.1",
     "classnames": "^2.3.2",
     "prop-types": "^15.8.1",
     "react-dropzone": "^11.3.1",
