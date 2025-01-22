@@ -1,10 +1,12 @@
 {
   "name": "@ilb/core",
-  "version": "1.1.2",
+  "version": "1.2.1",
   "description": "app core",
   "type": "module",
   "dependencies": {
     "@ilb/ajvinstance": "^1.0.3",
+    "await-timeout": "^1.1.1",
+    "cross-fetch": "^4.1.0",
     "next-connect": "^0.13.0"
   },
   "main": "index.js",
